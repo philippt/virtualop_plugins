@@ -1,0 +1,3 @@
+dependency :bash
+dependency :machines
+dependency :core
