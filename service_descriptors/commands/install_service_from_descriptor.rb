@@ -13,10 +13,11 @@ param :canned_service
 
 on_machine do |machine, params|
   
-  service_row = @op.list_available_services.select do |x|
+  service_row = @op.list_available_services("machine" => params["descriptor_machine"]).select do |x|
     x["name"] == params["service"]
   end.first
   
+  service_name = params["service"]
   descriptor_dir = service_row["dir_name"]
   
   @op.with_machine(params["descriptor_machine"]) do |descriptor_machine|
@@ -55,5 +56,45 @@ on_machine do |machine, params|
     
     lines = descriptor_machine.read_file_if_exists("file_name" => "#{descriptor_dir}/packages/gem")    
     machine.install_gems_from_file("lines" => lines) unless lines.size == 0
+    
+    # load as a vop plugin
+    plugin_file = descriptor_dir + "/#{service_name}.plugin"
+    if descriptor_machine.file_exists("file_name" => plugin_file)
+      descriptor_machine.load_plugin("plugin_file_name" => plugin_file)
+    end
+    
+    # TODO @op.flush_cache
+    
+    install_command_name = "#{service_name}_install"
+    broker = @op.local_broker
+    install_command = nil
+    begin
+      install_command = broker.get_command(install_command_name)
+      $logger.info("found install command #{install_command.name}")
+    rescue Exception => e
+      $logger.info("did not find install_command #{install_command_name} : #{e.message}")
+    end
+    
+    if install_command != nil    
+      param_values = {
+        "machine" => machine.name      
+        #TODO "service_root" => service_root
+      }
+      param_values["domain"] = params["domain"] if params.has_key?('domain')
+      
+      params_to_use = {}
+      param_values.each do |k,v|
+        params_to_use[k] = v if install_command.params.select do |p|
+          p.name == k
+        end.size > 0
+      end
+      request = RHCP::Request.new(install_command, params_to_use, Thread.current['broker'].context)
+      response = broker.execute(request)
+      
+    end
+    machine.hash_to_file(
+      "file_name" => "#{service_config_dir}/#{service_name}", 
+      "content" => params
+    )
   end
 end
