@@ -5,5 +5,5 @@ on_machine do |vm, params|
   
   vm.rm("file_name" => target_file_name) if vm.file_exists("file_name" => target_file_name)
     
-  process_template(:centos_base_repo, vm, target_file_name, binding())
+  process_local_template(:centos_base_repo, vm, target_file_name, binding())
 end

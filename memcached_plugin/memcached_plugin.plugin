@@ -1,0 +1,6 @@
+require 'brokers/memcached_broker'
+
+@plugin.register_broker MemcachedBroker
+
+config_param "server_name", "server ip and optionally port, separated by colon (example: 127.0.0.1:11211)", :default_value => "localhost"
+config_param "expiration_seconds", "number of seconds after which cached content should be considered invalid", :default_value => 86400
