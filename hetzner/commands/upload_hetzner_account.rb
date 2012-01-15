@@ -4,6 +4,7 @@ param :machine
 param :hetzner_account
 
 on_machine do |machine, params|
-  file_name = @plugin.hetzner_account_dropdir + '/' + params["hetzner_account"] + '.conf'
+  drop_dir = hetzner_account_dropdir
+  file_name = "#{drop_dir}/#{params["hetzner_account"]}.conf"
   machine.upload_file("local_file" => file_name, "target_file" => file_name)  
 end

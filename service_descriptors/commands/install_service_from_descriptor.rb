@@ -1,24 +1,17 @@
 description "installs a service on a target_machine given a service descriptor, not necessarily on the same machine"
 
 param :machine
-param "descriptor_machine", "alternative location to read the descriptor from", { 
-  :lookup_method => lambda do
-    @op.list_machines.map do |x|
-      x["name"]
-    end
-  end,
-  :default_value => 'localhost'
-}  
-param :canned_service
+param! :descriptor_machine
+param! "descriptor_dir", "fully qualified path where the service desriptor (e.g. the plugin file) can be found)"
 
 on_machine do |machine, params|
   
-  service_row = @op.list_available_services("machine" => params["descriptor_machine"]).select do |x|
-    x["name"] == params["service"]
-  end.first
-  
-  service_name = params["service"]
-  descriptor_dir = service_row["dir_name"]
+  descriptor_dir = params["descriptor_dir"]
+  parts = descriptor_dir.split("/")
+  service_name = parts.last
+  if service_name == ".vop"
+    service_name = parts[parts.size-2]
+  end
   
   @op.with_machine(params["descriptor_machine"]) do |descriptor_machine|
   
@@ -32,7 +25,7 @@ on_machine do |machine, params|
           $logger.info("github dependency #{line} already exists locally")
           next
         end
-        machine.install_service_from_github("git_project" => line)
+        machine.install_service_from_github("github_project" => line)
       end
     end  
   
@@ -93,7 +86,7 @@ on_machine do |machine, params|
       
     end
     machine.hash_to_file(
-      "file_name" => "#{service_config_dir}/#{service_name}", 
+      "file_name" => "#{config_string('service_config_dir')}/#{service_name}", 
       "content" => params
     )
   end
