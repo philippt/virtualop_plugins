@@ -5,15 +5,17 @@ param! :descriptor_machine
 param! :canned_service
 
 on_machine do |machine, params|
-  
-  service_row = @op.list_available_services.select do |x|
+  service_row = @op.list_available_services("machine" => params["descriptor_machine"]).select do |x|
     x["name"] == params["service"]
   end.first
   
   service_name = params["service"]
   descriptor_dir = service_row["dir_name"]
   
-  params["descriptor_dir"] = descriptor_dir
+  params["descriptor_dir"] = descriptor_dir  
+  
+  $logger.info("installing canned service #{params["service"]} onto #{params["machine"]}")
+  
   params.delete("service")
   
   @op.install_service_from_descriptor(params)  
