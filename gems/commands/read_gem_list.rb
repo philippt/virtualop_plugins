@@ -4,11 +4,12 @@ display_type :table
 add_column :name
 add_column :version
 
-param "input", "the list as one string with newlines"
+#param "input", "the list as one string with newlines"
+param! "lines", "lines from a package file", :allows_multiple_values => true
 
 execute do |params|
   result = []
-  params["input"].split("\n").each do |line|
+  params["lines"].each do |line|
     matched = /(.+)\s\(([\d\.]+)\)/.match(line)
     if matched
       result << {

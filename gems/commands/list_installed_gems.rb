@@ -12,5 +12,5 @@ on_machine do |machine, params|
   the_list = ""
   # TODO hardcoded sudo
   the_list = machine.ssh_and_check_result("command" => "gem list")
-  @op.read_gem_list("input" => the_list)
+  @op.read_gem_list("lines" => the_list.split("\n"))
 end

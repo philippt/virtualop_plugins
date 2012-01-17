@@ -1,11 +1,10 @@
 description "installs all gems listed in a file (same format as the output of 'gem list', please)"
 
 param :machine
-param "file_name", "absolute path to the file containing the gem names/versions", :mandatory => true
+param! "lines", "lines from a package file", :allows_multiple_values => true
 
 on_machine do |machine, params|
-  content = machine.ssh_and_check_result("command" => "cat #{params["file_name"]}")
-  gems = @op.read_gem_list("input" => content)
+  gems = @op.read_gem_list("lines" => params["lines"])
   installed_gems = machine.list_installed_gems
   gems.each do |row|
     $logger.info "checking for #{row["name"]}"

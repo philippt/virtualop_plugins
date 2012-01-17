@@ -5,6 +5,8 @@ add_columns [ :type, :alias ]
 
 mark_as_read_only
 
+#contributes_to :list_machine_groups
+
 with_contributions do |result, params|
   
   result.sort_by do |item|

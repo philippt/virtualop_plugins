@@ -70,8 +70,8 @@ on_machine do |machine, params|
     
     if install_command != nil    
       param_values = {
-        "machine" => machine.name      
-        #TODO "service_root" => service_root
+        "machine" => machine.name,      
+        "service_root" => descriptor_dir
       }
       param_values["domain"] = params["domain"] if params.has_key?('domain')
       
