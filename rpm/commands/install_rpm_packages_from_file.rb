@@ -21,16 +21,15 @@ on_machine do |machine, params|
     end
     
     begin
-      if matched = /^(.+?)-(\d+.+)/.match(rpm_name)
-        rpm_name = matched.captures.first
+      #if matched = /^(.+?)-(\d+.+)/.match(rpm_name)
+        #rpm_name = matched.captures.first
         
-        existing = already_installed.select do |candidate|
-          /^#{rpm_name}-/.match(candidate)
-        end
-        if existing.size > 0
-          $logger.info("package #{rpm_name} already installed.")
-          next  
-        end
+      existing = already_installed.select do |candidate|
+        /^#{rpm_name}-/.match(candidate)
+      end
+      if existing.size > 0
+        $logger.info("package #{rpm_name} already installed.")
+        next  
       end
     rescue
       $logger.warn("could not check if the RPM #{rpm_name} is already installed - gonna install it to be on the safe side (tm).")

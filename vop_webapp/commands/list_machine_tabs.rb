@@ -29,6 +29,8 @@ on_machine do |machine, params|
     service_names = machine.list_unix_services.map { |row| row["name"] }
     
     tabs << ["ssh_logs", "SSH Logins"]
+    
+    tabs << ["list_installed_services", "Services" ]
   
     if service_names.include?("libvirtd")
       tabs << ["list_vms", "Virtual Guests"] 

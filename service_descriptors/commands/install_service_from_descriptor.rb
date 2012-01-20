@@ -3,6 +3,7 @@ description "installs a service on a target_machine given a service descriptor, 
 param :machine
 param! :descriptor_machine
 param! "descriptor_dir", "fully qualified path where the service desriptor (e.g. the plugin file) can be found)"
+param "extra_params", "a hash of extra parameters for the service install command"
 
 on_machine do |machine, params|
   
@@ -74,6 +75,8 @@ on_machine do |machine, params|
         "service_root" => descriptor_dir
       }
       param_values["domain"] = params["domain"] if params.has_key?('domain')
+      
+      param_values.merge! params["extra_params"] if params.has_key?('extra_params')
       
       params_to_use = {}
       param_values.each do |k,v|

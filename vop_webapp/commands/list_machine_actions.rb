@@ -27,6 +27,35 @@ on_machine do |machine, params|
     "title" => "add working copy"
   }
   
+  result << {
+    "name" => "install_service_from_github",
+    "title" => "install github project"
+  }
+  
+  if service_names.include?("httpd")
+    result << {
+      "name" => "add_static_vhost",
+      "title" => "add static vhost"
+    }
+    
+    result << {
+      "name" => "configure_reverse_proxy",
+      "title" => "configure reverse proxy"
+    }
+  end
+  
+  result << {
+    "name" => "restart_unix_service",
+    "title" => "restart unix service"
+  }    
+  
+  result << {
+    "name" => "install_canned_service",
+    "title" => "install service"
+  }
+  
   result
 end
+
+
 

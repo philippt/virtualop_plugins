@@ -5,4 +5,8 @@ param "name", "the name of the package to install", :mandatory => true, :allows_
 
 on_machine do |machine, params|
   machine.ssh_and_check_result("command" => "yum install -y #{params["name"].join(" ")}")
+  
+  @op.without_cache do
+    machine.list_unix_services
+  end
 end

@@ -23,7 +23,8 @@ on_machine do |machine, params|
       next unless matched
       result << {
         "name" => matched.captures[1],
-        "state" => matched.captures[2]
+        "state" => matched.captures[2],
+        "full_name" => matched.captures[1] + "." + machine.name
       }
     end
 
