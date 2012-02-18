@@ -66,6 +66,10 @@ on_machine do |machine, params|
     $logger.warn "couldn't load service-specific tabs - something wrong with list_unix_services?"
   end
 
+  if /^philipp\./.match(params["machine"])
+    tabs << [ "fan", "FAN" ]    
+  end
+
 # 
   # if @show_mysql_replication_tab
     # tabs << ["mysql_replication", "MySQL Replication"]

@@ -93,4 +93,11 @@ on_machine do |machine, params|
       "content" => params
     )
   end
+  
+  @op.without_cache do
+    if @op.list_plugins.include? 'vop_webapp'
+      machine.list_machine_tabs
+      machine.list_machine_actions
+    end
+  end
 end

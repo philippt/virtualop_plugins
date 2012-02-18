@@ -40,6 +40,11 @@ class DropDirProvider
     begin
       Dir.foreach(options[:directory]) do |file_name|
         next if /^\./.match(file_name)
+        
+        if options.has_key? :extension_filter
+          next unless /#{options[:extension_filter]}$/.match(file_name)
+        end
+         
         full_name = File.join(options[:directory], file_name)
         File.open(full_name, "r") do |file|
           result << YAML.load(file)

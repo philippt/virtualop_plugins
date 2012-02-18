@@ -1,0 +1,20 @@
+dependencies [ :core, :machines, :drop_dir ]
+
+config_param "account_dropdir", "the directory with ec2 account details", :default_value => "/etc/vop/aws_accounts.d"
+
+on_activation do |plugin, config|
+  require 'aws'
+  
+  require 'helpers/drop_dir_provider'
+  
+  dir_name = config["account_dropdir"]
+  
+  provider = DropDirProvider.new(@op,
+	  :host => "localhost",
+	  :user => "root",
+	  :directory => dir_name,
+	  :extension_filter => '\.conf'
+  )
+  plugin.state[:drop_dir] = provider
+  Dir.mkdir(dir_name) unless File.exists?(dir_name)
+end
