@@ -20,13 +20,14 @@ on_machine do |machine, params|
     ["listen_ports", "Listen Ports"],
     ["processes", "Processes"],
     ["routes", "Routes"],
+    ["packages", "Packages"]
     #["access_logs", "Access Logs"],
     #["nagios_checks", "Nagios Checks"],
     #["active_versions", "Active Versions"]
   ]
   
   begin
-    service_names = machine.list_unix_services.map { |row| row["name"] }
+    service_names = machine.list_unix_services #.map { |row| row["name"] }
     
     tabs << ["ssh_logs", "SSH Logins"]
     

@@ -10,11 +10,19 @@ display_type :table
 add_columns [ :name, :description, :ssh_url ] 
 
 execute do |params|
+  result = []
+  
   if params.has_key?('github_user') and params.has_key?('github_password')
-    JSON.parse(@op.http_get("url" => "https://#{params["github_user"]}:#{params["github_password"]}@api.github.com/user/repos"))
+    result = JSON.parse(@op.http_get("url" => "https://#{params["github_user"]}:#{params["github_password"]}@api.github.com/user/repos"))
   elsif params.has_key?('github_token')
-    JSON.parse(@op.http_get("url" => "https://api.github.com/user/repos?access_token=#{params["github_token"]}"))
+    result = JSON.parse(@op.http_get("url" => "https://api.github.com/user/repos?access_token=#{params["github_token"]}"))
   else
     raise "need either github user/password or access token to authenticate against github"
   end
+  
+  result.each do |x|
+    x["full_name"] = x["owner"]["login"] + '/' + x["name"]
+  end
+  
+  result
 end

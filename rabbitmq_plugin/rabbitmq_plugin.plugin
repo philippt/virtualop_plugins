@@ -1,4 +1,4 @@
-require 'carrot'
+#require 'carrot'
 
 require 'brokers/rabbitmq_broker'
 

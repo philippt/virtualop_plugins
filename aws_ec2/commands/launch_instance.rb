@@ -18,7 +18,12 @@ param! "availability_zone", "the availability zone into which the new instance s
   }
 param! "instance_type", "the virtual hardware dimensioning of the new instance.", :default_value => "t1.micro"
 param! "ami", "the AMI to use"
-param "security_groups", "the security groups, to which this instance should be assigned", :allows_multiple_values => true
+param! "security_groups", "the security groups to which this instance should be assigned", :allows_multiple_values => true,
+  :lookup_method => lambda { |request| 
+    @op.list_security_groups("aws_account" => request.get_param_value("aws_account")).map do |group|
+      group["aws_group_name"]
+    end    
+  }
             
 execute do |params|
   ec2 = @op.get_aws_connection("aws_account" => params["aws_account"])

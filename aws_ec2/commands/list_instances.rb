@@ -21,7 +21,7 @@ execute do |params|
       instance_name = h["tags"]["Name"]      
     else
       instance_name = h["aws_instance_id"]
-    end
+    end    
     h["name"] = "#{instance_name}.#{params["aws_account"]}"
     
     h["ssh_name"] = h["dns_name"]

@@ -1,0 +1,52 @@
+###############################################################################
+###############################################################################
+#
+# HOST DEFINITIONS
+#
+###############################################################################
+###############################################################################
+
+define host{
+        use                     <%= config_string('host_template', 'linux-server,host-pnp') %>
+        host_name               <%= machine.name %>
+        alias                   <%= machine.name %>
+        address                 <%= machine.machine_detail['dns_name'] %>
+		check_command			check_ec2_status!<%= machine.machine_detail['aws_instance_id'] %>!<%= config_string('ec2_crypted_credentials_file')%>
+}
+
+
+###############################################################################
+###############################################################################
+#
+# SERVICE DEFINITIONS
+#
+###############################################################################
+###############################################################################
+
+define service{
+        use                     generic-service,srv-pnp
+        host_name               <%= machine.name %>
+        service_description     ssh
+        check_command           check_ssh
+}
+
+define service {
+        use						generic-service,srv-pnp
+		host_name				<%= machine.name %>
+		service_description		ec2_status
+		check_command			check_ec2_status!<%= machine.machine_detail['aws_instance_id'] %>!<%= config_string('ec2_crypted_credentials_file')%>
+}
+
+define service {
+		use						generic-service,srv-pnp
+		host_name				<%= machine.name %>
+		service_description		cpu
+		check_command			check_cloudwatch_status!<%= machine.machine_detail['aws_instance_id'] %>!<%= config_string('ec2_crypted_credentials_file')%>!CPUUtilization!90!75
+}
+
+define service {
+        use                     generic-service,srv-pnp
+        host_name               <%= machine.name %>
+        service_description     memory
+        check_command           check_by_ssh!ubuntu!memory!"/usr/local/nagios/checks/check_mem.pl -u -w 80 -c 90"
+}

@@ -5,6 +5,8 @@ param! :descriptor_machine
 param! "descriptor_dir", "fully qualified path where the service desriptor (e.g. the plugin file) can be found)"
 param "extra_params", "a hash of extra parameters for the service install command"
 
+accept_extra_params
+
 on_machine do |machine, params|
   
   descriptor_dir = params["descriptor_dir"]
@@ -22,6 +24,7 @@ on_machine do |machine, params|
       installed_github_projects = machine.list_working_copies()
       
       descriptor_machine.ssh_and_check_result("command" => "cat #{descriptor_dir}/packages/github").split("\n").each do |line|
+        next if /^#/.match(line)
         if installed_github_projects.select { |row| row["project"] == line }.size > 0
           $logger.info("github dependency #{line} already exists locally")
           next
@@ -74,9 +77,13 @@ on_machine do |machine, params|
         "machine" => machine.name,      
         "service_root" => descriptor_dir
       }
-      param_values["domain"] = params["domain"] if params.has_key?('domain')
-      
-      param_values.merge! params["extra_params"] if params.has_key?('extra_params')
+      if params.has_key?('domain')
+        param_values["domain"] = params["domain"]
+      end 
+      @op.comment("message" => "disabling the null check in the next line wouldn't be a good idea.")
+      if params.has_key?('extra_params') && params["extra_params"] != nil 
+        param_values.merge!(params["extra_params"])
+      end 
       
       params_to_use = {}
       param_values.each do |k,v|
@@ -84,8 +91,20 @@ on_machine do |machine, params|
           p.name == k
         end.size > 0
       end
+      $logger.info("FOOOOO3")
+      $logger.info("assembled param values : #{param_values}")
+      
       request = RHCP::Request.new(install_command, params_to_use, Thread.current['broker'].context)
       response = broker.execute(request)
+      
+      if response.status != RHCP::Response::Status::OK
+        filtered_error_detail = response.error_detail.split("\n").select do |line|
+          /lib\/plugins\//.match(line)
+        end.join("\n")
+        $logger.error("#{response.error_text}\n#{filtered_error_detail}")
+      
+        raise RHCP::RhcpException.new(response.error_text)
+      end
       
     end
     machine.hash_to_file(

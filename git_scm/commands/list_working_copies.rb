@@ -8,7 +8,7 @@ add_columns [ :project, :path ]
 
 on_machine do |machine, params|
   result = []
-  [ '$HOME', '/var/www', '$HOME/workspace', '/etc/vop/service_descriptors' ].each do |dir_name|
+  [ '$HOME', '/var/www', '$HOME/workspace', '$HOME/Dropbox', '$HOME/Dropbox/projects', '/etc/vop/service_descriptors' ].each do |dir_name|
     next unless machine.file_exists("file_name" => dir_name)
     machine.ssh_and_check_result("command" => "find #{dir_name} -maxdepth 2 -type d -name .git").each do |row|
 
@@ -32,7 +32,7 @@ on_machine do |machine, params|
           end
         end
       rescue => detail
-        $logger.warn("could not fetch origin information for project #{dir_name} : #{detail}")
+        $logger.warn("could not fetch origin information for project #{corrected_path} : #{detail}")
       end
 
       result << {

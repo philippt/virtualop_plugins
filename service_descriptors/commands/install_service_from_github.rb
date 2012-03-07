@@ -16,7 +16,9 @@ on_machine do |machine, params|
     "directory" => service_root,
     "git_url" => git_url 
   }
-  p["git_branch"] = params["git_branch"] if params.has_key?("git_branch")
+  if params.has_key?("git_branch")
+    p["git_branch"] = params["git_branch"]
+  end 
   machine.git_clone(p)
   
   machine.install_service_from_working_copy(

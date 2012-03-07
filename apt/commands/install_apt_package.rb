@@ -8,7 +8,7 @@ display_type :list
 on_machine do |machine, params|
   # TODO hardcoded sudo
   # TODO add version
-  machine.ssh_and_check_result("user" => "root", "command" => "apt-get install -y #{params["name"].join(" ")}")
+  machine.ssh_and_check_result("command" => "sudo apt-get install -y #{params["name"].join(" ")}")
   
   @op.without_cache do
     new_package_list = machine.list_installed_apt_packages

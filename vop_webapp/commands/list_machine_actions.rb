@@ -10,7 +10,7 @@ on_machine do |machine, params|
   result = []
   
   begin
-    service_names = machine.list_unix_services.map { |row| row["name"] }
+    service_names = machine.list_unix_services #.map { |row| row["name"] }
   
     if service_names.include?("libvirtd")
       result << {
@@ -50,8 +50,8 @@ on_machine do |machine, params|
   }    
   
   result << {
-    "name" => "install_canned_service",
-    "title" => "install service"
+    "name" => "install_package",
+    "title" => "install package"
   }
   
   result

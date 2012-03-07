@@ -10,7 +10,7 @@ define host{
         use                     <%= config_string('host_template', 'linux-host') %>
         host_name               <%= machine.name %>
         alias                   <%= machine.name %>
-        address                 <%= machine.machine_detail.has_key?('dns_name') ? machine.machine_detail['dns_name'] : machine.ipaddress %>
+        address                 <%= machine.ipaddress %>
 }
 
 

@@ -41,3 +41,7 @@ end
 def result_type_aws_instances
   add_columns [ "name", "type", "env", "aws_instance_id", "aws_instance_type", "aws_state", "dns_name" ]
 end
+
+def result_type_aws_accounts
+  add_columns [ "alias", "access_key_id", "secret_access_key", "aws_region" ]
+end

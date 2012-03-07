@@ -7,6 +7,14 @@ mark_as_read_only
 #display_type :list
 add_columns [ :full_string, :name, :version ]
 
+contributes_to :list_packages
+
+available_if do |params|
+  @op.with_machine(params["machine"]) do |machine|
+    machine.linux_distribution.split("_").first == "centos"
+  end
+end
+
 on_machine do |machine, params|
   #ivtv-firmware-20080701-20.2.noarch
   #e2fsprogs-1.41.12-3.el6.x86_64
