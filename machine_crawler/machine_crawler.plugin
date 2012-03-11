@@ -1,1 +1,1 @@
-dependency :machines
+dependencies [ :machines, :core ]

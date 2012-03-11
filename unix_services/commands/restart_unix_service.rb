@@ -1,7 +1,7 @@
 description 'restarts a unix service'
 
 param :machine
-param :unix_service
+param :unix_service, :default_param => true
 
 on_machine do |machine, params|
   case machine.linux_distribution.split("_").first

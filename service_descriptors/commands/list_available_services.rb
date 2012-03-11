@@ -10,7 +10,28 @@ on_machine do |machine, params|
   result = []
     
   config_string("descriptor_dirs").each do |dir|
-    result += machine.find_services_in_directory("directory" => dir)
+    
+    machine.with_files(
+      "directory" => dir, 
+      "pattern" => "*/services/*",
+      "what" => lambda do |file|
+        service = machine.read_service_descriptor("file_name" => "#{dir}/#{file}")
+        service["dir_name"] = dir 
+        
+        parts = service["file_name"].split("/")
+        idx = parts.index("services")
+        offset = 1
+        possible_name = parts[idx - offset]
+        if possible_name == '.vop'
+          offset += 1
+          possible_name = parts[idx - offset]
+        end
+        
+        service["full_name"] = possible_name + '/' + service["name"]
+        
+        result << service
+      end
+    )   
   end
   
   result

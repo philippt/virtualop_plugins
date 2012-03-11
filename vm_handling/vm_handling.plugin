@@ -2,6 +2,8 @@ dependency :core
 dependency :libvirt
 dependency :rpm
 dependency :service_descriptors
+dependency :github_scm
+dependency :git_scm
 
 config_param "install_kernel_location", "the location from the kernel+initrd pair should be retrieved for an installation", 
   :default_value => "http://centos_mirror.virtualop.org/pub/Mirrors/centos/6/os/x86_64/"

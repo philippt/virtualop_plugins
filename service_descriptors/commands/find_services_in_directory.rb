@@ -2,7 +2,13 @@ description "searches for service descriptor files in a directory, reads them an
 
 param :machine
 param! "directory", "the directory to search"
-param "pattern", "the search pattern to use"
+param "pattern", "the search pattern to use", :default_value => "*/services/*"
+
+display_type :table
+
+add_columns [ :dir_name, :full_name ]
+
+#mark_as_read_only
 
 on_machine do |machine, params|
   result = []
@@ -11,22 +17,26 @@ on_machine do |machine, params|
   
   machine.with_files(
     "directory" => dir, 
-    "pattern" => params.has_key?('pattern') ? params['pattern'] : "*/services/*",
+    "pattern" => params['pattern'],
     "what" => lambda do |file|
+      service = machine.read_service_descriptor("file_name" => "#{dir}/#{file}")
+      service["dir_name"] = dir 
       
-      full_name = "#{dir}/#{file}"
-      source = machine.read_file("file_name" => full_name)
+      parts = service["file_name"].split("/")
+      idx = parts.index("services")
+      offset = 1
+      possible_name = parts[idx - offset]
+      if possible_name == '.vop'
+        offset += 1
+        possible_name = parts[idx - offset]
+      end
       
-      $logger.debug "found #{file} : ***\n#{source}\n***\n"
-      name = file.split("/").first
-      service = ServiceDescriptorLoader.read(name, source).services.first
-      
-      service["file_name"] = full_name
-      service["dir_name"] = dir + "/" + name
-      service["full_name"] = file.split('/').first + '/' + file.split('/').last.split(".").first
+      service["full_name"] = possible_name + '/' + service["name"]
       
       result << service
+      
     end
   )
+  
   result
 end

@@ -9,6 +9,9 @@ param "vcpu_count", "the number of virtual CPUs to allocate", :default_value => 
 
 param "ip", "the static IP address for the new machine"
 
+param :github_project
+param :git_branch
+
 param "domain", "the domain at which the service should be available"
 param "script_url", "http URL to a script that should be executed at the end of the installation"
 param "location", "installation source for guest virtual machine kernel+initrd pair."
@@ -39,6 +42,8 @@ on_machine do |machine, params|
   new_vm_params = params.clone
   new_vm_params.delete("domain")
   new_vm_params.delete("script_url")
+  new_vm_params.delete("github_project")
+  new_vm_params.delete("git_branch")
   machine.new_vm_from_kickstart(new_vm_params)
 
   # TODO does not work without memcached
@@ -102,7 +107,8 @@ on_machine do |machine, params|
     vm.yum_update
     @op.comment("message" => "OS package update complete.")
     
-    #machine.install_vm(p)
+    machine.install_rpm_package("name" => [ "git", "vim", "screen" ])
+    machine.install_service_from_github(params) if params.has_key?('github_project')
     
     if params.has_key?('script_url')
       vm.execute_remote_command("url" => params['script_url'])

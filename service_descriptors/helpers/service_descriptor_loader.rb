@@ -14,7 +14,7 @@ class ServiceDescriptorLoader
   end
   
   def method_missing(m, *args)
-    targets = [ :unix_service, :port, :process_regex, :http_endpoint, :tcp_endpoint, :on_install ]
+    targets = [ :unix_service, :run_command, :start_command, :stop_command, :port, :process_regex, :http_endpoint, :tcp_endpoint, :on_install ]
     
     if targets.include? m
       @service[m.to_s] = *args.first

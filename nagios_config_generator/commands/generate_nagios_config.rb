@@ -24,7 +24,7 @@ on_machine do |machine, params|
       nagios.append_to_file("file_name" => target_file, "content" => apache_checks)
     end
     
-    if unix_services.include?('mysql')
+    if unix_services.include?('mysql') and machine.status_unix_service("name" => 'mysql')
       mysql_target = params.has_key?('alternative_mysql_host_name') ? params['alternative_mysql_host_name'] : '$HOSTADDRESS$'
       mysql_checks = read_local_template(:mysql, binding())
       nagios.append_to_file("file_name" => target_file, "content" => mysql_checks)
