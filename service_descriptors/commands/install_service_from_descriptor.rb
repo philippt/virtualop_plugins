@@ -107,10 +107,13 @@ on_machine do |machine, params|
       end
       
     end
-    machine.hash_to_file(
-      "file_name" => "#{config_string('service_config_dir')}/#{service_name}", 
-      "content" => params
-    )
+    
+    if machine.file_exists("file_name" => config_string('service_config_dir'))
+      machine.hash_to_file(
+        "file_name" => "#{config_string('service_config_dir')}/#{service_name}", 
+        "content" => params
+      )
+    end
   end
   
   @op.without_cache do

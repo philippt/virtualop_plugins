@@ -29,7 +29,7 @@ on_machine do |machine, params|
   defaults = {
     "bridge" => "br10",
     "location" => location_default,
-    "kickstart_url" => "http://demo.virtualop.org/kickstart/centos6_minimal",
+    "kickstart_url" => config_string('kickstart_url_vm'),
     "nameserver" => machine.first_configured_nameserver,
     "gateway" => gateway
   }
@@ -102,13 +102,19 @@ on_machine do |machine, params|
     # TODO add public keys and deactivate password login
     vm.ssh_and_check_result("command" => "/etc/init.d/sshd restart")
     
-    vm.write_own_centos_repo()
+    #vm.write_own_centos_repo()
     
     vm.yum_update
     @op.comment("message" => "OS package update complete.")
     
     machine.install_rpm_package("name" => [ "git", "vim", "screen" ])
-    machine.install_service_from_github(params) if params.has_key?('github_project')
+    if params.has_key?('github_project')
+      install_params = {
+        "github_project" => params["github_project"]      
+      }
+      install_params["git_branch"] = params["git_branch"] if params.has_key?('git_branch')
+      machine.install_service_from_github(install_params) 
+    end  
     
     if params.has_key?('script_url')
       vm.execute_remote_command("url" => params['script_url'])

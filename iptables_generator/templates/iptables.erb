@@ -181,6 +181,7 @@ iptables -A FORWARD -s $MASK_INTERNAL -p tcp --dport 9418 -m state --state NEW -
 
 ## outgoing smtp from VMs
 iptables -A FORWARD -s $MASK_INTERNAL -p tcp --dport 25 -m state --state NEW -j ACCEPT
+iptables -A FORWARD -s $MASK_INTERNAL -p tcp --dport 587 -m state --state NEW -j ACCEPT
 
 ## icmp forwarding for internal networks 
 #iptables -A FORWARD -s $MASK_INTERNAL -p icmp -m state --state NEW -j ACCEPT

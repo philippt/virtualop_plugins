@@ -8,12 +8,13 @@ class RabbitmqBroker < RHCP::LoggingBroker
   
   def get_blacklisted_commands
     commands = super()
-    commands << "log_ssh_start"
-    commands << "log_ssh_stop"
+    # commands << "log_ssh_start"
+    # commands << "log_ssh_stop"
     commands << "pre_flight_init"
-    commands << "get_ssh_connection"
-    commands << "default_user"
-    commands << "default_port"
+    commands << "create_partition"
+    # commands << "get_ssh_connection"
+    # commands << "default_user"
+    # commands << "default_port"
     
     commands << "hello_rabbit"
     commands << "listen_to_rabbit"
@@ -23,11 +24,14 @@ class RabbitmqBroker < RHCP::LoggingBroker
     commands << "raw_log"
     commands << "show_plugin_config"
     commands << "execute_as_hudson_job"
+    #commands << "process_messages"
     commands
   end
   
   def log_request_start(request_id, level, mode, current_stack, request, start_ts)
     request_id = Thread.current[var_name("request_id")]
+    
+    return if /^database_logging\./.match(request.command.full_name)
     
     param_values = []
     request.param_values.each do |k,v|
@@ -55,7 +59,7 @@ class RabbitmqBroker < RHCP::LoggingBroker
   
   def log_request_stop(request_id, level, mode, current_stack, request, response, duration)
     request_id = Thread.current[var_name("request_id")]
-    @op.hello_rabbit("queue" => "text_logging", "message" => "#{request_id} #{level} < #{current_stack} #{response.status} #{duration}s")
+    @op.hello_rabbit("queue" => "text_logging", "message" => "#{request_id} #{level} < #{current_stack} #{response != nil ? response.status : '-'} #{duration}s")
     
     j = JSON.generate({
       :request_id => request_id,

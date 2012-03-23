@@ -70,6 +70,7 @@ execute do |params|
   # TODO wait until it's launched
   @op.without_cache do
     @op.list_all_instances
+    @op.list_machines
   end
   
   result

@@ -15,8 +15,13 @@ on_machine do |machine, params|
       "directory" => dir, 
       "pattern" => "*/services/*",
       "what" => lambda do |file|
-        service = machine.read_service_descriptor("file_name" => "#{dir}/#{file}")
-        service["dir_name"] = dir 
+        full_name = "#{dir}/#{file}"
+        service = machine.read_service_descriptor("file_name" => full_name)
+        parts = full_name.split("/")
+        2.times do 
+          parts.pop 
+        end
+        service["dir_name"] = parts.join("/") 
         
         parts = service["file_name"].split("/")
         idx = parts.index("services")
