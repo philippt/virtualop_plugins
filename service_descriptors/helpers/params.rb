@@ -17,7 +17,7 @@ def param_canned_service(options = {})
       @op.with_machine('localhost') do |localhost|
         $logger.info "lookup for canned service - on localhost : #{localhost.name}"
         localhost.list_available_services().map do |x|
-          x["name"]
+          x["full_name"]
         end
       end
     end    

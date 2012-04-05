@@ -9,13 +9,13 @@ accept_extra_params
 
 on_machine do |machine, params|  
   service_row = @op.list_available_services("machine" => "localhost").select do |x|
-    x["name"] == params["service"]
+    x["full_name"] == params["service"]
   end.first
   
   service_name = params["service"]
-  descriptor_dir = service_row["dir_name"]
+  #descriptor_dir = service_row["dir_name"]
   
-  params["descriptor_dir"] = descriptor_dir  
+  params["descriptor"] = service_row["file_name"]  
   
   $logger.info("installing canned service #{params["service"]} onto #{params["machine"]}")
   

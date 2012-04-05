@@ -2,19 +2,22 @@ description "installs a service on a target_machine given a service descriptor, 
 
 param :machine
 param! :descriptor_machine
-param! "descriptor_dir", "fully qualified path where the service desriptor (e.g. the plugin file) can be found)"
+param! "descriptor", "fully qualified path where the service desriptor can be found)"
 param "extra_params", "a hash of extra parameters for the service install command"
 
 accept_extra_params
 
 on_machine do |machine, params|
   
-  descriptor_dir = params["descriptor_dir"]
+  descriptor_dir = params["descriptor"]
+  
   parts = descriptor_dir.split("/")
-  service_name = parts.last
-  if service_name == ".vop"
-    service_name = parts[parts.size-2]
-  end
+  service_name = parts.last.split(".").first
+  descriptor_dir = parts[0..parts.size-3].join("/")
+  puts "installing service '#{service_name}' from #{descriptor_dir}"
+  #if service_name == ".vop"
+  #  service_name = parts[parts.size-2]
+  #end
   
   @op.with_machine(params["descriptor_machine"]) do |descriptor_machine|
   
@@ -91,7 +94,7 @@ on_machine do |machine, params|
           p.name == k
         end.size > 0
       end
-      $logger.info("FOOOOO3")
+      #$logger.info("FOOOOO3")
       $logger.info("assembled param values : #{param_values}")
       
       request = RHCP::Request.new(install_command, params_to_use, Thread.current['broker'].context)

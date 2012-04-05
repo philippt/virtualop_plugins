@@ -161,7 +161,8 @@ iptables -A FORWARD -d <%= vm["ipaddress"] %> -p tcp --dport 22 -m state --state
 <%
 vops = machine.list_installed_vms.select do |vm|
   /^virtualop/.match(vm["name"]) or
-  /^vop/.match(vm["name"])
+  /vop/.match(vm["name"]) or
+  /^ci01/.match(vm["name"])
 end
 %>
 

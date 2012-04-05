@@ -24,6 +24,7 @@ on_machine do |machine, params|
     install_command = broker.get_command(install_command_name)
     $logger.info("found install command #{install_command.name}")
     service["install_command_name"] = install_command.name
+    service["install_command_params"] = install_command.params
   rescue Exception => e
     $logger.info("did not find install_command #{install_command_name} : #{e.message}")
     service["install_command_name"] = nil

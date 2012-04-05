@@ -25,11 +25,12 @@ on_machine do |machine, params|
       
       result << rpm_name      
     else
-      rpms_to_install << line
+      result += machine.install_rpm_package("name" => line)
+      #rpms_to_install << line
     end
   end
   
-  result += machine.install_rpm_package("name" => rpms_to_install)
+  #result += machine.install_rpm_package("name" => rpms_to_install)
   
   result
 end  
