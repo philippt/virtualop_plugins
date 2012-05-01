@@ -14,4 +14,8 @@ on_machine do |machine, params|
   command += " #{params["git_url"]}"
   command += " #{params["directory"]}" if params.has_key?('directory')
   machine.ssh_and_check_result("command" => command)
+  
+  @op.without_cache do
+    machine.list_working_copies
+  end
 end

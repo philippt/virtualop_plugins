@@ -1,0 +1,46 @@
+description "waits for vop commands that are sent as JSON objects through a queue. commands are executed, they are not requeued on failure"
+
+execute do |params|
+  broker = Thread.current['broker']
+  
+  c = Carrot.new(:host => config_string('rabbitmq_hostname'))
+  q = c.queue('vop_commands')
+
+  result = []
+  
+  while (true) do
+    $logger.debug "count: #{q.message_count}"
+    #@op.listen_to_rabbit('queue' => 'vop_commands').each do |msg|
+    while msg = q.pop(:ack => true)
+      begin
+        entry = JSON.parse(msg)
+        r = entry["request"]     
+        command = broker.get_command(r["command_name"].split(".").last)
+        
+        #request = RHCP::Request.new(command, r["param_values"], broker.context.clone())
+        p r["context"]
+        context = RHCP::Context.from_hash(r["context"])
+        puts "context : #{context}"
+        request = RHCP::Request.new(command, r["param_values"], context)
+        
+        puts "request context : #{request.context}"
+        puts "user : #{request.context.cookies['current_user']}"
+        #context.cookies['current_user']
+        puts ">>> executing : #{request}"
+        response = broker.execute(request)
+        puts "executed #{request.command.name} : #{response.status}"
+        p response.data
+      rescue Exception => msg
+        $logger.error(msg)
+      ensure
+        q.ack
+      end
+    end
+    
+    sleep 5
+    print "."
+  end
+  
+end
+
+

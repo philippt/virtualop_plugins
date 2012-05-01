@@ -7,3 +7,5 @@ config_param "service_template", "name of a service template to 'use' within gen
 config_param "ec2_crypted_credentials_file", "path on the nagios machine where crypted aws ec2 credentials can be found", :default_value => '/usr/local/nagios/ec2.crypted'
 config_param "mysql_check_user", "the mysql user to use for nagios checks with check_mysql_health"
 config_param "mysql_check_password", "the password to use for mysql connections initiated by check_mysql_health"
+
+tags :monitoring

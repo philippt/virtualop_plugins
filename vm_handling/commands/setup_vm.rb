@@ -95,6 +95,7 @@ on_machine do |machine, params|
   )
   
   @op.with_machine(full_name) do |vm|
+    # TODO persist this
     vm.ssh_and_check_result("command" => "setenforce Permissive")
     vm.ssh_and_check_result("command" => "restorecon -R -v /root/.ssh")
     
@@ -103,6 +104,27 @@ on_machine do |machine, params|
     vm.ssh_and_check_result("command" => "/etc/init.d/sshd restart")
     
     #vm.write_own_centos_repo()
+    
+    sleep 15
+    
+    # there might be already a yum process running - started by the OS
+    @op.wait_until(
+    "interval" => 5, "timeout" => 120, 
+    "error_text" => "there seems to be a yum process already running",
+    "condition" => lambda do
+      result = false
+      begin
+        procs = vm.processes.select do |p|
+          /yum/.match(p["command"])
+        end
+        
+        result = procs.size == 0
+      rescue Exception => e
+        $logger.info("got an exception while trying to connect to machine : #{e.message}")
+      end
+      result
+    end
+  )
     
     vm.yum_update
     @op.comment("message" => "OS package update complete.")
@@ -113,6 +135,7 @@ on_machine do |machine, params|
         "github_project" => params["github_project"]      
       }
       install_params["git_branch"] = params["git_branch"] if params.has_key?('git_branch')
+      install_params["domain"] = params["domain"] if params.has_key?('domain')
       machine.install_service_from_github(install_params) 
     end  
     

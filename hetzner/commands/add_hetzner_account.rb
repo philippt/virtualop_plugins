@@ -8,5 +8,6 @@ param "ssh_port", "port for ssh connect to the hosts (default: 22)"
 param "server_name_suffix", "suffix to complete the hetzner alias name to a full DNS name (experimental, madness)"
 
 execute do |params|
-  @plugin.account_dropdir.write_params_to_file(Thread.current['command'], params)
+  dropdir = @plugin.state[:hetzner_drop_dir]
+  dropdir.write_params_to_file(Thread.current['command'], params)
 end

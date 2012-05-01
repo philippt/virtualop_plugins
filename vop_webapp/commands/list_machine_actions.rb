@@ -10,13 +10,12 @@ on_machine do |machine, params|
   result = []
   
   begin
-    service_names = machine.list_unix_services #.map { |row| row["name"] }
-  
-    if service_names.include?("libvirtd")
+    if machine.has_running_unix_service('service_name' => 'libvirtd')
       result << {
-        "name" => "vm_click",
+        #"name" => "vm_click",
+        "name" => "setup_vm",
         "title" => "new vm"
-      } 
+      }
     end
   rescue
     $logger.warn "couldn't load service-specific actions - something wrong with list_unix_services?"
@@ -32,7 +31,7 @@ on_machine do |machine, params|
     "title" => "install github project"
   }
   
-  if service_names.include?("httpd")
+  if machine.has_running_unix_service('service_name' => 'httpd')
     result << {
       "name" => "add_static_vhost",
       "title" => "add static vhost"

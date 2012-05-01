@@ -2,24 +2,36 @@ description "installs a service on a target_machine given a service descriptor, 
 
 param :machine
 param! :descriptor_machine
-param! "descriptor", "fully qualified path where the service desriptor can be found)"
-param "extra_params", "a hash of extra parameters for the service install command"
+param! "descriptor", "fully qualified path where the service descriptor can be found)"
+param "service_root", "path where the service should be installed"
+#param "extra_params", "a hash of extra parameters for the service install command"
 
 accept_extra_params
 
 on_machine do |machine, params|
   
-  descriptor_dir = params["descriptor"]
-  
-  parts = descriptor_dir.split("/")
+  parts = params["descriptor"].split("/")
   service_name = parts.last.split(".").first
-  descriptor_dir = parts[0..parts.size-3].join("/")
-  puts "installing service '#{service_name}' from #{descriptor_dir}"
+  
+  #descriptor_dir = parts[0..parts.size-3].join("/")
+  
+  service_root = params.has_key?('service_root') && params['service_root'] != '' ? params['service_root'] :
+    parts[0..parts.size-3].join("/")
+  
+  descriptor_dir = service_root
+    
+  puts "installing service '#{service_name}' from #{descriptor_dir} into #{service_root}"
   #if service_name == ".vop"
   #  service_name = parts[parts.size-2]
   #end
   
   @op.with_machine(params["descriptor_machine"]) do |descriptor_machine|
+    
+    dotvop_dir = "#{descriptor_dir}/.vop"
+    if descriptor_machine.file_exists("file_name" => dotvop_dir)
+      @op.comment("message" => "found descriptor dir #{dotvop_dir}")
+      descriptor_dir = dotvop_dir 
+    end
   
     # install dependencies
     if descriptor_machine.file_exists("file_name" => "#{descriptor_dir}/packages/github")
@@ -66,7 +78,8 @@ on_machine do |machine, params|
     # TODO @op.flush_cache
     
     install_command_name = "#{service_name}_install"
-    broker = @op.local_broker
+    #broker = @op.local_broker
+    broker = Thread.current['broker']
     install_command = nil
     begin
       install_command = broker.get_command(install_command_name)
@@ -77,17 +90,15 @@ on_machine do |machine, params|
     
     if install_command != nil    
       param_values = {
-        "machine" => machine.name,      
-        "service_root" => descriptor_dir
+        "machine" => machine.name,
+        "service_root" => service_root      
       }
-      if params.has_key?('domain')
-        param_values["domain"] = params["domain"]
-      end 
+      
       @op.comment("message" => "disabling the null check in the next line wouldn't be a good idea.")
       if params.has_key?('extra_params') && params["extra_params"] != nil 
         param_values.merge!(params["extra_params"])
-      end 
-      
+      end
+       
       params_to_use = {}
       param_values.each do |k,v|
         params_to_use[k] = v if install_command.params.select do |p|

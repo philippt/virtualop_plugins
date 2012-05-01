@@ -33,7 +33,7 @@ execute do |params|
     idx = 0
     uids.sort.reverse.each do |uid|
       idx += 1
-      break if idx > threshold
+      break if idx > threshold and threshold != 0
       msg = imap.uid_fetch(uid, ['ENVELOPE', 'FLAGS']).first
       #source = msg.first.attr['RFC822']      
       envelope = msg.attr['ENVELOPE']
@@ -42,6 +42,10 @@ execute do |params|
       
       #p msg.attr['FLAGS']
       
+      if params.has_key?('block')
+        params['block'].call(uid, msg, envelope)
+      end
+      
       result << {
         "uid" => uid,
         "date" => Time.parse(envelope.date),
@@ -49,6 +53,8 @@ execute do |params|
         "subject" => envelope.subject,
         "flags" => msg.attr['FLAGS'].join(",")
       }
+      
+      $logger.info "." if idx % 10 == 0
     end
   ensure
     # TODO logout

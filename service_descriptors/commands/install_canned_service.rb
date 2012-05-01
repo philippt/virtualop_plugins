@@ -3,7 +3,8 @@ description "installs a service from a 'canned' service descriptor, i.e. a descr
 param :machine
 #param! :descriptor_machine 
 param! :canned_service
-param "extra_params", "a hash of extra parameters for the service install command"
+
+#param "extra_params", "a hash of extra parameters for the service install command"
 
 accept_extra_params
 

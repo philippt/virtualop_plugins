@@ -1,2 +1,4 @@
 dependency :core
 dependency :machines
+
+tags :installation

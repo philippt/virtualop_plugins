@@ -5,6 +5,8 @@ param! :github_project
 param :git_branch
 #param :domain
 
+accept_extra_params
+
 on_machine do |machine, params|
   project_name = params["github_project"].split("/").last
   
@@ -19,9 +21,20 @@ on_machine do |machine, params|
   if params.has_key?("git_branch")
     p["git_branch"] = params["git_branch"]
   end 
-  machine.git_clone(p)
+  machine.git_clone(p)  
+  
+  machine.load_services_from_working_copies
+  
+  params["working_copy"] = service_root
+  params["service"] = params["github_project"]
+  
+  if params.has_key?('extra_params')
+    params["extra_params"].each do |k,v|
+      params[k] = v
+    end
+  end
   
   machine.install_service_from_working_copy(
-    "working_copy" => service_root    
+    params    
   )
 end

@@ -25,7 +25,14 @@ class RabbitmqBroker < RHCP::LoggingBroker
     commands << "show_plugin_config"
     commands << "execute_as_hudson_job"
     #commands << "process_messages"
+    #commands << "listen_and_execute"
     commands
+  end
+  
+  def get_graylisted_commands
+    result = super()
+    #result << %w|listen_and_execute|
+    result
   end
   
   def log_request_start(request_id, level, mode, current_stack, request, start_ts)

@@ -1,0 +1,16 @@
+dependency :rabbitmq_plugin
+dependencies [ :core, :machines ]
+dependency :erb_processor
+
+config_param! "db_host", "host on which the database is running that should be used"
+config_param! "db_user", "user name for the db connection"
+config_param! "db_pass", "password for the db connection"
+config_param! "db_name", "name of the database to use"
+config_param "archive_directory", "the directory where old archive tables should be stored"
+
+on_activation do |plugin, config|
+  require 'mysql'
+  
+  plugin.state[:dbh] = Mysql.real_connect(config["db_host"], config["db_user"], config["db_pass"], config["db_name"])      
+  $logger.info("database logging activated (db name : #{config["db_name"]})")
+end

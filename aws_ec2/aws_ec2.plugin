@@ -1,6 +1,8 @@
 dependencies [ :core, :machines, :drop_dir ]
 
-config_param "account_dropdir", "the directory with ec2 account details", :default_value => "/etc/vop/aws_accounts.d"
+config_param "account_dropdir", "the directory with ec2 account details", :default_value => "#{@op.config_base_dir}/accounts/aws_ec2"
+
+tags :hosting, :installation
 
 on_activation do |plugin, config|
   require 'aws'

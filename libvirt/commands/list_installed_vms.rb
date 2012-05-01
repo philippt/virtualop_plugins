@@ -10,8 +10,8 @@ on_machine do |machine, params|
   result = []
   dir_name = "/var/lib/virtualop/machines/"
   if machine.file_exists("file_name" => dir_name)
-    machine.ssh("command" => "ls #{dir_name}").split("\n").each do |line|
-      input = machine.ssh("command" => "cat #{dir_name}#{line}")
+    machine.list_files("directory" => dir_name).each do |file|
+      input = machine.read_file("file_name" => dir_name + file)
       vm = YAML.load(input)
       vm["name"] = vm["vm_name"]
       vm["ipaddress"] = vm["extra_arg"].select { |i| /^ip=/.match(i) }.first.split("=").last
