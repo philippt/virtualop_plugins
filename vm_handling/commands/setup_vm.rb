@@ -72,7 +72,6 @@ on_machine do |machine, params|
   
   machine.fix_libvirt_timezone_config("vm_name" => params["vm_name"])
   
-  # startup
   machine.start_vm("name" => params["vm_name"])
   
   sleep 15

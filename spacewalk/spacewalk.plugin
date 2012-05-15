@@ -1,4 +1,4 @@
-dependencies [ :core, :machines ]
+dependencies [ :core, :machines, :rpm ]
 
 on_activation do |plugin, config|
   require 'uri'
