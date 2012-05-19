@@ -2,9 +2,7 @@ def param_spacewalk_host(options = {})
   merge_options_with_defaults(options, {
     :mandatory => true,
     :lookup_method => lambda {
-      @op.list_spacewalks.map do |spacewalk|
-        spacewalk["name"]
-      end
+      @op.list_spacewalks.values
     },
     :autofill_context_key => 'spacewalk_host'    
   })

@@ -1,0 +1,3 @@
+dependencies [ :core, :machines, :erb_processor ]
+
+config_param! "plugin_dir", "directory into which new plugins should be written"
