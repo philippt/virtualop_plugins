@@ -14,4 +14,8 @@ on_machine do |machine, params|
     end
     machine.install_gem(row) unless existing.size > 0
   end        
+  
+  @op.without_cache do 
+    machine.list_installed_gems
+  end
 end

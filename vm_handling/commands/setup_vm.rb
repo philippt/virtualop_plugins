@@ -12,9 +12,11 @@ param "ip", "the static IP address for the new machine"
 param :github_project
 param :git_branch
 
-param "domain", "the domain at which the service should be available"
+#param "domain", "the domain at which the service should be available"
 param "script_url", "http URL to a script that should be executed at the end of the installation"
 param "location", "installation source for guest virtual machine kernel+initrd pair."
+
+accept_extra_params
 
 on_machine do |machine, params|  
   
@@ -130,12 +132,12 @@ on_machine do |machine, params|
     
     machine.install_rpm_package("name" => [ "git", "vim", "screen" ])
     if params.has_key?('github_project')
-      install_params = {
-        "github_project" => params["github_project"]      
-      }
-      install_params["git_branch"] = params["git_branch"] if params.has_key?('git_branch')
-      install_params["domain"] = params["domain"] if params.has_key?('domain')
-      machine.install_service_from_github(install_params) 
+      #install_params = {
+      #  "github_project" => params["github_project"]      
+      #}
+      #install_params["git_branch"] = params["git_branch"] if params.has_key?('git_branch')
+      #install_params["domain"] = params["domain"] if params.has_key?('domain')
+      machine.install_service_from_github(params) 
     end  
     
     if params.has_key?('script_url')

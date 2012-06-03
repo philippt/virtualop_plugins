@@ -17,6 +17,7 @@ on_machine do |machine, params|
       "directory" => dir, 
       "pattern" => '.vop/services/*',
       "what" => lambda do |file|
+        # TODO should not do this for every service (oh my)
         plugin_file_name = dir + '/.vop/' + working_copy["project"].split("/").last + '.plugin'
         plugin_loaded_from = nil
         if machine.file_exists("file_name" => plugin_file_name)

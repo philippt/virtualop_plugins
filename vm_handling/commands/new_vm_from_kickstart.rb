@@ -17,6 +17,8 @@ param "ip", "the static IP address for the new machine", :mandatory => true
 param "gateway", "the network gateway that should be used by the new machine", :mandatory => true
 param "nameserver", "the nameserver that should be configured into the new machine", :mandatory => true
 
+ignore_extra_params
+
 on_machine do |machine, p|
   params = p.clone  
   extra_args = []

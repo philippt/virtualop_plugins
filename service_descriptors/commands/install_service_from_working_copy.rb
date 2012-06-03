@@ -4,7 +4,6 @@ param :machine
 param! "working_copy", "fully qualified path to the working copy from which to install"
 param! "service", "the name of the service contained inside the working copy that should be installed."
 
-#param "extra_params", "a hash of extra parameters for the service install command"
 accept_extra_params
 
 on_machine do |machine, params|
