@@ -4,6 +4,8 @@ class ServiceDescriptorLoader
   
   def initialize
     @services = []
+    
+    #@command_loader = CommandLoader.new()
   end
   
   def new_service(name)
@@ -19,6 +21,9 @@ class ServiceDescriptorLoader
     if targets.include? m
       @service[m.to_s] = *args.first
     else
+      #if [ :param, :param!, :params_as ].include? m
+        #@service.install_command
+      #end
       super(m, args)
     end
   end

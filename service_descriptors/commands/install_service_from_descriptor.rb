@@ -36,7 +36,7 @@ on_machine do |machine, params|
     # install dependencies
     if descriptor_machine.file_exists("file_name" => "#{descriptor_dir}/packages/github")
       
-      installed_github_projects = machine.list_working_copies()
+      installed_github_projects = machine.list_working_copies_with_projects
       
       descriptor_machine.ssh_and_check_result("command" => "cat #{descriptor_dir}/packages/github").split("\n").each do |line|
         next if /^#/.match(line)

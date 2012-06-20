@@ -8,13 +8,21 @@ mark_as_read_only
 
 on_machine do |machine, params|
   machine.list_working_copies.each do |working_copy|
-    services = machine.list_services_in_working_copies.select do |candidate|
-      candidate["dir_name"] == working_copy["path"]
-    end    
-    project_name = working_copy["project"].split("/").last
-    same_name = services.select { |x| x["full_name"] == (project_name + '/' + project_name) }
-    if same_name.size > 0    
-      services.unshift services.delete same_name.first
+    
+    #services = machine.list_services_in_working_copies.select do |candidate|
+    #  candidate["dir_name"] == working_copy["path"]
+    #end
+        
+    #project_name = working_copy["project"].split("/").last
+    
+    services = machine.list_services_in_working_copy("working_copy" => working_copy["path"])
+    if services.size > 0
+      project_name = services.first["plugin_name"] || working_copy["path"].split("/").last
+      
+      same_name = services.select { |x| x["full_name"] == (project_name + '/' + project_name) }
+      if same_name.size > 0    
+        services.unshift services.delete same_name.first
+      end
     end
     
     working_copy["services"] = services

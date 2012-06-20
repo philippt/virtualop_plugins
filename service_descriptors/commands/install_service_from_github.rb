@@ -3,7 +3,6 @@ description "creates a working copy of a github project on a machine and install
 param :machine
 param! :github_project
 param :git_branch
-#param :domain
 
 accept_extra_params
 

@@ -2,7 +2,7 @@ description 'returns a list of actions that should be displayed for a machine'
 
 param :machine
 
-#mark_as_read_only
+mark_as_read_only
 
 add_columns [ :name, :title ]
 
