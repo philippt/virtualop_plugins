@@ -13,22 +13,9 @@ on_machine do |machine, params|
       
   $logger.debug "found #{full_name} : ***\n#{source}\n***\n"
   name = full_name.split("/").last.split(".").first
-  service = ServiceDescriptorLoader.read(name, source).services.first
+  service = ServiceDescriptorLoader.read(@op, name, source).services.first
   
   service["file_name"] = full_name
-  
-  install_command_name = "#{name}_install"
-  broker = @op.local_broker
-  install_command = nil
-  begin
-    install_command = broker.get_command(install_command_name)
-    $logger.info("found install command #{install_command.name}")
-    service["install_command_name"] = install_command.name
-    service["install_command_params"] = install_command.params
-  rescue Exception => e
-    $logger.info("did not find install_command #{install_command_name} : #{e.message}")
-    service["install_command_name"] = nil
-  end
   
   service
 end

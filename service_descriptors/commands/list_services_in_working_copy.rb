@@ -3,7 +3,8 @@ description "looks for services defined in a working copy"
 param :machine
 param! "working_copy", "fully qualified path to the working copy"
 
-mark_as_read_only
+# TODO if this is read only, services aren't loaded (see below)
+#mark_as_read_only
 add_columns [ :full_name, :unix_service, :port, :process_regex, :http_endpoint, :tcp_endpoint ]
 
 on_machine do |machine, params|
@@ -12,10 +13,11 @@ on_machine do |machine, params|
   dir = params["working_copy"]
   dotvop_dir = dir + '/.vop'
   
-  if machine.file_exists("file_name" => dotvop_dir)  
+  if machine.file_exists("file_name" => dotvop_dir)
+      
     plugin_files = machine.list_files("directory" => dotvop_dir).select { |x| /\.plugin$/.match(x) }.sort
     
-    # TODO why is this loading plugins here?
+    # TODO why is this loading plugins here? (probably because otherwise the install commands couldn't be loaded. hmm...)
     plugin_name = nil
     plugin_loaded_from = nil
     plugin_files.each do |plugin_file_name|

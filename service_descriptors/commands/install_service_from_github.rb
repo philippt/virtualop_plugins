@@ -22,7 +22,8 @@ on_machine do |machine, params|
   end 
   machine.git_clone(p)  
   
-  machine.load_services_from_working_copies
+  #machine.load_services_from_working_copies
+  machine.list_services_in_working_copies
   
   params["working_copy"] = service_root
   params["service"] = params["github_project"]

@@ -11,6 +11,8 @@ accept_extra_params
 on_machine do |machine, params|
   
   parts = params["descriptor"].split("/")
+  
+  # TODO [bug] this works only for the "main" service
   service_name = parts.last.split(".").first
   
   #descriptor_dir = parts[0..parts.size-3].join("/")
@@ -122,6 +124,7 @@ on_machine do |machine, params|
       
     end
     
+    # TODO somebody should do a mkdir config_string('service_config_dir') somewhere
     if machine.file_exists("file_name" => config_string('service_config_dir'))
       machine.hash_to_file(
         "file_name" => "#{config_string('service_config_dir')}/#{service_name}", 
