@@ -17,6 +17,18 @@ on_machine do |machine, params|
         "title" => "new vm"
       }
     end
+    
+    if machine.has_running_unix_service('service_name' => 'httpd')
+    result << {
+      "name" => "add_static_vhost",
+      "title" => "add static vhost"
+    }
+    
+    result << {
+      "name" => "configure_reverse_proxy",
+      "title" => "configure reverse proxy"
+    }
+  end    
   rescue
     $logger.warn "couldn't load service-specific actions - something wrong with list_unix_services?"
   end
@@ -30,18 +42,6 @@ on_machine do |machine, params|
     "name" => "install_service_from_github",
     "title" => "install github project"
   }
-  
-  if machine.has_running_unix_service('service_name' => 'httpd')
-    result << {
-      "name" => "add_static_vhost",
-      "title" => "add static vhost"
-    }
-    
-    result << {
-      "name" => "configure_reverse_proxy",
-      "title" => "configure reverse proxy"
-    }
-  end
   
   result << {
     "name" => "restart_unix_service",

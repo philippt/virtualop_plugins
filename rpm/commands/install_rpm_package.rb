@@ -15,7 +15,13 @@ on_machine do |machine, params|
   end
   
   if to_install.size > 0
-    machine.ssh_and_check_result("command" => "yum install -y #{to_install.join(" ")}")
+    command = case machine.linux_distribution.split("_").first
+    when "centos"
+      "yum"
+    when "sles"
+      "zypper"
+    end      
+    machine.ssh_and_check_result("command" => "#{command} install -y #{to_install.join(" ")}")
     
     @op.without_cache do
       machine.list_unix_services

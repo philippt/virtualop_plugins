@@ -11,7 +11,8 @@ contributes_to :list_packages
 
 available_if do |params|
   @op.with_machine(params["machine"]) do |machine|
-    machine.linux_distribution.split("_").first == "centos"
+    machine.linux_distribution.split("_").first == "centos" or
+    machine.linux_distribution.split("_").first == "sles"
   end
 end
 

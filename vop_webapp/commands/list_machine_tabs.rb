@@ -66,6 +66,10 @@ on_machine do |machine, params|
   rescue
     $logger.warn "couldn't load service-specific tabs - something wrong with list_unix_services?"
   end
+  
+  if @op.list_plugins.include?('vmware_rvc') and @op.machine_by_name("machine" => params["machine"])["type"] == "host"
+    tabs << [ "list_vms", "Virtual Guests" ]
+  end
 
   if /^philipp\./.match(params["machine"])
     tabs << [ "fan", "FAN" ]    
@@ -95,3 +99,4 @@ on_machine do |machine, params|
   
   result
 end
+ 
