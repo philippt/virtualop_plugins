@@ -55,6 +55,15 @@ on_machine do |machine, params|
     )
   end
   
+  if result.size > 0
+    project_name = result.first["plugin_name"] || params["working_copy"].split("/").last
+    
+    same_name = result.select { |x| x["full_name"] == (project_name + '/' + project_name) }
+    if same_name.size > 0    
+      result.unshift result.delete same_name.first
+    end
+  end
+  
   result
 end
 
