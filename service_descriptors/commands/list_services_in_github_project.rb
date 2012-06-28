@@ -4,12 +4,13 @@ github_params
 param! :github_project
 param :git_branch
 
-# TODO careful with that - looks like we#re missing a clone() here
+# TODO careful with that - looks like we're missing a clone() here (or something else, actually)
 #mark_as_read_only
 
 #add_columns [ :path, :type, :sha ]
 add_columns [ :name, :unix_service, :port, :process_regex, :http_endpoint, :tcp_endpoint ]
 
+# TODO refactor
 execute do |params|
   result = []
   
@@ -83,5 +84,15 @@ execute do |params|
     result << service.clone()   
   end
   
+  if result.size > 0
+    project_name = plugin_name
+    
+    same_name = result.select { |x| x["full_name"] == (project_name + '/' + project_name) }
+    if same_name.size > 0    
+      result.unshift result.delete same_name.first
+    end
+  end  
+  
   result
 end
+ 
