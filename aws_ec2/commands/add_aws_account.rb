@@ -1,7 +1,5 @@
 description 'configures a new aws account'
 
-mark_as_read_only
-
 result_type_aws_accounts
 
 param! "alias", "a human-readable alias name to describe this account. should also be a valid unix file name (sorry)"

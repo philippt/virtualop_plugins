@@ -3,4 +3,4 @@ dependency :bash
 dependency :vop_webapp
 dependency :vm_handling
 
-config_param "target_url", "the full HTTP url to which notifications should be posted", :mandatory => true
+config_param! "target_url", "the full HTTP url to which notifications should be posted", :default_value => 'http://localhost:3000/notifications'

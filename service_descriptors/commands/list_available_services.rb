@@ -6,6 +6,7 @@ mark_as_read_only
 
 add_columns [ :full_name, :unix_service, :port, :process_regex, :http_endpoint, :tcp_endpoint ]
 
+# TODO cleanup (see list_services_in_github_project and filter plugins that are not configured/loaded
 on_machine do |machine, params|
   result = []
     

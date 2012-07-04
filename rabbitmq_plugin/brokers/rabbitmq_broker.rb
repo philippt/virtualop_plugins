@@ -31,7 +31,7 @@ class RabbitmqBroker < RHCP::LoggingBroker
   
   def get_graylisted_commands
     result = super()
-    #result << %w|listen_and_execute|
+    result << "listen_and_execute"
     result
   end
   

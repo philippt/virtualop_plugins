@@ -24,7 +24,11 @@ execute do |params|
         request = RHCP::Request.new(command, r["param_values"], context)
         
         puts "request context : #{request.context}"
-        puts "user : #{request.context.cookies['current_user']}"
+        puts "user : #{request.context.cookies['current_user']} (#{request.context.cookies['current_user_email']})"
+        
+        # TODO might want to test this with two users ;-)
+        broker.context.cookies.merge! request.context.cookies
+        
         #context.cookies['current_user']
         puts ">>> executing : #{request}"
         response = broker.execute(request)

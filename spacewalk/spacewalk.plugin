@@ -1,4 +1,4 @@
-dependencies [ :core, :machines ]
+dependencies [ :core, :machines, :rpm ]
 
 on_activation do |plugin, config|
   require 'uri'
@@ -10,7 +10,7 @@ end
 on_preflight do |request, response|
   spacewalks = @op.list_spacewalks
   if spacewalks.size > 0
-    @op.select_spacewalk("spacewalk_host" => spacewalks.first["name"])
+    @op.select_spacewalk("spacewalk_host" => spacewalks.values.first)
   end
 end
 

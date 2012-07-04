@@ -8,12 +8,14 @@ param! "github_repo", "the repository that should be initialized", :lookup_metho
       x["full_name"]
     }
   }
+#param "project_name", ""
   
 on_machine do |machine, params|
   repo = @op.list_github_repos.map { |x| 
       x["full_name"] == params["github_repo"]
   }.first
   
+  # TODO wtf?!?
   machine.ssh_and_check_result("command" => "mkdir erosintl")
   machine.ssh_and_check_result("command" => "cd erosintl && git init")
   machine.ssh_and_check_result("command" => "cd erosintl && touch README && git add README")

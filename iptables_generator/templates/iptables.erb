@@ -69,6 +69,8 @@ iptables -t nat -A PREROUTING  -p tcp  -d $IP_HOST --dport <%= vm["ssh_port"] %>
 
 <% end %>
 
+<%= @includes[:prerouting] %>
+
 echo -post-routing-
 
 iptables -t nat -A POSTROUTING -s $MASK_INTERNAL -o eth0 ! -d 10.0.0.0/8 -j SNAT --to $IP_WWW
@@ -191,6 +193,8 @@ iptables -A FORWARD -p icmp -m state --state NEW -j ACCEPT
 ## dns forwarding for internal networks
 iptables -A FORWARD -s $MASK_INTERNAL -p tcp --dport 53 -m state --state NEW -j ACCEPT
 iptables -A FORWARD -s $MASK_INTERNAL -p udp --dport 53 -m state --state NEW -j ACCEPT
+
+<%= @includes[:forward] %>
 
 ## LOG & DROP ##
 

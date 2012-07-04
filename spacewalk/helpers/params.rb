@@ -2,9 +2,7 @@ def param_spacewalk_host(options = {})
   merge_options_with_defaults(options, {
     :mandatory => true,
     :lookup_method => lambda {
-      @op.list_spacewalks.map do |spacewalk|
-        spacewalk["name"]
-      end
+      @op.list_spacewalks.values
     },
     :autofill_context_key => 'spacewalk_host'    
   })
@@ -45,4 +43,14 @@ def param_config_channel(options = {})
     }
   })
   RHCP::CommandParam.new("config_channel", "the config channel to work with", options)
+end
+
+def param_system_group(options = {})
+  merge_options_with_defaults(options, {
+    :mandatory => true,
+    :lookup_method => lambda {
+      @op.list_system_groups.map { |x| x["name"] }
+    }
+  })
+  RHCP::CommandParam.new("system_group", "the system group to work with", options)
 end

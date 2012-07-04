@@ -5,9 +5,13 @@ dependency :service_descriptors
 dependency :github_scm
 dependency :git_scm
 
-config_param "install_kernel_location", "the location from the kernel+initrd pair should be retrieved for an installation", 
-  :default_value => "http://centos_mirror.virtualop.org/pub/Mirrors/centos/6/os/x86_64/"
+config_param "install_kernel_location", "the location from which the kernel+initrd pair should be retrieved for an installation", 
+  :default_value => "http://ftp-stud.fht-esslingen.de/pub/Mirrors/centos/6/os/x86_64/"
+  #:default_value => "http://centos_mirror.virtualop.org/pub/Mirrors/centos/6/os/x86_64/"
+  
 config_param "kickstart_url_vm", "the HTTP url to the kickstart script to use for setting up new VMs",
-  :default_value => "http://ci.virtualop.org/kickstart/centos6_minimal"  
+  :default_value => "http://ci.virtualop.org/kickstart/centos6_minimal"
+  
+config_param "installation_target", "a virtualization host on which VMs can be created", :lookup_method => lambda { @op.list_machines.map { |x| x["name"] } }, :allows_multiple_values => true    
   
 tags :installation

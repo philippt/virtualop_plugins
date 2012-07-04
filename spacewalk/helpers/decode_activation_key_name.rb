@@ -1,3 +1,5 @@
+# TODO kaboom here, please.
+
 def decode_activation_key_name(key)
   stack_name = nil
   environment = nil

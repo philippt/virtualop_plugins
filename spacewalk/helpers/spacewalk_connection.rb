@@ -1,11 +1,15 @@
 class SpacewalkConnection
 
-  attr_reader :server, :session  
+  attr_reader :server, :session 
 
   def initialize(connection_string)
     @uri = URI.parse(connection_string)
   
     @connected = false
+  end
+  
+  def hostname
+    @uri.host
   end
 
   def connect(force = false)
