@@ -46,18 +46,24 @@ execute do |params|
       when "start"      
         request = entry["request"]
             
+        uid = nil
+        if request.has_key?('context') and request['context'].has_key?('cookies') and request['context']['cookies'].has_key?('current_user')
+          uid = request['context']['cookies']['current_user']
+        end
+            
         # the top-level request itself should be written into the unpartitioned index table
         # all the others go into the partitioned tables only
         params = []
         request["param_values"].each do |name, values|
           values.each do |value|
+            value = "xxx" if name == "password"
             params << "#{name}=#{value}"
           end
         end
         param_string = '(' + params.join(' ') + ')'
         
-        do_sql(dbh, "INSERT INTO requests (request_id, command_name, param_string,  mode, start_ts)
-                  VALUES ('#{request_id}', '#{request["command_name"]}', '#{dbh.escape_string(param_string)}', '#{entry["mode"]}', '#{entry["start_ts"]}')")
+        do_sql(dbh, "INSERT INTO requests (request_id, command_name, param_string, uid, mode, start_ts)
+                  VALUES ('#{request_id}', '#{request["command_name"]}', '#{dbh.escape_string(param_string)}', #{uid != nil ? "'#{uid}'" : 'NULL'}, '#{entry["mode"]}', '#{entry["start_ts"]}')")
       when "stop"
         escaped_response = dbh.escape_string(JSON.generate(entry["response"]))
         dbh.query("UPDATE requests SET response_code = '#{entry["response"]["status"]}', stop_ts = '#{entry["response"]["created_at_iso8601"]}' " +
@@ -77,6 +83,7 @@ execute do |params|
             $logger.debug "not logging block parameter '#{name}'"
             next
           end
+          value = "xxx" if name == "password"
           string_values << "#{name}=#{value}" 
         end
       end
@@ -98,6 +105,7 @@ execute do |params|
             $logger.debug "not logging block parameter '#{name}'"
             next
           end
+          value = "xxx" if name == "password"
           escaped_value = dbh.escape_string(value.to_s)
           all_values << [ "'#{request_id}'", execution_id, "'#{name}'", "'#{escaped_value}'" ]
         end

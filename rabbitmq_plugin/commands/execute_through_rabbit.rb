@@ -10,6 +10,7 @@ execute do |params|
   
   broker = Thread.current['broker']
   command = broker.get_command(params["command_name"])
+  params["extra_params"] ||= {}
   request = RHCP::Request.new(command, params["extra_params"], broker.context)
   #p request.as_json()
   

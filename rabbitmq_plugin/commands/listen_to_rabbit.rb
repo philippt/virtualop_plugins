@@ -12,7 +12,7 @@ execute do |params|
   $logger.debug "count: #{q.message_count}"
   while msg = q.pop(:ack => true)
    #puts msg
-   p msg
+   #p msg
    result << msg
    q.ack
   end

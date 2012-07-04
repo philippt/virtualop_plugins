@@ -8,8 +8,8 @@ class RabbitmqBroker < RHCP::LoggingBroker
   
   def get_blacklisted_commands
     commands = super()
-    # commands << "log_ssh_start"
-    # commands << "log_ssh_stop"
+    #commands << "log_ssh_start"
+    #commands << "log_ssh_stop"
     commands << "pre_flight_init"
     commands << "create_partition"
     # commands << "get_ssh_connection"
@@ -24,8 +24,10 @@ class RabbitmqBroker < RHCP::LoggingBroker
     commands << "raw_log"
     commands << "show_plugin_config"
     commands << "execute_as_hudson_job"
+    commands << "execute_through_rabbit"
+    commands << "select_datacenter"
     #commands << "process_messages"
-    #commands << "listen_and_execute"
+    commands << "listen_and_execute"
     commands
   end
   
