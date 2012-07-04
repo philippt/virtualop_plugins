@@ -54,7 +54,7 @@ on_machine do |machine, params|
     
     # install packages
     case machine.linux_distribution.split("_").first
-    when "centos"  
+    when "centos", "sles"  
       lines = descriptor_machine.read_file_if_exists("file_name" => "#{descriptor_dir}/packages/rpm_repos")
       machine.install_rpm_repo("repo_url" => lines) unless lines.size == 0
       
