@@ -8,6 +8,11 @@ execute do |params|
 
   result = []
   
+  #rabbit_broker = RabbitmqBroker.new(broker, @op.plugin_by_name('rabbitmq_plugin'))
+  #Thread.current['broker'] = rabbit_broker
+  
+  Thread.current['logging_enabled'] = 'true'
+  
   while (true) do
     $logger.debug "count: #{q.message_count}"
     #@op.listen_to_rabbit('queue' => 'vop_commands').each do |msg|

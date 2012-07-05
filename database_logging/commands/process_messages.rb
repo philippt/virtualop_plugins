@@ -56,7 +56,7 @@ execute do |params|
         params = []
         request["param_values"].each do |name, values|
           values.each do |value|
-            value = "xxx" if name == "password"
+            value = "xxx" if /password/.match(name)
             params << "#{name}=#{value}"
           end
         end
@@ -83,7 +83,7 @@ execute do |params|
             $logger.debug "not logging block parameter '#{name}'"
             next
           end
-          value = "xxx" if name == "password"
+          value = "xxx" if /password/.match(name)
           string_values << "#{name}=#{value}" 
         end
       end
@@ -105,7 +105,7 @@ execute do |params|
             $logger.debug "not logging block parameter '#{name}'"
             next
           end
-          value = "xxx" if name == "password"
+          value = "xxx" if /password/.match(name)
           escaped_value = dbh.escape_string(value.to_s)
           all_values << [ "'#{request_id}'", execution_id, "'#{name}'", "'#{escaped_value}'" ]
         end

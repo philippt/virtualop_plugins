@@ -40,6 +40,9 @@ class RabbitmqBroker < RHCP::LoggingBroker
   def log_request_start(request_id, level, mode, current_stack, request, start_ts)
     request_id = Thread.current[var_name("request_id")]
     
+    #return unless @plugin.config_string('broker_enabled') == 'true'
+    return unless Thread.current['logging_enabled'] == 'true'
+    
     return if /^database_logging\./.match(request.command.full_name)
     
     param_values = []
@@ -67,6 +70,9 @@ class RabbitmqBroker < RHCP::LoggingBroker
   end
   
   def log_request_stop(request_id, level, mode, current_stack, request, response, duration)
+    return unless Thread.current['logging_enabled'] == 'true'
+    #return unless @plugin.config_string('broker_enabled') == 'true'
+    
     request_id = Thread.current[var_name("request_id")]
     @op.hello_rabbit("queue" => "text_logging", "message" => "#{request_id} #{level} < #{current_stack} #{response != nil ? response.status : '-'} #{duration}s")
     
