@@ -7,7 +7,7 @@
 ###############################################################################
 
 define host{
-        use                     <%= config_string('host_template', 'linux-host') %>
+        use                     <%= config_string('host_template') %>
         host_name               <%= machine.name %>
         alias                   <%= machine.name %>
         address                 <%= machine.ipaddress %>

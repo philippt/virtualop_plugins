@@ -31,7 +31,7 @@ execute do |params|
         puts "request context : #{request.context}"
         puts "user : #{request.context.cookies['current_user']} (#{request.context.cookies['current_user_email']})"
         
-        # TODO might want to test this with two users ;-)
+        # TODO might want to test this with two users ;-) or multiple times even?
         broker.context.cookies.merge! request.context.cookies
         
         #context.cookies['current_user']

@@ -17,5 +17,6 @@ on_machine do |machine, params|
   
   @op.without_cache do
     machine.list_working_copies
+    machine.list_working_copies_with_projects
   end
 end

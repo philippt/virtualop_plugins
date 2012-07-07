@@ -1,4 +1,4 @@
-description 'adds a public key to a user directory on a machine'
+description 'adds a public key to a user directory on a machine so that it is authorized to login'
 
 param :machine
 #param "user", "the user account that should be used"

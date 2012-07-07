@@ -35,6 +35,7 @@ on_machine do |machine, params|
   
     if service_names.include?("libvirtd")
       tabs << ["list_vms", "Virtual Guests"] 
+      tabs << ["list_vms_with_memory", "VMs w/ memory"]
     end
     
     if service_names.include?("vz")

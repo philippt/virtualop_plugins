@@ -1,0 +1,9 @@
+dependencies [ :core, :machines ]
+
+config_param! "app_key", "dropbox application key (from https://www.dropbox.com/developers)"
+config_param! "app_secret", "secret associated to app_key"
+
+on_activation do |plugin, config|  
+  #plugin.state[:session] = DropboxSession.new(APP_KEY, APP_SECRET)
+  plugin.state[:client] = nil
+end

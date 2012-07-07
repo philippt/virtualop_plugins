@@ -12,5 +12,5 @@ config_param "broker_enabled", "if set to true, all rhcp commands will be logged
 
 on_activation do |plugin, config|
   #require 'rubygems'
-  #require 'carrot'
+  #require 'carrot'  
 end  

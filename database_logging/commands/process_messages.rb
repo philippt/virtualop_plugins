@@ -12,7 +12,7 @@ execute do |params|
   # $logger.info "read #{the_log.size} entries"
   # 
   # the_log.each do |data|
-  c = Carrot.new(:host => config_string('rabbitmq_hostname', 'localhost'))
+  c = Carrot.new(:host => @op.plugin_by_name("rabbitmq_plugin").config_string('rabbitmq_hostname'))
   q = c.queue('raw_logging')
 
   result = []

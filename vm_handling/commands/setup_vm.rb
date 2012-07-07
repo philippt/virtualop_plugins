@@ -131,6 +131,8 @@ on_machine do |machine, params|
     @op.comment("message" => "OS package update complete.")
     
     machine.install_rpm_package("name" => [ "git", "vim", "screen" ])
+    machine.mkdir('dir_name' => @op.plugin_by_name('service_descriptors').config_string('service_config_dir'))
+    
     if params.has_key?('github_project')
       #install_params = {
       #  "github_project" => params["github_project"]      
@@ -144,6 +146,7 @@ on_machine do |machine, params|
       vm.execute_remote_command("url" => params['script_url'])
     end
     
+    pp Thread.current['request']
     machine.notify_vm_setup_complete("data" => params)    
   end
 end

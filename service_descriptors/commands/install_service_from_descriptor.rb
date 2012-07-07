@@ -97,7 +97,7 @@ on_machine do |machine, params|
       }
       
       @op.comment("message" => "disabling the null check in the next line wouldn't be a good idea.")
-      if params.has_key?('extra_params') && params["extra_params"] != nil 
+      if params.has_key?('extra_params') && params["extra_params"] != nil && params["extra_params"].class == Hash
         param_values.merge!(params["extra_params"])
       end
        
@@ -108,19 +108,27 @@ on_machine do |machine, params|
         end.size > 0
       end
       #$logger.info("FOOOOO3")
-      $logger.info("assembled param values : #{param_values}")
+      $logger.info("params_to_use : \n#{params_to_use.map { |k,v| "\t#{k}\t#{v}" }.join("\n")}")
       
-      request = RHCP::Request.new(install_command, params_to_use, Thread.current['broker'].context)
-      response = broker.execute(request)
-      
-      if response.status != RHCP::Response::Status::OK
-        filtered_error_detail = response.error_detail.split("\n").select do |line|
-          /lib\/plugins\//.match(line)
-        end.join("\n")
-        $logger.error("#{response.error_text}\n#{filtered_error_detail}")
-      
-        raise RHCP::RhcpException.new(response.error_text)
+      begin
+        @op.send(install_command.name.to_sym, params_to_use)
+      rescue => detail
+        $logger.error "got a problem while executing install command '#{install_command.name}'", detail
+        raise detail
       end
+        
+      
+      # request = RHCP::Request.new(install_command, params_to_use, Thread.current['broker'].context)
+      # response = broker.execute(request)
+#       
+      # if response.status != RHCP::Response::Status::OK
+        # filtered_error_detail = response.error_detail.split("\n").select do |line|
+          # /lib\/plugins\//.match(line)
+        # end.join("\n")
+        # $logger.error("#{response.error_text}\n#{filtered_error_detail}")
+#       
+        # raise RHCP::RhcpException.new(response.error_text)
+      # end
       
     end
     

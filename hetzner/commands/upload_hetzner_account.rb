@@ -4,7 +4,12 @@ param :machine
 param :hetzner_account
 
 on_machine do |machine, params|
-  drop_dir = hetzner_account_dropdir
-  file_name = "#{drop_dir}/#{params["hetzner_account"]}.conf"
-  machine.upload_file("local_file" => file_name, "target_file" => file_name)  
+  account = @op.list_hetzner_accounts.select { |x| x["alias"] == params["hetzner_account"] }.first
+  
+  cmd = 'add_hetzner_account'
+  account.each do |k,v|
+    cmd += " #{k}=#{v}"
+  end
+  
+  machine.vop_call("command" => cmd)     
 end
