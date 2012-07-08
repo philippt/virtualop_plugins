@@ -8,6 +8,8 @@ execute do |params|
     params[k] = @plugin.config_string(k)
   end
   
+  params['to'] ||= Thread.current['broker'].context.cookies['current_user_email']
+  
   raise "need a recipient address" if params['to'] == nil or params['to'] == '' 
   
   result = false

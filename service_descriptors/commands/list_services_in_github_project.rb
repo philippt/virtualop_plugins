@@ -8,7 +8,7 @@ param :git_branch
 #mark_as_read_only
 
 #add_columns [ :path, :type, :sha ]
-add_columns [ :name, :unix_service, :port, :process_regex, :http_endpoint, :tcp_endpoint ]
+#add_columns [ :name, :unix_service, :port, :process_regex, :http_endpoint, :tcp_endpoint ]
 
 # TODO refactor
 execute do |params|
@@ -81,15 +81,22 @@ execute do |params|
   
   services_to_load.each do |service_name, source|
     service = ServiceDescriptorLoader.read(@op, service_name, source).services.first
+    service["full_name"] = [ plugin_name, service_name ].join("/")
     result << service.clone()   
   end
   
+  pp result
   if result.size > 0
     project_name = plugin_name
     
-    same_name = result.select { |x| x["full_name"] == (project_name + '/' + project_name) }
-    if same_name.size > 0    
-      result.unshift result.delete same_name.first
+    default_service_name = project_name + '/' + project_name
+    same_name = result.select { |x| x["full_name"] == (default_service_name) }
+    if same_name.size > 0
+      default_service = result.delete same_name.first
+      puts "moving default service #{default_service["name"]} to the front of the list"     
+      result.unshift default_service
+    else
+      puts "did not find default service - looked for '#{default_service_name}'"
     end
   end  
   
