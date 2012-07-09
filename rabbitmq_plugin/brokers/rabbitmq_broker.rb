@@ -20,14 +20,19 @@ class RabbitmqBroker < RHCP::LoggingBroker
     commands << "listen_to_rabbit"
     commands << "ssh_options_for_machine"
     commands << "ssh_extended"
+    
     commands << "text_log"
     commands << "raw_log"
     commands << "show_plugin_config"
     commands << "execute_as_hudson_job"
     commands << "execute_through_rabbit"
+    
     commands << "select_datacenter"
     #commands << "process_messages"
     commands << "listen_and_execute"
+    
+    commands += %w|enrich_machine_list machine_by_name list_machines on_machine|
+    
     commands
   end
   

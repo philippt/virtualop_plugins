@@ -1,7 +1,7 @@
 description "sends an email"
 
 param! "message", "the message body that should be sent (might include Subject header)"
-param! "to", "recipient address" 
+param "to", "recipient address" 
 
 execute do |params|
   %w|smtp_host_name smtp_user smtp_port smtp_password|.each do |k| 
