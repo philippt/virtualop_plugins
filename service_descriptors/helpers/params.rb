@@ -25,6 +25,7 @@ def param_canned_service(options = {})
   RHCP::CommandParam.new("service", "the service to work with", options)
 end  
 
+# TODO this looks weird (list_services?)
 def param_service_full_name(options = {})
   merge_options_with_defaults(options, {
     :mandatory => true,
@@ -44,3 +45,13 @@ def param_github_project(options = {})
   })
   RHCP::CommandParam.new("github_project", "the github project to install (e.g. philippt/virtualop)", options)
 end
+
+def param_service(options = {})
+  merge_options_with_defaults(options, {
+    :mandatory => true,
+    :lookup_method => lambda do |request|
+      @op.list_installed_services("machine" => request.get_param_value("machine"))
+    end
+  })
+  RHCP::CommandParam.new("service", "the service to work with", options)
+end  
