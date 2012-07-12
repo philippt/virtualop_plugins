@@ -49,6 +49,7 @@ on_machine do |machine, params|
   machine.new_vm_from_kickstart(new_vm_params)
 
   # TODO does not work without memcached
+  # TODO do we need this?
   @op.flush_cache
   
   machine.generate_and_execute_iptables_script
@@ -130,7 +131,7 @@ on_machine do |machine, params|
     vm.yum_update
     @op.comment("message" => "OS package update complete.")
     
-    machine.install_rpm_package("name" => [ "git", "vim", "screen" ])
+    machine.install_rpm_package("name" => [ "git", "vim", "screen", "man" ])
     machine.mkdir('dir_name' => @op.plugin_by_name('service_descriptors').config_string('service_config_dir'))
     
     if params.has_key?('github_project')
@@ -146,7 +147,8 @@ on_machine do |machine, params|
       vm.execute_remote_command("url" => params['script_url'])
     end
     
-    pp Thread.current['request']
+    machine.change_runlevel("runlevel" => "running")
+    
     machine.notify_vm_setup_complete("data" => params)    
   end
 end

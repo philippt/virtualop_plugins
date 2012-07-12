@@ -29,8 +29,13 @@ class ServiceDescriptorLoader
     @service
   end
   
+  def runlevel(sym)
+    @service["runlevel"] = sym.to_s
+  end
+  
   def method_missing(m, *args)
     targets = [ :unix_service, :run_command, :start_command, :stop_command, :port, :process_regex, :http_endpoint, :tcp_endpoint, :log_file, :on_install ]
+    #targets += [ :runlevel ]
     
     if targets.include? m
       @service[m.to_s] = *args.first

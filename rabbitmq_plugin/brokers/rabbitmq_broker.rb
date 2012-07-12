@@ -33,6 +33,8 @@ class RabbitmqBroker < RHCP::LoggingBroker
     
     commands += %w|enrich_machine_list machine_by_name list_machines on_machine|
     
+    commands += %w|ssh_and_check_result ssh_extended ssh|
+    
     commands
   end
   
