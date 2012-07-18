@@ -25,7 +25,7 @@ on_machine do |machine, params|
   #machine.load_services_from_working_copies
   machine.list_services_in_working_copies
   
-  params["working_copy"] = service_root
+  params["working_copy"] = project_name # TODO is that a good idea? (used to be the path)
   params["service"] = params["github_project"]
   
   if params.has_key?('extra_params')

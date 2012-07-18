@@ -7,17 +7,22 @@ on_machine do |machine, params|
   service = @op.service_details(params)
   
   if service.has_key? "run_command"
-    machine.mkdir("dir_name" => service["service_root"] + '/log')
+    service["service_root"] ||= '.'
     
-    # TODO this probably does not work for services without service_root
-    bin_path = service["service_root"] + '/.vop/bin'
-    script_path = bin_path + '/start_' + service["name"] + '.sh'
+    redirect_log_file = service.has_key?("redirect_log") ? service["redirect_log"] : "#{service["service_root"]}/log/#{service["name"]}.log"
+    machine.mkdir("dir_name" => File.dirname(redirect_log_file))
+        
+    (script_path, output) = machine.start_background_process(
+      "directory" => service["service_root"], 
+      "command_line" => service["run_command"], 
+      "log_file" => redirect_log_file,
+      "name_hint" => service["name"]
+    )
     
-    machine.mkdir("dir_name" => bin_path)
-    process_local_template(:start_background_job, machine, script_path, binding())
-    machine.chmod("file_name" => script_path, "permissions" => "+x")
-    
-    machine.ssh_and_check_result("command" => script_path)
+    if service.has_key? "cron"
+      # TODO actually, we shouldn't do this at every start
+      machine.add_crontab_entry("data" => read_local_template(:crontab, binding()))  
+    end        
   elsif service.has_key? "start_command"
     machine.ssh_and_check_result("command" => service["start_command"])
   else

@@ -1,4 +1,0 @@
-#!/bin/bash
-
-cd <%= service["service_root"] %>
-nohup <%= service["run_command"] %> > log/<%= service["name"] %>.log 2>&1 &

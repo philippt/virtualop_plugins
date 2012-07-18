@@ -142,6 +142,8 @@ on_machine do |machine, params|
   end
   
   @op.without_cache do
+    machine.list_working_copies
+    machine.list_installed_services
     if @op.list_plugins.include? 'vop_webapp'
       machine.list_machine_tabs
       machine.list_machine_actions

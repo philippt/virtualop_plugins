@@ -11,5 +11,6 @@ on_machine do |machine, params|
     status = machine.ssh_extended("command" => service["status_command"])
     result = (status["result_code"] == 0).to_s
   end
+  
   result
 end  

@@ -1,2 +1,5 @@
 dependency :core
 dependency :machines
+
+config_param "root_action", "target for the root action in rails route config", :default_value => 'home#index'
+config_param "default_theme", "the theme to use", :default_value => 'virtualop'

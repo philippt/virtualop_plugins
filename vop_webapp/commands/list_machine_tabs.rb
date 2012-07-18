@@ -60,10 +60,10 @@ on_machine do |machine, params|
       tabs << [ "varnish_stats", "Varnish Stats" ]
     end
     
-    # if service_names.include?("mysqld")
-      # tabs << ["mysql_dumps", "MySQL Dumps"]
-      # tabs << ["mysql_processlist", "MySQL Processes"]
-    # end
+    if service_names.include?("mysqld")
+      #tabs << ["mysql_dumps", "MySQL Dumps"]
+      #tabs << ["mysql_processlist", "MySQL Processes"]
+    end
   rescue
     $logger.warn "couldn't load service-specific tabs - something wrong with list_unix_services?"
   end

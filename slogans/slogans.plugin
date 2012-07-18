@@ -18,7 +18,3 @@ on_init do |plugin, config|
   
   #require 'backports'
 end
-
-on_activation do |plugin, config|
-  slogans = plugin.state[:drop_dir].read_local_dropdir
-end

@@ -1,18 +1,22 @@
 description "installs a service that is available as working copy on a target_machine"
 
 param :machine
-param! "working_copy", "fully qualified path to the working copy from which to install"
+param :working_copy
 param! "service", "the name of the service contained inside the working copy that should be installed."
 
 accept_extra_params
 
 on_machine do |machine, params|
-  vop_dir = params["working_copy"] + "/.vop"
+  path = machine.list_working_copies.select do |w|
+    w["name"] == params["working_copy"]
+  end.first["path"]
+  
+  vop_dir = "#{path}/.vop"
   if machine.file_exists("file_name" => vop_dir)
     params.merge!({
       "descriptor" => vop_dir + "/services/#{params["service"]}.rb", 
       "descriptor_machine" => machine.name,
-      "service_root" => params["working_copy"]
+      "service_root" => path
     })
     
     if params.has_key?('extra_params')

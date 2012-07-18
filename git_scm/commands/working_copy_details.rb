@@ -20,13 +20,13 @@ on_machine do |machine, params|
       matched = /origin\s+(.+)/.match(line)
       if matched
         remote_origin = matched.captures.first
-        matched_again = /github.com[\:\/]([^\/]+\/.+)\.git$/.match(remote_origin)
+        matched_again = /github.com[\:\/]([^\/]+\/.+)\.git/.match(remote_origin)
         if matched_again
           project = matched_again.captures.first
           wc["project"] = project
           wc["source"] = remote_origin
         else 
-          $logger.warn("could not parse project name from remote origin #{remote_origin}")
+          $logger.warn "could not parse project name from remote origin #{remote_origin}"
         end
       end
     end
