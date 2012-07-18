@@ -34,7 +34,7 @@ class ServiceDescriptorLoader
   end
   
   def method_missing(m, *args)
-    targets = [ :unix_service, :run_command, :redirect_log, :cron, :start_command, :stop_command, :port, :process_regex, :http_endpoint, :tcp_endpoint, :log_file, :on_install ]
+    targets = [ :unix_service, :run_command, :redirect_log, :cron, :every, :start_command, :stop_command, :port, :process_regex, :http_endpoint, :tcp_endpoint, :log_file, :on_install ]
     #targets += [ :runlevel ]
     
     if targets.include? m

@@ -11,6 +11,10 @@ on_machine do |machine, params|
   
   service_root = "#{machine.home}/#{project_name}"
   
+  if params.has_key?('extra_params') and params["extra_params"].has_key?("domain")
+    service_root = "/var/www/#{project_name}"
+  end
+  
   git_url = "git://github.com/#{params["github_project"]}.git"
   
   p = {

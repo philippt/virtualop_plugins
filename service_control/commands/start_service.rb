@@ -21,7 +21,7 @@ on_machine do |machine, params|
     
     if service.has_key? "cron"
       # TODO actually, we shouldn't do this at every start
-      machine.add_crontab_entry("data" => read_local_template(:crontab, binding()))  
+      machine.add_crontab_entry("data" => read_local_template(:crontab, binding()))
     end        
   elsif service.has_key? "start_command"
     machine.ssh_and_check_result("command" => service["start_command"])

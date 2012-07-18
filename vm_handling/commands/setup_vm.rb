@@ -111,27 +111,47 @@ on_machine do |machine, params|
     
     # there might be already a yum process running - started by the OS
     @op.wait_until(
-    "interval" => 5, "timeout" => 120, 
-    "error_text" => "there seems to be a yum process already running",
-    "condition" => lambda do
-      result = false
-      begin
-        procs = vm.processes.select do |p|
-          /yum/.match(p["command"])
+      "interval" => 5, "timeout" => 120, 
+      "error_text" => "there seems to be a yum process already running",
+      "condition" => lambda do
+        result = false
+        begin
+          procs = vm.processes.select do |p|
+            /yum/.match(p["command"])
+          end
+          
+          result = procs.size == 0
+        rescue Exception => e
+          $logger.info("got an exception while trying to connect to machine : #{e.message}")
         end
-        
-        result = procs.size == 0
-      rescue Exception => e
-        $logger.info("got an exception while trying to connect to machine : #{e.message}")
+        result
       end
-      result
+    )
+   
+    MAX_ATTEMPTS = 3
+    attempts = 0
+    updated = false
+    while (attempts < MAX_ATTEMPTS) do
+      attempts += 1    
+      begin
+        Timeout::timeout(10 * 60) {
+          vm.yum_update
+          updated = true
+        }
+      rescue => detail
+        $logger.warn "yum update didn't complete within 10 minutes - #{MAX_ATTEMPTS - attempts} attempts left.."
+        machine.kill_processes_like("string" => "yum")
+      end
     end
-  )
     
-    vm.yum_update
-    @op.comment("message" => "OS package update complete.")
+    if updated
+      @op.comment("message" => "OS package update complete.")
+    else
+      raise "couldn't update OS packages"
+    end
     
-    machine.install_rpm_package("name" => [ "git", "vim", "screen", "man" ])
+    machine.install_rpm_package("name" => [ "git", "vim", "screen", "man", "rubygems" ])
+    machine.ssh_and_check_result("command" => "gem update --system")
     machine.mkdir('dir_name' => @op.plugin_by_name('service_descriptors').config_string('service_config_dir'))
     
     if params.has_key?('github_project')
