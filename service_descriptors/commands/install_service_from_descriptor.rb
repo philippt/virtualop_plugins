@@ -4,7 +4,6 @@ param :machine
 param! :descriptor_machine
 param! "descriptor", "fully qualified path where the service descriptor can be found)"
 param "service_root", "path where the service should be installed"
-#param "extra_params", "a hash of extra parameters for the service install command"
 
 accept_extra_params
 
