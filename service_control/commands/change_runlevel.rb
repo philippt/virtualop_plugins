@@ -10,9 +10,20 @@ on_machine do |machine, params|
     
   result = []
     
-  machine.status_services.select do |candidate|
+  services = machine.status_services.select do |candidate|
     candidate["is_startable"] == true
-  end.each do |service|
+  end     
+    
+  infrastructure = services.select { |x| x["runlevel"] == "infrastructure" }
+  application = services.select { |x| x["runlevel"] == "application" }
+  
+  if target_runlevel == "running"
+    services = infrastructure + application
+  else
+    services = application + infrastructure
+  end
+    
+  services.each do |service|
     begin
       h = {
         "service_name" => service["name"],
