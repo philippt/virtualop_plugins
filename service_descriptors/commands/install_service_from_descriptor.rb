@@ -97,7 +97,7 @@ on_machine do |machine, params|
       }
       
       @op.comment("message" => "disabling the null check in the next line wouldn't be a good idea.")
-      if params.has_key?('extra_params') && params["extra_params"] != nil && params["extra_params"].class == Hash
+      if params.has_key?('extra_params') && params["extra_params"] != nil #&& params["extra_params"].class == Hash
         param_values.merge!(params["extra_params"])
       end
       
@@ -115,6 +115,7 @@ on_machine do |machine, params|
       begin
         @op.send(install_command.name.to_sym, params_to_use)
       rescue => detail
+        @op.comment "got a problem while executing install command '#{install_command.name}' : #{detail.message}"
         $logger.error "got a problem while executing install command '#{install_command.name}'", detail
         raise detail
       end
