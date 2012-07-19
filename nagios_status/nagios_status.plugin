@@ -5,5 +5,6 @@ config_param! "nagios_user", "the user for http basic auth"
 config_param! "nagios_password", "password for nagios_user" 
 
 on_activation do |plugin, config|
+  require 'rubygems'
   require 'nagiosharder'
 end

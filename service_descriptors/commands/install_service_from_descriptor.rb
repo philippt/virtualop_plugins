@@ -100,6 +100,8 @@ on_machine do |machine, params|
       if params.has_key?('extra_params') && params["extra_params"] != nil && params["extra_params"].class == Hash
         param_values.merge!(params["extra_params"])
       end
+      
+      $logger.info("available param values: \n#{param_values.map { |k,v| "\t#{k}\t#{v}" }.join("\n")}")
        
       params_to_use = {}
       param_values.each do |k,v|
