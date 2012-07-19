@@ -90,10 +90,7 @@ on_machine do |machine, params|
     end
     
     if install_command != nil    
-      param_values = {
-        "machine" => machine.name,
-        "service_root" => service_root      
-      }
+      param_values = params.clone()
       
       @op.comment("message" => "disabling the null check in the next line wouldn't be a good idea.")
       if params.has_key?('extra_params') && params["extra_params"] != nil #&& params["extra_params"].class == Hash
