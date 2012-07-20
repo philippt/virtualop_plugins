@@ -1,3 +1,3 @@
-execute do |params|
-  Thread.current['logging_enabled'] = 'true'
+execute_request do |request, response|
+  response.set_context('logging_enabled' => 'true')
 end

@@ -9,12 +9,13 @@ param! :canned_service
 accept_extra_params
 
 on_machine do |machine, params|  
-  service_row = @op.list_available_services("machine" => "localhost").select do |x|
+  service_rows = @op.list_available_services("machine" => "localhost").select do |x|
     x["full_name"] == params["service"]
-  end.first
+  end
+  raise "no such service : #{params["service"]}" unless service_rows.size > 0
+  service_row = service_rows.first
   
   service_name = params["service"]
-  #descriptor_dir = service_row["dir_name"]
   
   params["descriptor"] = service_row["file_name"]  
   
