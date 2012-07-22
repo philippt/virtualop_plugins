@@ -1,5 +1,6 @@
 dependency :core
 dependency :bash
+dependency :machines
 dependency :git_scm
 dependency :github_scm
 
