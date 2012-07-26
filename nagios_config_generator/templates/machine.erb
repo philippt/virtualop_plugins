@@ -11,6 +11,12 @@ define host{
         host_name               <%= machine.name %>
         alias                   <%= machine.name %>
         address                 <%= machine.ipaddress %>
+        <% 
+        if @plugin.config.has_key?('default_check_command')
+        %>
+        check_command 			<%= config_string('default_check_command') %>
+        <%  %> 			
+        <% end %>
 }
 
 
@@ -22,17 +28,5 @@ define host{
 ###############################################################################
 ###############################################################################
 
-define service{
-        use                     generic-service
-        host_name               <%= machine.name %>
-        service_description     PING
-        check_command           check_ping!100.0,20%!500.0,60%
-}
 
-define service{
-        use                     generic-service
-        host_name               <%= machine.name %>
-        service_description     SSH
-        check_command           check_ssh
-}
 

@@ -26,6 +26,9 @@ class ServiceDescriptorLoader
       @service["install_command_name"] = nil
     end
     
+    @service["databases"] = []
+    @service["local_files"] = []
+    
     @service
   end
   
@@ -33,8 +36,26 @@ class ServiceDescriptorLoader
     @service["runlevel"] = sym.to_s
   end
   
+  def database(name, mode = 'read-write')
+    @service["databases"] << {
+      "name" => name,
+      "mode" => mode
+    }
+  end
+  
+  def backup(hash, mode = 'read-write')
+    hash.each do |k,v|
+      @service["local_files"] << {
+        "alias" => k,
+        "path" => v,
+        "mode" => mode
+      }
+    end
+  end
+  
   def method_missing(m, *args)
     targets = [ :unix_service, :run_command, :redirect_log, :cron, :every, :start_command, :stop_command, :port, :process_regex, :http_endpoint, :tcp_endpoint, :log_file, :on_install ]
+    #targets += [ :database ]
     #targets += [ :runlevel ]
     
     if targets.include? m

@@ -18,6 +18,11 @@ on_machine do |machine, params|
     process_local_template(template_name, nagios, target_file, binding())    
     nagios.chmod("file_name" => target_file, "permissions" => "644")
   
+    default_services = config_string('default_services', [])
+    default_services.each do |name|
+      machine.add_config_from_template("template_name" => name)
+    end
+  
     unix_services = machine.list_unix_services
     if unix_services.include?('apache2') and machine.status_unix_service("name" => 'apache2')
       apache_checks = read_local_template(:apache, binding())
