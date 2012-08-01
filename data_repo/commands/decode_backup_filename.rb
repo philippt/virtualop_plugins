@@ -2,7 +2,7 @@ description "extracts structured information from a backup filename"
 
 param! "filename", "the filename to decode"
 
-#mark_as_read_only
+mark_as_read_only
 
 add_columns [ "name", "type", "date", "host", "service", "alias" ]
 

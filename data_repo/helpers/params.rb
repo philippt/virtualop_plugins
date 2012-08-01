@@ -29,7 +29,7 @@ def param_data_repo_backup_for_service(options = {})
   merge_options_with_defaults(options, {
     :mandatory => true,
     :lookup_method => lambda do |request|
-      @op.list_backups_in_repo("data_repo_service" => request.get_param_value("data_repo_service"))
+      @op.list_backups_in_repo("data_repo_service" => request.get_param_value("data_repo_service")).map { |x| x["name"]}
     end
   })
   RHCP::CommandParam.new("backup_name", "a backup item in the data repository to work with", options)

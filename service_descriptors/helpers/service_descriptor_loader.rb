@@ -36,17 +36,15 @@ class ServiceDescriptorLoader
     @service["runlevel"] = sym.to_s
   end
   
-  def database(name, mode = 'read-write')
-    @service["databases"] << {
-      "name" => name,
-      "mode" => mode
-    }
+  def database(name, options = { :mode => 'read-write', :exclude_tables => [] })
+    options[:name] = name
+    @service["databases"] << options
   end
   
   def backup(hash, mode = 'read-write')
     hash.each do |k,v|
       @service["local_files"] << {
-        "alias" => k,
+        "alias" => k.to_s,
         "path" => v,
         "mode" => mode
       }

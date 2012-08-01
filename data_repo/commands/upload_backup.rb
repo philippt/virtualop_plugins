@@ -15,7 +15,7 @@ on_machine do |machine, params|
   
   repo = @op.list_data_repos.select { |x| x["alias"] == params["data_repo"] }.first
   machine.http_upload "target_url" => repo["url"] + '/' + the_backup["service"] + '/',
-    "file_name" => config_string('local_backup_dir') + '/' + the_backup["name"] + '.tgz'
+    "file_name" => local_backup_dir(machine) + '/' + the_backup["name"] + '.tgz'
   
   [ the_backup ]
 end

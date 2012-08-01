@@ -13,7 +13,7 @@ on_machine do |machine, params|
     # TODO extract
     dominfo = machine.ssh_and_check_result("command" => "virsh dominfo #{vm["name"]}")
     dominfo.split("\n").each do |line|
-      if matched = /Max memory:\s+(\d+)\s+kB/.match(line)
+      if matched = /Used memory:\s+(\d+)\s+kB/.match(line)
         memory = matched.captures.first
         vm["memory"] = memory
         vm["memory_percent"] = memory.to_i / (total.to_i / 100)

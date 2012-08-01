@@ -11,7 +11,7 @@ on_machine do |machine, params|
   result = []
   
   machine.list_working_copies.each do |working_copy|
-    result += machine.list_services_in_working_copy("working_copy" => working_copy["path"]).map do |service|
+    result += machine.list_services_in_directory("directory" => working_copy["path"]).map do |service|
       service["working_copy"] = working_copy["path"]
       service
     end

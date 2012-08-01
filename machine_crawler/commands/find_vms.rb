@@ -18,6 +18,6 @@ execute do |params|
     end
   end
   
-  @op.flush_cache
+  @op.flush_cache()
   @op.list_machines
 end

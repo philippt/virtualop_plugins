@@ -13,22 +13,21 @@ on_machine do |machine, params|
   
   # databases
   details = machine.service_details("service" => params["service"])
-  databases = details["databases"]
-  read_write_db_names = databases.select do |db|
-    db["mode"] != "read-only"        
-  end.map do |db|
-    db["name"]
-  end
   
-  if read_write_db_names.size > 0 then
-    dump_name = "db_backup_" + [ machine.name, params["service"], timestamp_to_use ].join('_')
-    machine.dump_database(
-      "database" => read_write_db_names,
+  details["databases"].each do |database|
+    next if database["mode"] == "read-only"
+    dump_name = "db_backup_" + [ machine.name, [ params["service"], database["name"] ].join("."), timestamp_to_use ].join('_')
+    
+    options = {
+      "database" => database["name"],
       "dump_name" => dump_name
-    )
+    }
+    options["table_blacklist"] = database[:exclude_tables] if database.has_key? :exclude_tables
+    machine.dump_database(options)
+    
     result << {
       "type" => "database",
-      "source" => read_write_db_names.sort.join(','),
+      "source" => database["name"],
       "backup_name" => dump_name
     }
   end
@@ -41,7 +40,7 @@ on_machine do |machine, params|
     machine.tar(
       "working_dir" => local_files["path"],
       "files" => "*",
-      "tar_name" => config_string('local_backup_dir') + '/' + tarball_name + ".tgz"
+      "tar_name" => local_backup_dir(machine) + '/' + tarball_name + ".tgz"
     )
     result << {
       "type" => "directory",

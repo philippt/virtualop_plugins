@@ -11,7 +11,7 @@ add_columns [ :name , :description ]
 on_machine do |machine, params|
   result = []
   
-  service = machine.list_services_in_working_copy("working_copy" => params["working_copy"]).select { |x| x["name"] == params["service"] }.first
+  service = machine.list_services_in_directory("directory" => params["working_copy"]).select { |x| x["name"] == params["service"] }.first
   p service
   service["install_command_params"].each do |param|
     result << {

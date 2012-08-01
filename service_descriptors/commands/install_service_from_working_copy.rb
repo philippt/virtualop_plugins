@@ -11,7 +11,7 @@ on_machine do |machine, params|
     w["name"] == params["working_copy"]
   end.first["path"]
   
-  machine.list_services_in_working_copy("working_copy" => path)
+  machine.list_services_in_directory("directory" => path)
   
   vop_dir = "#{path}/.vop"
   if machine.file_exists("file_name" => vop_dir)

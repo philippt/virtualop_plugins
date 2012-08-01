@@ -8,14 +8,14 @@ display_type :hash
 mark_as_read_only
 
 on_machine do |machine, params|
-  content = machine.read_file("file_name" => config_string('service_config_dir') + '/' + params["service"])
+  content = machine.read_file("file_name" => machine.config_dir + '/' + params["service"])
   
   result = YAML.load(content)
   
   result["domain"] = result["extra_params"]["domain"] if result.has_key?("extra_params") and result["extra_params"].has_key?("domain")
   
   if result.has_key?("service_root")
-    result.merge! machine.list_services_in_working_copy("working_copy" => result["service_root"]).select { |row| row["name"] == params["service"] }.first
+    result.merge! machine.list_services_in_directory("directory" => result["service_root"]).select { |row| row["name"] == params["service"] }.first
   else
     # TODO that's a bit approximate - should use x["full_name"] here to observe the "name spacing"
     found_canned_service = @op.list_available_services("machine" => "localhost").select { |x| x["name"] == params["service"] }.first
