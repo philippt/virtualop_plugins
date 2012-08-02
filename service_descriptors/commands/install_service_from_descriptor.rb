@@ -132,9 +132,9 @@ on_machine do |machine, params|
     end
     
     # TODO somebody should do a mkdir config_string('service_config_dir') somewhere
-    if machine.file_exists("file_name" => config_string('service_config_dir'))
+    if machine.file_exists("file_name" => machine.config_dir)
       machine.hash_to_file(
-        "file_name" => "#{config_string('service_config_dir')}/#{service_name}", 
+        "file_name" => "#{machine.config_dir}/#{service_name}", 
         "content" => params
       )
     end

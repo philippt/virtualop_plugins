@@ -8,7 +8,7 @@ param :git_branch
 #mark_as_read_only
 
 #add_columns [ :path, :type, :sha ]
-#add_columns [ :name, :unix_service, :port, :process_regex, :http_endpoint, :tcp_endpoint ]
+add_columns [ :name, :unix_service, :port, :process_regex, :http_endpoint, :tcp_endpoint ]
 
 # TODO refactor
 execute do |params|
@@ -44,6 +44,11 @@ execute do |params|
     
   end
   
+  things_to_load = {
+    "helper" => {},
+    "command" => {}
+  }
+  
   descriptor.each do |row|
     file = row["file"]
     
@@ -66,8 +71,12 @@ execute do |params|
       p["blob_url"] = row["url"]    
       source = @op.get_blob(p).clone()
       
-      load_method = "load_#{matched.captures.first[0..-2]}"
-      the_plugin.send(load_method.to_sym, matched.captures[1], source)
+      thing = matched.captures.first[0..-2]
+      name = matched.captures[1]
+      things_to_load[thing][name] = source
+      
+      #load_method = "load_#{}"
+      #the_plugin.send(load_method.to_sym, matched.captures[1], source)
     elsif matched = /services\/(.+)\.rb$/.match(file)
       service_name = matched.captures.first
       
@@ -76,6 +85,13 @@ execute do |params|
       source = @op.get_blob(p).clone()
       
       services_to_load[service_name] = source
+    end
+  end
+  
+  things_to_load.each do |thing,hash|
+    load_method = "load_#{thing}"
+    hash.each do |name, source|
+      the_plugin.send(load_method.to_sym, name, source)
     end
   end
   

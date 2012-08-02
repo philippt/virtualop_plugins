@@ -60,7 +60,8 @@ on_machine do |machine, params|
       tabs << [ "varnish_stats", "Varnish Stats" ]
     end
     
-    if service_names.include?("mysqld")
+    if service_names.include?("mysqld") or service_names.include?("mysql")
+      tabs << [ "list_databases", "Databases" ]
       #tabs << ["mysql_dumps", "MySQL Dumps"]
       #tabs << ["mysql_processlist", "MySQL Processes"]
     end

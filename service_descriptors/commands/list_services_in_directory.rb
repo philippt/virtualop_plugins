@@ -1,16 +1,17 @@
-description "looks for services defined in a working copy"
+description "looks for services defined in a directory"
 
 param :machine
-param! "working_copy", "fully qualified path to the working copy"
+param! "directory", "fully qualified path to the directory"
 
 # TODO if this is read only, services aren't loaded (see below)
 #mark_as_read_only
+
 add_columns [ :full_name, :unix_service, :port, :process_regex, :http_endpoint, :tcp_endpoint ]
 
 on_machine do |machine, params|
   result = []
   
-  dir = params["working_copy"]
+  dir = params["directory"]
   dotvop_dir = dir + '/.vop'
   
   if machine.file_exists("file_name" => dotvop_dir)
@@ -56,7 +57,7 @@ on_machine do |machine, params|
   end
   
   if result.size > 0
-    project_name = result.first["plugin_name"] || params["working_copy"].split("/").last
+    project_name = result.first["plugin_name"] || dir.split("/").last
     
     same_name = result.select { |x| x["full_name"] == (project_name + '/' + project_name) }
     if same_name.size > 0    
