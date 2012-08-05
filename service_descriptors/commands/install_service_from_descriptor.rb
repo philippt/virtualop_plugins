@@ -11,17 +11,14 @@ on_machine do |machine, params|
   
   parts = params["descriptor"].split("/")
   
-  # TODO [bug] this works only for the "main" service
   service_name = parts.last.split(".").first
-  
-  #descriptor_dir = parts[0..parts.size-3].join("/")
   
   service_root = params.has_key?('service_root') && params['service_root'] != '' ? params['service_root'] :
     parts[0..parts.size-3].join("/")
   
   descriptor_dir = service_root
     
-  puts "installing service '#{service_name}' from #{descriptor_dir} into #{service_root}"
+  @op.comment("message" => "installing service '#{service_name}' from #{descriptor_dir} into #{service_root}")
   #if service_name == ".vop"
   #  service_name = parts[parts.size-2]
   #end
@@ -71,6 +68,7 @@ on_machine do |machine, params|
     machine.install_gems_from_file("lines" => lines) unless lines.size == 0
     
     # load as a vop plugin
+    # TODO this won't work for sub-services
     plugin_file = descriptor_dir + "/#{service_name}.plugin"
     if descriptor_machine.file_exists("file_name" => plugin_file)
       descriptor_machine.load_plugin("plugin_file_name" => plugin_file)
