@@ -22,7 +22,7 @@ on_machine do |machine, params|
       "database" => database["name"],
       "dump_name" => dump_name
     }
-    options["table_blacklist"] = database[:exclude_tables] if database.has_key? :exclude_tables
+    options["table_blacklist"] = database["exclude_tables"] if database.has_key? "exclude_tables"
     machine.dump_database(options)
     
     result << {

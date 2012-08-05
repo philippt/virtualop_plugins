@@ -31,7 +31,7 @@ on_machine do |machine, params|
     
     tabs << ["ssh_logs", "SSH Logins"]
     
-    tabs << ["list_installed_services", "Services" ]
+    tabs << ["list_services", "Services" ]
   
     if service_names.include?("libvirtd")
       tabs << ["list_vms", "Virtual Guests"] 
