@@ -10,6 +10,8 @@ on_machine do |machine, params|
   if service.has_key? "status_command"
     status = machine.ssh_extended("command" => service["status_command"])
     result = (status["result_code"] == 0).to_s
+  elsif service.has_key? "run_command"
+    result = (machine.processes_like("string" => service["run_command"]).size > 0).to_s
   end
   
   result

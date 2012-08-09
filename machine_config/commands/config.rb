@@ -4,6 +4,8 @@ param :machine
 
 display_type :hash
 
+mark_as_read_only
+
 on_machine do |machine, params|
   config_file_name = ".vop/config"
   if machine.file_exists("file_name" => config_file_name)

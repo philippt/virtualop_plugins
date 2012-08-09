@@ -38,16 +38,26 @@ class ServiceDescriptorLoader
   
   def database(name, options = { :mode => 'read-write', :exclude_tables => [] })
     options[:name] = name
+    # TODO cleanup
+    options.each do |k,v|
+      options[k.to_s] = v
+    end
     @service["databases"] << options
   end
   
   def backup(hash, mode = 'read-write')
     hash.each do |k,v|
-      @service["local_files"] << {
-        "alias" => k.to_s,
-        "path" => v,
-        "mode" => mode
-      }
+      case v.class.to_s
+      when "String"
+        @service["local_files"] << {
+          "alias" => k.to_s,
+          "path" => v,
+          "mode" => mode
+        }
+      when "Hash"
+        v["alias"] = k.to_s
+        @service["local_files"] << v
+      end
     end
   end
   
