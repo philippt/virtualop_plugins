@@ -6,7 +6,7 @@ on_machine do |machine, params|
   @op.find_vms
   
   @op.kaboom_vm(
-    "machine" => "vop_ci.website.zapata.virtualop",
+    "machine" => "vop_ci_website.zapata.virtualop",
     "github_project" => "philippt/virtualop_website",
     "domain" => "website.ci.virtualop.org"
   )
