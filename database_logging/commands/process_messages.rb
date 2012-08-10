@@ -66,7 +66,7 @@ execute do |params|
                   VALUES ('#{request_id}', '#{request["command_name"]}', '#{dbh.escape_string(param_string)}', #{uid != nil ? "'#{uid}'" : 'NULL'}, '#{entry["mode"]}', '#{entry["start_ts"]}')")
       when "stop"
         escaped_response = dbh.escape_string(JSON.generate(entry["response"]))
-        dbh.query("UPDATE requests SET response_code = '#{entry["response"]["status"]}', stop_ts = '#{entry["response"]["created_at"]}' " +
+        dbh.query("UPDATE requests SET response_code = '#{entry["response"]["status"]}', stop_ts = FROM_UNIXTIME(UNIX_TIMESTAMP(start_ts) + #{entry["duration"]}) " +
                   "WHERE request_id = '#{entry["request_id"]}'"
         )        
       end
@@ -131,6 +131,7 @@ execute do |params|
       response = entry["response"]
       escaped_response = dbh.escape_string(JSON.generate(response))
       statement = "UPDATE command_executions_#{partition} " +
+                  # TODO stop_ts shouldn't be really now() here, should it?
                   "SET response_code = '#{response["status"]}', stop_ts = now(), " +
                      " error_message = '#{dbh.escape_string(response["error_text"])}', " +
                      " error_detail = '#{dbh.escape_string(response["error_detail"])}', " +

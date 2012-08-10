@@ -4,6 +4,8 @@ param :machine
 param :working_copy
 param! "file_name", "the file that should be added"
 
+display_type :list
+
 on_machine do |machine, params|
   path = machine.list_working_copies.select do |w|
     w["name"] == params["working_copy"]

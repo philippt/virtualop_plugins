@@ -78,7 +78,7 @@ class RabbitmqBroker < RHCP::LoggingBroker
       :mode => mode,
       :current_stack => current_stack,
       :request => request.as_json(),
-      :start_ts => start_ts.iso8601()
+      :start_ts => start_ts.utc.iso8601()
     })
     @op.hello_rabbit("queue" => "raw_logging", "message" => j)
   end
