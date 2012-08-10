@@ -6,6 +6,8 @@ add_columns [ :name, :service_root, :runlevel, :unix_service, :is_startable ]
 
 mark_as_read_only
 
+#include_for_crawling if @op.plugins.include? 'machine_crawler'
+
 on_machine do |machine, params|
   machine.list_installed_services.map do |service_name|
     machine.service_details("service" => service_name)

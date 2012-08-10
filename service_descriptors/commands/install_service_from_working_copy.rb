@@ -7,11 +7,11 @@ param! "service", "the name of the service contained inside the working copy tha
 accept_extra_params
 
 on_machine do |machine, params|
-  path = machine.list_working_copies.select do |w|
+  path = machine.list_working_copies().select do |w|
     w["name"] == params["working_copy"]
   end.first["path"]
   
-  machine.list_services_in_directory("directory" => path)
+  #machine.list_services_in_directory("directory" => path)
   
   vop_dir = "#{path}/.vop"
   if machine.file_exists("file_name" => vop_dir)

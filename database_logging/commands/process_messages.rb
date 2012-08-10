@@ -66,7 +66,7 @@ execute do |params|
                   VALUES ('#{request_id}', '#{request["command_name"]}', '#{dbh.escape_string(param_string)}', #{uid != nil ? "'#{uid}'" : 'NULL'}, '#{entry["mode"]}', '#{entry["start_ts"]}')")
       when "stop"
         escaped_response = dbh.escape_string(JSON.generate(entry["response"]))
-        dbh.query("UPDATE requests SET response_code = '#{entry["response"]["status"]}', stop_ts = '#{entry["response"]["created_at_iso8601"]}' " +
+        dbh.query("UPDATE requests SET response_code = '#{entry["response"]["status"]}', stop_ts = '#{entry["response"]["created_at"]}' " +
                   "WHERE request_id = '#{entry["request_id"]}'"
         )        
       end

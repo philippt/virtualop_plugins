@@ -12,7 +12,7 @@ execute do |params|
     result << {
       "path" => "/" + account["alias"],
       "name" => account["alias"],
-      "parent" => nil
+      "parent" => "root"
     }
     result += @op.list_account_entries("hosting_account" => account["alias"]).map do |entry|
       entry["parent"] = account["alias"]
