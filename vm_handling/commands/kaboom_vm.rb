@@ -20,8 +20,8 @@ accept_extra_params
 on_machine do |machine, params|
   short_name = machine.name.split(".").first
   host_name = machine.machine_detail["host_name"]
-  @op.with_machine(host_name) do |host|
-    host.terminate_vm("name" => short_name)
+  @op.with_machine(host_name) do |host|    
+    host.terminate_vm("name" => short_name) if host.list_vms.map { |x| x["name"] }.include? short_name
     
     p = params.clone
     p.delete("machine")

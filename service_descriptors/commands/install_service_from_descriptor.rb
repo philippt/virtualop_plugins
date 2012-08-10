@@ -126,7 +126,7 @@ on_machine do |machine, params|
       end
     end
     
-    if service.has_key?("cron")
+    if service != nil && service.has_key?("cron")
       # TODO machine.add_crontab_entry("data" => read_local_template(:crontab, binding()))
     end        
     
