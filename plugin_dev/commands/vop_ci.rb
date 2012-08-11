@@ -1,8 +1,6 @@
 description "tests if a vop machine can setup new machines"
 
-param :machine
-
-on_machine do |machine, params|
+execute do |params|
   @op.find_vms
   
   @op.kaboom_vm(
