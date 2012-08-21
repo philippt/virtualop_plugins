@@ -69,6 +69,19 @@ on_machine do |machine, params|
     $logger.warn "couldn't load service-specific tabs - something wrong with list_unix_services?"
   end
   
+  begin
+    service_names = machine.list_services.map { |x| x["name"] }
+    
+    tabs << [ "dropbox", "Dropbox" ] if service_names.include? "dropbox"
+  rescue => detail
+    
+  end
+  
+  if @op.list_plugins.include?('nagios_status')
+    tabs << [ "nagios_checks", "Nagios" ]
+  end
+  
+  
   if @op.list_plugins.include?('vmware_rvc') and @op.machine_by_name("machine" => params["machine"])["type"] == "host"
     tabs << [ "list_vms", "Virtual Guests" ]
   end

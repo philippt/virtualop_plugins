@@ -2,7 +2,7 @@ description "returns services that are configured to run on this machine"
 
 param :machine
 
-add_columns [ :name, :service_root, :runlevel, :unix_service, :is_startable ]
+add_columns [ :name, :runlevel ]
 
 mark_as_read_only
 

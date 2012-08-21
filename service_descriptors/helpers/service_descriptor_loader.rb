@@ -61,6 +61,10 @@ class ServiceDescriptorLoader
     end
   end
   
+  def unix_service(arg)
+   @service["unix_service"] = arg
+  end
+  
   def method_missing(m, *args)
     targets = [ :unix_service, :run_command, :redirect_log, :cron, :every, :start_command, :stop_command, :port, :process_regex, :http_endpoint, :tcp_endpoint, :log_file, :on_install ]
     #targets += [ :database ]

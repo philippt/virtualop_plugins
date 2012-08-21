@@ -8,14 +8,14 @@ accept_extra_params
 
 on_machine do |machine, params|
   project_name = params["github_project"].split("/").last
-  
   service_root = "#{machine.home}/#{project_name}"
   
   if params.has_key?('extra_params') and params["extra_params"].has_key?("domain")
     service_root = "/var/www/#{project_name}"
   end
   
-  git_url = "git://github.com/#{params["github_project"]}.git"
+  #git_url = "git://github.com/#{params["github_project"]}.git"
+  git_url = "git@github.com:#{params["github_project"]}.git"
   
   p = {
     "directory" => service_root,

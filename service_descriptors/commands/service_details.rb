@@ -26,8 +26,20 @@ on_machine do |machine, params|
   
   %w|start stop status|.each do |operation|
     if result.has_key?("unix_service") and not result.has_key?("#{operation}_command")
+      unix_service = result["unix_service"]
+      pp unix_service
+      unix_service_name = unix_service
+      if unix_service.class == Hash
+        distribution = machine.linux_distribution.split("_").first
+                
+        if unix_service.has_key? distribution
+          unix_service_name = unix_service[distribution]
+        else
+          raise "could not evaluate unix service name for service #{params["service"]} for distribution #{distribution}"
+        end
+      end
       # TODO merge in ubuntu-specific sudo handling from status_unix_service
-      result["#{operation}_command"] = "/etc/init.d/#{result["unix_service"]} #{operation}"
+      result["#{operation}_command"] = "/etc/init.d/#{unix_service_name} #{operation}"
     end
   end
   

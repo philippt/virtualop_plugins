@@ -1,13 +1,11 @@
 description 'lists the github repositories for a user'
 
-param "github_user", "the github user to use"
-param "github_password", "the password that should be used (http basic auth)"
-param "github_token", "the OAuth token to be used "
+github_params
 
 mark_as_read_only
 
 display_type :table
-add_columns [ :name, :description, :ssh_url ] 
+add_columns [ :full_name, :ssh_url, :private ] 
 
 execute do |params|
   result = []

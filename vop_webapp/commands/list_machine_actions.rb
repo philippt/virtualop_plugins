@@ -53,6 +53,13 @@ on_machine do |machine, params|
     "title" => "install package"
   }
   
+  if @op.list_plugins.include? "nagios_config_generator"
+    result << {
+      "name" => "generate_nagios_config",
+      "title" => "generate nagios config"
+    }
+  end
+  
   result
 end
 

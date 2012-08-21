@@ -36,4 +36,5 @@ on_machine do |machine, params|
     # end
   end
   
+  @op.reload_nagios
 end

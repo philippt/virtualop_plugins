@@ -4,10 +4,13 @@ result_as :list_machines
 
 execute do |params|
   result = []
+  
+  puts "STEP1: Hosts"
   hosts = @op.find_hosts
   
-  @op.flush_cache()
   
+  puts "STEP2: VMs on Hosts"
+  @op.flush_cache()
   hosts.each do |row|
     @op.with_machine(row["name"]) do |host|
       begin
@@ -18,6 +21,11 @@ execute do |params|
     end
   end
   
+  puts "STEP3: Machines"
   @op.flush_cache()
-  @op.list_machines
+  @op.list_machines.each do |m|
+    @op.with_machine(m["name"]) do |machine|
+      
+    end
+  end
 end
