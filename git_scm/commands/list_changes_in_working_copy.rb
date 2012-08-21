@@ -14,7 +14,14 @@ on_machine do |machine, params|
   
   result = []
   
-  output = machine.ssh_and_check_result("command" => "cd #{path} && git status")
+  # TODO in some cases, this seems to return status 1 even if everything's more or less normal:
+  # sbk-vop-test:~/service_descriptors # git status
+  # # On branch master
+  # nothing to commit (working directory clean)
+  # sbk-vop-test:~/service_descriptors # echo $?
+  # 1
+  #output = machine.ssh_and_check_result("command" => "cd #{path} && git status")
+  output = machine.ssh("command" => "cd #{path} && git status")
   output.split("\n").each do |line|
     line.chomp!
     if matched = /#\sOn\sbranch\s(.+)/.match(line)
