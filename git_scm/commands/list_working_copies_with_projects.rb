@@ -6,6 +6,8 @@ mark_as_read_only
 
 add_columns [ :path, :name, :project, :path ]
 
+#include_for_crawling
+
 on_machine do |machine, params|
   result = []
   machine.list_working_copies.each do |wc|
