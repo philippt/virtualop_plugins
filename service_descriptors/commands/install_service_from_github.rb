@@ -16,12 +16,15 @@ on_machine do |machine, params|
     service_root = "/var/www/#{project_name}"
   end
   
-  project_row = @op.list_github_repos(params).select { |x| x["full_name"] == params["github_project"] }.first
+  git_url = "git://github.com/#{params["github_project"]}.git"
   
-  git_url = project_row["private"] == "true" ? 
-    "git@github.com:#{params["github_project"]}.git" :
-    "git://github.com/#{params["github_project"]}.git"
-  
+  begin  
+    project_row = @op.list_github_repos(params).select { |x| x["full_name"] == params["github_project"] }.first
+    git_url = "git@github.com:#{params["github_project"]}.git" if project_row["private"] == "true"
+  rescue => detail
+    raise detail unless /^need either/.match(detail.message)
+  end
+      
   p = {
     "directory" => service_root,
     "git_url" => git_url 

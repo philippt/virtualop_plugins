@@ -5,7 +5,5 @@ github_params
 add_columns [ :title, :url ]
 
 execute do |params|
-  result = []
-  
   JSON.parse(@op.http_get("url" => github_url(params, '/user/keys')))
 end
