@@ -1,5 +1,7 @@
 description "creates a working copy of a github project on a machine and installs the project"
 
+github_params
+
 param :machine
 param! :github_project
 param :git_branch
@@ -14,8 +16,11 @@ on_machine do |machine, params|
     service_root = "/var/www/#{project_name}"
   end
   
-  #git_url = "git://github.com/#{params["github_project"]}.git"
-  git_url = "git@github.com:#{params["github_project"]}.git"
+  project_row = @op.list_github_repos(params).select { |x| x["full_name"] == params["github_project"] }.first
+  
+  git_url = project_row["private"] == "true" ? 
+    "git@github.com:#{params["github_project"]}.git" :
+    "git://github.com/#{params["github_project"]}.git"
   
   p = {
     "directory" => service_root,

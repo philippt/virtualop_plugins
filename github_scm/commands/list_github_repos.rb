@@ -5,7 +5,9 @@ github_params
 mark_as_read_only
 
 display_type :table
-add_columns [ :full_name, :ssh_url, :private ] 
+add_columns [ :full_name, :ssh_url, :private ]
+
+ignore_extra_params 
 
 execute do |params|
   result = []
