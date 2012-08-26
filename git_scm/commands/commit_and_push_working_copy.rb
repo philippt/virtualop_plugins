@@ -9,7 +9,6 @@ on_machine do |machine, params|
     w["name"] == params["working_copy"]
   end.first["path"]
   
-  # TODO handle branches (+ origin <branch_name>)
   machine.ssh_and_check_result("command" => "cd #{path} && git commit -a -m \"#{params["comment"]}\"")
   
   machine.push_working_copy("working_copy" => params["working_copy"])

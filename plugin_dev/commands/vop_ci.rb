@@ -13,7 +13,7 @@ execute do |params|
   
   @op.kaboom_vm(
     "machine" => "vop_ci_vop.zapata.virtualop",
-    "github_project" => "philippt/virtualop_webapp",
+    "github_project" => "virtualop/virtualop_webapp",
     "git_branch" => "rails3",
     "extra_params" => {
       "domain" => "vop.ci.virtualop.org"
