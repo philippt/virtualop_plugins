@@ -8,5 +8,8 @@ on_machine do |machine, params|
     w["name"] == params["working_copy"]
   end.first["path"]
   
-  machine.git_pull("working_copy" => path)
+  active_branch = machine.list_branches_for_working_copy("working_copy" => params["working_copy"]).select { |x| x["active"] == "true" }.first["name"]
+  puts "active branch : #{active_branch}"
+  
+  machine.git_pull("working_copy_path" => path, "branch" => active_branch)
 end

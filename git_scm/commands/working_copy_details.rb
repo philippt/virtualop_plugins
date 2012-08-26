@@ -33,6 +33,6 @@ on_machine do |machine, params|
   rescue => detail
     $logger.warn("could not fetch origin information for project #{corrected_path} : #{detail}")
   end
-
+  
   wc
 end
