@@ -10,7 +10,7 @@ on_machine do |machine, params|
     @op.add_known_machine(
       "ssh_host" => machine.ipaddress,
       "ssh_port" => vm["ssh_port"],
-      "ssh_pass" => "the_password",
+      "ssh_password" => "the_password",
       "ssh_user" => "root",
       "name" => full_name,
       "type" => "vm",

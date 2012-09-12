@@ -46,7 +46,5 @@ on_machine do |machine, params|
     end
   end
   
-  machine.install_service_from_working_copy(
-    params    
-  )
+  machine.install_service_from_working_copy(params)
 end

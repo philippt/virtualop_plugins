@@ -1,0 +1,5 @@
+#!/bin/bash
+
+. /etc/profile
+cd <%= service["service_root"] %>
+nohup <%= service["run_command"] %> > <%= redirect_log_file %> 2>&1 &

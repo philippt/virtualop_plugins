@@ -6,5 +6,9 @@ param! "service", "name of the service for which the include has been generated"
 param! "content", "the script content"
 
 on_machine do |machine, params|
-  machine.write_file("target_filename" => "#{config_string('include_dropdir')}/forward/#{params["source_machine"]}_#{params["service"]}.conf", "content" => params["content"])
+  file_name = [ params["source_machine"], params["service"] ].join("_") + '.conf'
+  machine.write_file("target_filename" => "#{config_string('include_dropdir')}/forward/#{file_name}", "content" => params["content"])
+  @op.without_cache do
+    machine.list_forward_includes
+  end
 end

@@ -1,6 +1,7 @@
 dependency :core
 dependency :bash
 dependency :machines
+dependency :erb_processor
 dependency :git_scm
 dependency :github_scm
 dependency :machine_config

@@ -60,6 +60,11 @@ on_machine do |machine, params|
     }
   end
   
+  result << {
+    "name" => "reload_metadata",
+    "title" => "reload metadata"
+  }
+  
   result
 end
 

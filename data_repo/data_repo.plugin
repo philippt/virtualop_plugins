@@ -5,6 +5,8 @@ config_param "local_backup_dir", "the directory on the target machines where bac
 config_param "default_owner", "the user that should own backups"
 config_param "default_permissions", "default permissions for backup files"
 
+tags :backup
+
 on_activation do |plugin, config|
   require 'helpers/drop_dir_provider'
   

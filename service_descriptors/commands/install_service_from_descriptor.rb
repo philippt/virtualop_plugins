@@ -104,13 +104,7 @@ on_machine do |machine, params|
       end
     end
     
-    service = descriptor_machine.list_services_in_directory("directory" => descriptor_dir).select { |x| x["full_name"] == "#{plugin_name}/#{service_name}"}.first    
-    
     # TODO process config
-    
-    # TODO start the services that this service depends on?
-    
-    # TODO @op.flush_cache
     
     install_command_name = "#{service_name}_install"
     #broker = @op.local_broker
@@ -139,23 +133,32 @@ on_machine do |machine, params|
           p.name == k
         end.size > 0
       end
-      #$logger.info("FOOOOO3")
       $logger.info("params_to_use : \n#{params_to_use.map { |k,v| "\t#{k}\t#{v}" }.join("\n")}")
       
       begin
         @op.send(install_command.name.to_sym, params_to_use)
       rescue => detail
-        @op.comment "got a problem while executing install command '#{install_command.name}' : #{detail.message}"
-        $logger.error "got a problem while executing install command '#{install_command.name}'", detail
+        @op.comment("message" => "got a problem while executing install command '#{install_command.name}' : #{detail.message}")
         raise detail
       end
     end
     
+    # TODO move this to the end (use service_details instead of list_services_in_directory), otherwise this won't fly for canned services
+    service = descriptor_machine.list_services_in_directory("directory" => service_root).select { |x| x["full_name"] == "#{plugin_name}/#{service_name}"}.first
     if service != nil && service.has_key?("cron")
-      # TODO machine.add_crontab_entry("data" => read_local_template(:crontab, binding()))
-    end        
+      script_path = machine.write_background_start_script("service" => service_name)
+      machine.add_crontab_entry("data" => read_local_template(:crontab, binding()))
+    end
     
-    # TODO somebody should do a mkdir config_string('service_config_dir') somewhere
+    if dotvop_content.include? "nagios_commands"
+      descriptor_machine.list_files("directory" => "#{descriptor_dir}/nagios_commands").each do |nagios_command|
+        @op.add_extra_command(
+          "file_name" => nagios_command, 
+          "content" => descriptor_machine.read_file("file_name" =>  "#{descriptor_dir}/nagios_commands/#{nagios_command}")
+        )
+      end      
+    end
+    
     if machine.file_exists("file_name" => machine.config_dir)
       machine.hash_to_file(
         "file_name" => "#{machine.config_dir}/#{service_name}", 
@@ -178,8 +181,29 @@ on_machine do |machine, params|
     end
   end
   
-  service = machine.service_details("service" => service_name)
+  service = machine.service_details("service" => service_name) 
+  
+  if service != nil && service.has_key?("outgoing_tcp")
+    service["outgoing_tcp"].each do |outgoing|
+      case outgoing
+      when "all_destinations"
+        host_name = machine.name.split('.')[1..10].join('.')
+        @op.with_machine(host_name) do |host|
+          host.add_forward_include(
+            "source_machine" => machine.name,
+            "service" => service_name,
+            "content" => "iptables -A FORWARD -s #{machine.ipaddress} -p tcp -m state --state NEW -j ACCEPT"
+          )
+          #host.generate_and_diff_iptables()  # TODO needs 'differ' gem
+          host.generate_and_execute_iptables_script()
+        end
+      else
+        raise "unknown destination #{outgoing} in service #{service_name}"
+      end
+    end
+  end
+  
   if service["is_startable"]
     machine.start_service("service" => service_name)
-  end  
+  end
 end

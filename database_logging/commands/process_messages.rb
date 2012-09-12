@@ -41,6 +41,8 @@ execute do |params|
     
     dbh = @plugin.state[:dbh]
         
+    # the top-level request itself should be written into the unpartitioned index table
+    # all the others go into the partitioned tables only
     if entry["level"] == 1
       case phase
       when "start"      
@@ -50,17 +52,40 @@ execute do |params|
         if request.has_key?('context') and request['context'].has_key?('cookies') and request['context']['cookies'].has_key?('current_user')
           uid = request['context']['cookies']['current_user']
         end
-            
-        # the top-level request itself should be written into the unpartitioned index table
-        # all the others go into the partitioned tables only
+
         params = []
-        request["param_values"].each do |name, values|
-          values.each do |value|
-            value = "xxx" if /password/.match(name)
-            params << "#{name}=#{value}"
+        param_string = nil
+        
+        broker = Thread.current['broker']
+        begin
+          command = broker.get_command(request["command_name"].split("\.").last)
+          
+          command.params.each do |param|
+            if request["param_values"].has_key? param.name
+              blacklist = %w|extra_params what|
+              next if blacklist.include? param.name
+              values = request["param_values"][param.name]
+              values.each do |value|
+                value = "xxx" if /password/.match(param.name)
+                params << "#{param.name}=#{value}"
+              end
+            end
           end
+          param_string = '(' + params.join(' ') + ')'
+        rescue => detail
+          raise detail
         end
-        param_string = '(' + params.join(' ') + ')'
+            
+        if param_string == nil
+          # plan b - construct param_string if the command cannot be loaded
+          request["param_values"].each do |name, values|
+            values.each do |value|
+              value = "xxx" if /password/.match(name)
+              params << "#{name}=#{value}"
+            end
+          end
+          param_string = '(' + params.join(' ') + ')'
+        end
         
         do_sql(dbh, "INSERT INTO requests (request_id, command_name, param_string, uid, mode, start_ts)
                   VALUES ('#{request_id}', '#{request["command_name"]}', '#{dbh.escape_string(param_string)}', #{uid != nil ? "'#{uid}'" : 'NULL'}, '#{entry["mode"]}', '#{entry["start_ts"]}')")

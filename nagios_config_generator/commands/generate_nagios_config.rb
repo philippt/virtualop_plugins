@@ -36,5 +36,16 @@ on_machine do |machine, params|
     # end
   end
   
+  nagios_public_key = @op.with_machine("nagios@#{config_string('nagios_machine_name')}") do |nagios|
+    nagios.list_authorized_keys.first
+  end
+  machine.add_authorized_key("public_key" => nagios_public_key) unless machine.list_authorized_keys.include? nagios_public_key
+  
   @op.reload_nagios
+  
+  if @op.list_plugins.include? 'nagios_status'
+    @op.without_cache do
+      machine.list_nagios_checks
+    end
+  end
 end

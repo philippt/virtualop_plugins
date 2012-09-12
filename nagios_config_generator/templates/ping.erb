@@ -1,5 +1,5 @@
 define service{
-        use                     generic-service
+        use                     <%= config_string('service_template').join(',') %>
         host_name               <%= machine.name %>
         service_description     PING
         check_command           check_ping!100.0,20%!500.0,60%

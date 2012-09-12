@@ -20,15 +20,11 @@ execute do |params|
     }
   )
   
-  #machine.vop_call("command" => "find_vms")
-  #machine.vop_call("command" => "kaboom_vm machine=vop_ci_website.zapata.virtualop github_project=philippt/virtualop_website domain=website.ci.virtualop.org")
-  #machine.vop_call("command" => "kaboom_vm machine=vop_ci_vop.zapata.virtualop github_project=philippt/virtualop_webapp git_branch=rails3 domain=vop.ci.virtualop.org")
-
-  # TODO this will only work if vop.ci is configured with the private key!
-  #if @plugin.config.has_key?("private_key")
-  #  @op.with_machine("localhost") do |localhost|
-  #    localhost.write_keys
- #   end
- # end
-  
+  @op.kaboom_vm(
+    "machine" => "vop_ci_nagios.zapata.virtualop",
+    "canned_service" => "nagios/nagios",
+    "extra_params" => {
+      "domain" => "nagios.ci.virtualop.org"
+    }
+  )
 end

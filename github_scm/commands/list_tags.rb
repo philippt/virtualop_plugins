@@ -5,16 +5,11 @@ param! :github_project
 
 #mark_as_read_only
 
-#add_columns [ :tag, :sha ]
+add_columns [ :name, :sha ]
 
 execute do |params|
-  result = JSON.parse(@op.http_get("url" => "https://api.github.com/repos/#{params["github_project"]}/git/tags/047e0e70d461a4f25cb259e48bd280e5bea07dee?access_token=#{params["github_token"]}")).map do |ref|
+  JSON.parse(@op.http_get("url" => "https://api.github.com/repos/#{params["github_project"]}/tags?access_token=#{params["github_token"]}")).map do |ref|
+    ref["sha"] = ref["commit"]["sha"] if ref.has_key?("commit") and ref["commit"].has_key?("sha")
     ref
-    #{
-    #  "sha" => ref["object"]["sha"],
-    #  "name" => ref["ref"].split("/").last
-    #}
   end
-  pp result
-  result
 end

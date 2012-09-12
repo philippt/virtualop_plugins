@@ -22,12 +22,13 @@ class ServiceDescriptorLoader
       @service["install_command_name"] = install_command.name
       @service["install_command_params"] = install_command.params
     rescue Exception => e
-      $logger.info("did not find install_command #{install_command_name} : #{e.message}")
+      $logger.debug("did not find install_command #{install_command_name} : #{e.message}")
       @service["install_command_name"] = nil
     end
     
     @service["databases"] = []
     @service["local_files"] = []
+    @service["outgoing_tcp"] = []
     
     @service
   end
@@ -61,8 +62,18 @@ class ServiceDescriptorLoader
     end
   end
   
+  def outgoing_tcp(sym)
+    @service["outgoing_tcp"] << sym.to_s
+  end
+  
   def unix_service(arg)
    @service["unix_service"] = arg
+  end
+  
+  def post_restart(&block)
+    @service["post_restart"] = lambda do |machine, params|
+      block.call(machine, params)
+    end
   end
   
   def method_missing(m, *args)
@@ -72,6 +83,7 @@ class ServiceDescriptorLoader
     
     if targets.include? m
       @service[m.to_s] = *args.first
+      #@service[m] = *args.first
     else
       #if [ :param, :param!, :params_as ].include? m
         #@service.install_command

@@ -16,6 +16,8 @@ param :git_branch
 param "script_url", "http URL to a script that should be executed at the end of the installation"
 param "location", "installation source for guest virtual machine kernel+initrd pair."
 
+param "canned_service", "name of a canned service to install on the machine", :allows_multiple_values => true
+
 accept_extra_params
 
 on_machine do |machine, params|  
@@ -145,7 +147,7 @@ on_machine do |machine, params|
     end
     
     if updated
-      @op.comment("message" => "OS package update complete.")
+      @op.comment("message" => "OS package update complete (took #{attempts} attempt(s)).")
     else
       raise "couldn't update OS packages"
     end
@@ -153,6 +155,23 @@ on_machine do |machine, params|
     machine.install_rpm_package("name" => [ "git", "vim", "screen", "man", "rubygems" ])
     machine.ssh_and_check_result("command" => "gem update --system")
     machine.mkdir('dir_name' => @op.plugin_by_name('service_descriptors').config_string('service_config_dir'))
+    
+    if params.has_key?('canned_service')
+      params['canned_service'].each do |canned_service|
+        p = {
+          "service" => canned_service
+        }
+        if params.has_key?("extra_params")
+          p["extra_params"] = params["extra_params"]
+        end
+          # params["extra_params"].each do |k,v|
+            # p[k] = v
+          # end
+        # end
+        machine.install_canned_service(p)
+      end
+    end
+    
     
     if params.has_key?('github_project')
       #install_params = {
