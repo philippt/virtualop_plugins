@@ -22,8 +22,8 @@ execute do |params|
   
   @op.kaboom_vm(
     "machine" => "vop_ci_nagios.zapata.virtualop",
-    "canned_service" => "nagios/nagios",
     "extra_params" => {
+      "canned_service" => "nagios/nagios",
       "domain" => "nagios.ci.virtualop.org"
     }
   )
