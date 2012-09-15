@@ -1,5 +1,9 @@
 dependencies [ :core, :machines ]
 
+description "spike for dropbox API integration"
+
+tags :deployment
+
 config_param! "app_key", "dropbox application key (from https://www.dropbox.com/developers)"
 config_param! "app_secret", "secret associated to app_key"
 

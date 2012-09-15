@@ -1,2 +1,6 @@
 dependency :core
 dependency :git_scm
+
+description "support for github repositories"
+
+tags :deployment

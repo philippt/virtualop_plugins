@@ -12,7 +12,6 @@ param "ip", "the static IP address for the new machine"
 param :github_project
 param :git_branch
 
-#param "domain", "the domain at which the service should be available"
 param "script_url", "http URL to a script that should be executed at the end of the installation"
 param "location", "installation source for guest virtual machine kernel+initrd pair."
 
