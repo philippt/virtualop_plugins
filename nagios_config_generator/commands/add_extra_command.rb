@@ -1,6 +1,5 @@
 description "adds an extra command to nagios"
 
-#param :machine, "a nagios machine to work with", :default_value => config_string('nagios_machine_name'), :mandatory => false
 param "nagios_machine", "a nagios machine to work with", :lookup_method => lambda { @op.list_machines.map { |x| x["name"] }}, :default_value => config_string('nagios_machine_name') 
 param! "file_name", "relative file name"
 param! "content", "the actual content that should be written into a nagios configuration file"
