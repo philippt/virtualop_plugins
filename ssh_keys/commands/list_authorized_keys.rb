@@ -5,5 +5,5 @@ param :machine
 display_type :list
 
 on_machine do |machine, params|
-  machine.read_file_if_exists("file_name" => ".ssh/authorized_keys")
+  machine.read_lines("file_name" => ".ssh/authorized_keys")
 end

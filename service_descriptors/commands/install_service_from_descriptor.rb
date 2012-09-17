@@ -44,7 +44,7 @@ on_machine do |machine, params|
       package_files = descriptor_machine.file_exists("file_name" => package_dir) ? descriptor_machine.list_files("directory" => package_dir) : []
       
       if package_files.include? "vop"
-        lines = descriptor_machine.read_file_if_exists("file_name" => "#{descriptor_dir}/packages/vop").split("\n")
+        lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/vop")
         lines.each do |service_spec|
           unless /\//.match(service_spec)
             service_spec += '/' + service_spec
@@ -56,7 +56,7 @@ on_machine do |machine, params|
       if package_files.include? "github"
         installed_github_projects = machine.list_working_copies_with_projects
 
-        descriptor_machine.read_file("file_name" => "#{descriptor_dir}/packages/github").split("\n").each do |line|
+        descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/github").each do |line|
           next if /^#/.match(line)
           if installed_github_projects.select { |row| row["project"] == line }.size > 0
             $logger.info("github dependency #{line} already exists locally")
@@ -69,28 +69,28 @@ on_machine do |machine, params|
       case machine.linux_distribution.split("_").first
       when "centos", "sles"
         if package_files.include? "rpm_repos"
-          lines = descriptor_machine.read_file("file_name" => "#{descriptor_dir}/packages/rpm_repos").split("\n")
+          lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/rpm_repos")
           machine.install_rpm_repo("repo_url" => lines) unless lines.size == 0
         end  
         
         if package_files.include? "rpm"
-          lines = descriptor_machine.read_file("file_name" => "#{descriptor_dir}/packages/rpm").split("\n")    
+          lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/rpm")    
           machine.install_rpm_packages_from_file("lines" => lines) unless lines.size == 0
         end
       when "ubuntu"
         if package_files.include? "apt_repos"
-          lines = descriptor_machine.read_file("file_name" => "#{descriptor_dir}/packages/apt_repos").split("\n")    
+          lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/apt_repos")    
           machine.install_apt_repo("repo_url" => lines) unless lines.size == 0
         end
         
         if package_files.include? "apt"
-          lines = descriptor_machine.read_file("file_name" => "#{descriptor_dir}/packages/apt").split("\n")    
+          lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/apt")    
           machine.install_apt_package("name" => lines) unless lines.size == 0
         end
       end
       
       if package_files.include? "gem"
-        lines = descriptor_machine.read_file("file_name" => "#{descriptor_dir}/packages/gem").split("\n")    
+        lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/gem")    
         machine.install_gems_from_file("lines" => lines) unless lines.size == 0
       end
       
