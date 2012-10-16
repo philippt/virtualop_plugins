@@ -1,4 +1,4 @@
-dependencies [ :core, :machines ]
+dependencies [ :core, :machines, :erb_processor, :service_descriptors, :working_copies ]
 
 description "spike for dropbox API integration"
 
@@ -7,7 +7,9 @@ tags :deployment
 config_param! "app_key", "dropbox application key (from https://www.dropbox.com/developers)"
 config_param! "app_secret", "secret associated to app_key"
 
-on_activation do |plugin, config|  
-  #plugin.state[:session] = DropboxSession.new(APP_KEY, APP_SECRET)
+on_activation do |plugin, config|
+  #require 'helpers/dropbox_sdk'
+  #Dropbox::TRUSTED_CERT_FILE = File.join(plugin.path, 'trusted-certs.crt')
+    
   plugin.state[:client] = nil
 end

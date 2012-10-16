@@ -10,15 +10,16 @@ accept_extra_params
 on_machine do |machine, params|
   
   parts = params["descriptor"].split("/")
+  descriptor_dir = parts[0..parts.size-3].join("/")
   
   service_name = parts.last.split(".").first
   
-  service_root = params.has_key?('service_root') && params['service_root'] != '' ? params['service_root'] :
-    parts[0..parts.size-3].join("/")
+  #service_root = params.has_key?('service_root') && params['service_root'] != '' ? params['service_root'] :
+  #  parts[0..parts.size-3].join("/")
+  #service_root = params["service_root"]
   
-  descriptor_dir = service_root
-    
-  @op.comment("message" => "installing service '#{service_name}' from #{descriptor_dir} into #{service_root}")
+  $logger.info("installing service '#{service_name}' from #{descriptor_dir}")
+  $logger.info("service root : #{params["service_root"]}") if params.has_key? "service_root"
   
   @op.with_machine(params["descriptor_machine"]) do |descriptor_machine|
     
@@ -127,7 +128,7 @@ on_machine do |machine, params|
       
       $logger.info("available param values: \n#{param_values.map { |k,v| "\t#{k}\t#{v}" }.join("\n")}")
        
-      params_to_use = {}
+      params_to_use = { }
       param_values.each do |k,v|
         params_to_use[k] = v if install_command.params.select do |p|
           p.name == k
@@ -143,11 +144,15 @@ on_machine do |machine, params|
       end
     end
     
-    # TODO move this to the end (use service_details instead of list_services_in_directory), otherwise this won't fly for canned services
-    service = descriptor_machine.list_services_in_directory("directory" => service_root).select { |x| x["full_name"] == "#{plugin_name}/#{service_name}"}.first
-    if service != nil && service.has_key?("cron")
-      script_path = machine.write_background_start_script("service" => service_name)
-      machine.add_crontab_entry("data" => read_local_template(:crontab, binding()))
+    if params.has_key? 'service_root'
+      service_root = params['service_root']
+      
+      # TODO move this to the end (use service_details instead of list_services_in_directory), otherwise this won't fly for canned services
+      service = descriptor_machine.list_services_in_directory("directory" => service_root).select { |x| x["full_name"] == "#{plugin_name}/#{service_name}"}.first
+      if service != nil && service.has_key?("cron")
+        script_path = machine.write_background_start_script("service" => service_name)
+        machine.add_crontab_entry("data" => read_local_template(:crontab, binding()))
+      end
     end
     
     if dotvop_content.include? "nagios_commands"
@@ -183,24 +188,56 @@ on_machine do |machine, params|
   
   service = machine.service_details("service" => service_name) 
   
-  if service != nil && service.has_key?("outgoing_tcp")
-    service["outgoing_tcp"].each do |outgoing|
-      case outgoing
-      when "all_destinations"
-        host_name = machine.name.split('.')[1..10].join('.')
-        @op.with_machine(host_name) do |host|
-          host.add_forward_include(
-            "source_machine" => machine.name,
-            "service" => service_name,
-            "content" => "iptables -A FORWARD -s #{machine.ipaddress} -p tcp -m state --state NEW -j ACCEPT"
-          )
-          #host.generate_and_diff_iptables()  # TODO needs 'differ' gem
-          host.generate_and_execute_iptables_script()
+  if service != nil
+    
+    if service.has_key?("outgoing_tcp") and service["outgoing_tcp"] != nil and service["outgoing_tcp"].class == Array
+      service["outgoing_tcp"].each do |outgoing|
+        case outgoing
+        when "all_destinations"
+          host_name = machine.name.split('.')[1..10].join('.')
+          @op.with_machine(host_name) do |host|
+            host.add_forward_include(
+              "source_machine" => machine.name,
+              "service" => service_name,
+              "content" => "iptables -A FORWARD -s #{machine.ipaddress} -p tcp -m state --state NEW -j ACCEPT"
+            )
+            #host.generate_and_diff_iptables()  # TODO needs 'differ' gem
+            host.generate_and_execute_iptables_script()
+          end
+        else
+          raise "unknown destination #{outgoing} in service #{service_name}"
         end
-      else
-        raise "unknown destination #{outgoing} in service #{service_name}"
       end
     end
+    
+    if service.has_key?("http_endpoint")
+      unless params.has_key?("extra_params") and params["extra_params"].has_key?("domain")
+        raise "http_endpoint configuration found for service #{service["name"]}, but no domain parameter is present. not handling http_endpoint #{service["http_endpoint"]}"
+      end
+      
+      domain = params["extra_params"]["domain"]
+      machine.install_canned_service("service" => "apache/apache")
+  
+      machine.add_reverse_proxy("server_name" => domain, "target_url" => "http://localhost:#{service["http_endpoint"]}/")
+      machine.restart_unix_service("name" => "httpd")
+      
+      machine.configure_reverse_proxy("domain" => domain)
+    end    
+    
+    if service.has_key?("static_html")
+      unless params.has_key?("extra_params") and params["extra_params"].has_key?("domain")
+        raise "http_endpoint configuration found for service #{service["name"]}, but no domain parameter is present. not handling http_endpoint #{service["http_endpoint"]}"
+      end
+      
+      domain = params["extra_params"]["domain"]
+      machine.install_canned_service("service" => "apache/apache")
+  
+      machine.add_static_vhost("server_name" => domain, "document_root" => params["service_root"])
+      machine.restart_unix_service("name" => "httpd")
+      
+      machine.configure_reverse_proxy("domain" => domain)
+    end
+    
   end
   
   if service["is_startable"]

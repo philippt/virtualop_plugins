@@ -5,6 +5,7 @@ dependency :erb_processor
 dependency :git_scm
 dependency :github_scm
 dependency :machine_config
+dependency :working_copies
 #dependency :machine_crawler
 
 config_param! "descriptor_dirs", "list of fully qualified paths holding service descriptors", :allows_multiple_values => true

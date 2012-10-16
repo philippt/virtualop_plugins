@@ -15,13 +15,18 @@ on_machine do |machine, params|
       x["full_name"] == params["github_repo"]
   }.first
   
-  # TODO wtf?!?
-  machine.ssh_and_check_result("command" => "mkdir erosintl")
-  machine.ssh_and_check_result("command" => "cd erosintl && git init")
-  machine.ssh_and_check_result("command" => "cd erosintl && touch README && git add README")
-  machine.ssh_and_check_result("command" => "cd erosintl && git commit -m 'first commit'")
-  machine.ssh_and_check_result("command" => "cd erosintl && git remote add origin #{repo["ssh_url"]}")
-  machine.ssh_and_check_result("command" => "cd erosintl && git push -u origin master")
+  # TODO untested
+  project_name = params["github_repo"].split("/").last
+  machine.ssh_and_check_result("command" => "mkdir #{project_name}")
+  [
+    "git init",
+    "touch README && git add README",
+    "git commit -m 'first commit'",
+    "git remote add origin #{repo["ssh_url"]}",
+    "git push -u origin master"
+  ].each do |x|
+    machine.ssh_and_check_result("command" => "cd #{project_name} && #{x}")
+  end
 end  
 
 

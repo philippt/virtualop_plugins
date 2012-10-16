@@ -22,6 +22,7 @@ on_machine do |machine, params|
   end
   
   @op.without_cache do
+    machine.file_exists("file_name" => params["directory"])
     machine.list_working_copies
     machine.list_working_copies_with_projects
   end

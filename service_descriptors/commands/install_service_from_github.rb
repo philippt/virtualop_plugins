@@ -32,7 +32,7 @@ on_machine do |machine, params|
   if params.has_key?("git_branch")
     p["git_branch"] = params["git_branch"]
   end 
-  machine.git_clone(p)  
+  machine.git_clone(p) unless machine.file_exists("file_name" => service_root)  
   
   #machine.load_services_from_working_copies
   machine.list_services_in_working_copies

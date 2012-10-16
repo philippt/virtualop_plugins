@@ -6,6 +6,7 @@ param "overlay_column", "if the command returns a table, this parameter specifie
 
 #display_type :hash
 
+# TODO how do we invalidate data in cached overlays?
 mark_as_read_only
 
 execute do |params|
