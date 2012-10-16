@@ -47,6 +47,7 @@ on_machine do |machine, params|
       if package_files.include? "vop"
         lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/vop")
         lines.each do |service_spec|
+          next if /^#/.match(service_spec)
           unless /\//.match(service_spec)
             service_spec += '/' + service_spec
           end
