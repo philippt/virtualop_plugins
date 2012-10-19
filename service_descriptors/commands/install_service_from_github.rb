@@ -34,11 +34,10 @@ on_machine do |machine, params|
   end 
   machine.git_clone(p) unless machine.file_exists("file_name" => service_root)  
   
-  #machine.load_services_from_working_copies
   machine.list_services_in_working_copies
   
   params["working_copy"] = project_name # TODO is that a good idea? (used to be the path)
-  params["service"] = params["github_project"]
+  params["service"] = project_name
   
   if params.has_key?('extra_params')
     params["extra_params"].each do |k,v|
