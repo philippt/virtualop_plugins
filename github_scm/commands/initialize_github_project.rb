@@ -1,6 +1,7 @@
 description "initializes an empty github repo so that working copies can be cloned from it"
 
 param :machine
+param "directory", "the directory in which the working copy should be initialized"
 
 github_params
 param! "github_repo", "the repository that should be initialized", :lookup_method => lambda {
@@ -17,7 +18,9 @@ on_machine do |machine, params|
   
   # TODO untested
   project_name = params["github_repo"].split("/").last
-  machine.ssh_and_check_result("command" => "mkdir #{project_name}")
+  #machine.ssh_and_Check_result("command" => "mkdir #{project_name}")
+  dir_name = params.has_key?("directory") ? params["directory"] : project_name
+  machine.mkdir("dir_name" => dir_name)
   [
     "git init",
     "touch README && git add README",

@@ -7,7 +7,7 @@ param! "service", "the name of the service contained inside the working copy tha
 accept_extra_params
 
 on_machine do |machine, params|
-  params["directory"] = machine.working_copy_details("working_copy")["path"]
+  params["directory"] = machine.working_copy_details("working_copy" => params["working_copy"])["path"]
   params.delete("working_copy")
   
   machine.install_service_from_directory(params)
