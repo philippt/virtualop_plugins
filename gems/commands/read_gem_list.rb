@@ -10,6 +10,7 @@ param! "lines", "lines from a package file", :allows_multiple_values => true
 execute do |params|
   result = []
   params["lines"].each do |line|
+    # TODO make version optional
     matched = /(.+)\s\(([\d\.]+)\)/.match(line)
     if matched
       result << {

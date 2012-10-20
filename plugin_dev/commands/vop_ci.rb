@@ -21,6 +21,14 @@ execute do |params|
   )
   
   @op.kaboom_vm(
+    "machine" => "vop_ci_xoplogs.zapata.virtualop",
+    "github_project" => "philippt/xoplogs",
+    "extra_params" => {
+      "domain" => "xoplogs.ci.virtualop.org"
+    }
+  )
+  
+  @op.kaboom_vm(
     "machine" => "vop_ci_nagios.zapata.virtualop",
     "canned_service" => "nagios/nagios",
     "extra_params" => {
