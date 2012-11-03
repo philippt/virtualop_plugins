@@ -8,7 +8,7 @@ contributes_to :list_working_copies
 result_as :list_working_copies
 
 on_machine do |machine, params|
-  sync_record_dir = "/var/log/virtualop/dropbox_sync/"
+  sync_record_dir = config_string('sync_record_dir')  
   if machine.file_exists("file_name" => sync_record_dir)
     machine.find("type" => "f", "path" => sync_record_dir).map do |path|
       path.strip!

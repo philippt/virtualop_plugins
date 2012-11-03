@@ -14,7 +14,11 @@ on_machine do |machine, params|
   service_root = "/var/www/#{params["project"]}"
   machine.sync_dropbox_folder("path" => "/projects/#{params["project"]}", "directory" => service_root, "force" => "true")
   
-  machine.allow_access_for_apache("file_name" => service_root)
+  @op.without_cache do
+    machine.list_dropbox_working_copies
+  end
+  
+  #machine.allow_access_for_apache("file_name" => service_root)
   
   p = {
     "descriptor_machine" => machine.name, 

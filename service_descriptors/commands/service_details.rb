@@ -21,7 +21,12 @@ on_machine do |machine, params|
   else
     # TODO that's a bit approximate - should use x["full_name"] here to observe the "name spacing"
     found_canned_service = @op.list_available_services("machine" => "localhost").select { |x| x["name"] == params["service"] }.first
-    result.merge! found_canned_service  
+    if found_canned_service
+      result.merge! found_canned_service
+    else
+      # TODO this happens if services have been installed with a different vop instance
+      $logger.warn("did not find canned service #{params["service"]} - a bit odd.")
+    end  
   end 
   
   %w|start stop status|.each do |operation|

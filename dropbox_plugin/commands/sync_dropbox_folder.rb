@@ -8,6 +8,8 @@ param! "directory", "path on the machine into which the dropbox folder should be
 
 param "force", "if set to true, will re-read the dropbox folder metadata without using the cache", :lookup_method => lambda { %w|true false| }
 
+param "remote_files", "a list of remote file metadata that should be used for syncing (hack for processing the input of the dropbox APIs delta() method)", :allows_multiple_values => true
+
 on_machine do |machine, params|
   sync_record_file = "/var/log/virtualop/dropbox_sync" + params["directory"]
   sync_record = {}
@@ -16,21 +18,31 @@ on_machine do |machine, params|
     sync_record = record["files"]
   end
   
-  pp sync_record
+  #pp sync_record
   
   machine.mkdir("dir_name" => params["directory"])
 
   local_files = machine.find("path" => params["directory"])
   
-  reload_block = lambda do
-    @op.troll_dropbox_folders("path" => params["path"])
-  end
-  remote_files = if params.has_key?("force") && params["force"] == "true"
-    @op.without_cache do
-      reload_block.call()  
-    end
+  remote_files = nil
+  if params.has_key?("remote_files")
+    remote_files = params["remote_files"]
   else
-    reload_block.call()
+    reload_block = lambda do
+      @op.troll_dropbox_folders("path" => params["path"])
+    end
+    
+    remote_files = if params.has_key?("force") && params["force"] == "true"
+      @op.without_cache do
+        reload_block.call()  
+      end
+    else
+      reload_block.call()
+    end
+    remote_files.map! do |x|
+      [ x["path"], x ]
+    end
+    # TODO use local_files to find out which files need to be deleted, add to remote_files with nil metadata objects 
   end
    
   synced_files = sync_record.clone
@@ -45,25 +57,30 @@ on_machine do |machine, params|
     synced_files[full_path] = file["rev"]
   end
     
-  remote_files.each do |file|
-    relative_path = file["path"][params["path"].length + 1..file["path"].length-1]
-    full_path = params["directory"] + '/' + relative_path
+  remote_files.each do |remote_file|
+    path, file = remote_file.first, remote_file.last
     
-    puts "syncing #{full_path} (#{relative_path})..."
-    if local_files.include? full_path
-      puts "  local file detected"
-      if (sync_record.has_key?(full_path)) and (sync_record[full_path] == file["rev"])
-        puts "  already up to date (rev #{sync_record[full_path]}), no need to sync."
-      else 
-        puts "  overwriting with new rev >>#{file["rev"]}<< (old rev >>#{sync_record[full_path]}<<)"
+    if file
+      relative_path = file["path"][params["path"].length + 1..file["path"].length-1]
+      full_path = params["directory"] + '/' + relative_path
+      
+      puts "syncing #{full_path} (#{relative_path})..."
+      if local_files.include? full_path
+        puts "  local file detected"
+        if (sync_record.has_key?(full_path)) and (sync_record[full_path] == file["rev"])
+          puts "  already up to date (rev #{sync_record[full_path]}), no need to sync."
+        else 
+          puts "  overwriting with new rev >>#{file["rev"]}<< (old rev >>#{sync_record[full_path]}<<)"
+          sync_file.call(full_path, file)
+        end
+      else
         sync_file.call(full_path, file)
       end
     else
-      sync_file.call(full_path, file)
+      # TODO delete local files that don't exist remote anymore
     end
   end
   
-  # TODO delete local files that don't exist remote anymore
   
   machine.mkdir("dir_name" => File.dirname(sync_record_file))
   # TODO maybe store the dropbox username as well?

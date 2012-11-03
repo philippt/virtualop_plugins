@@ -21,6 +21,7 @@ on_machine do |machine, params|
     record = YAML.load(machine.read_file("file_name" => sync_record))
     wc["project_path"] = record["path"]
     wc["project"] = record["path"]["/projects/".length..record["path"].length-1]
+    wc["sync_record"] = record["files"]    
   end
  
   wc

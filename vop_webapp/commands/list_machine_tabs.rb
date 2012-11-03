@@ -78,7 +78,7 @@ on_machine do |machine, params|
   end
   
   if @op.list_plugins.include?('nagios_status')
-    tabs << [ "nagios_checks", "Nagios" ]
+    tabs << [ "nagios_checks", "Monitoring" ]
   end
   
   

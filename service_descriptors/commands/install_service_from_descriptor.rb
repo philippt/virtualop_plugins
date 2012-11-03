@@ -14,10 +14,6 @@ on_machine do |machine, params|
   
   service_name = parts.last.split(".").first
   
-  #service_root = params.has_key?('service_root') && params['service_root'] != '' ? params['service_root'] :
-  #  parts[0..parts.size-3].join("/")
-  #service_root = params["service_root"]
-  
   $logger.info("installing service '#{service_name}' from #{descriptor_dir}")
   $logger.info("service root : #{params["service_root"]}") if params.has_key? "service_root"
   
@@ -211,6 +207,27 @@ on_machine do |machine, params|
       end
     end
     
+    if service.has_key?("tcp_endpoint")
+      port = service["tcp_endpoint"]
+      host_name = machine.name.split('.')[1..10].join('.')
+      @op.with_machine(host_name) do |host|
+        host.add_prerouting_include(
+          "source_machine" => machine.name,
+          "service" => service_name,
+          "content" => "iptables -t nat -A PREROUTING -p udp  -d $IP_HOST --dport #{port}  -j DNAT --to-destination #{machine.ipaddress}:#{port}"
+        )
+        host.add_forward_include(
+          "source_machine" => machine.name,
+          "service" => service_name,
+          "content" => "iptables -A INPUT -d $IP_HOST -p udp --dport #{port} -m state --state NEW -j ACCEPT"
+        )
+        #iptables -A FORWARD -d $IP_PRIVATE_PROXY -p tcp --dport 80 -m state --state NEW -j ACCEPT
+        
+        host.generate_and_execute_iptables_script()
+      end
+      #iptables -t nat -A PREROUTING  -p tcp  -d $IP_HOST --dport <%= vm["ssh_port"] %>  -j DNAT --to-destination <%= vm["ipaddress"] %>:22
+    end
+    
     if service.has_key?("http_endpoint")
       unless params.has_key?("extra_params") and params["extra_params"].has_key?("domain")
         raise "http_endpoint configuration found for service #{service["name"]}, but no domain parameter is present. not handling http_endpoint #{service["http_endpoint"]}"
@@ -234,6 +251,7 @@ on_machine do |machine, params|
       machine.install_canned_service("service" => "apache/apache")
   
       machine.add_static_vhost("server_name" => domain, "document_root" => params["service_root"])
+      machine.allow_access_for_apache("file_name" => params["service_root"])
       machine.restart_unix_service("name" => "httpd")
       
       machine.configure_reverse_proxy("domain" => domain)
@@ -243,5 +261,18 @@ on_machine do |machine, params|
   
   if service["is_startable"]
     machine.start_service("service" => service_name)
+  end
+  
+  if service.has_key?("post_installation")
+    details = nil
+    # TODO [optimization] would be helpful if we could just load the details without cache without reloading the lookups
+    @op.without_cache do
+      details = machine.service_details("service" => service["name"])
+    end
+    begin
+      details["post_installation"].call(machine, params)
+    rescue => detail
+      raise "problem in post_installation block for service #{service["name"]} on #{params["machine"]} : #{detail.message}"
+    end
   end
 end

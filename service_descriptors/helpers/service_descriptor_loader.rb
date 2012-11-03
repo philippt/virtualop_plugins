@@ -76,6 +76,12 @@ class ServiceDescriptorLoader
     end
   end
   
+  def post_installation(&block)
+    @service["post_installation"] = lambda do |machine, params|
+      block.call(machine, params)
+    end
+  end
+  
   def method_missing(m, *args)
     targets = [ :unix_service, :run_command, :redirect_log, :start_command, :stop_command, :on_install ]
     targets += [ :port, :process_regex, :log_file ]

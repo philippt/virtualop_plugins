@@ -1,11 +1,10 @@
-description 'installs an RPM package through yum'
+description 'installs an RPM package'
 
 param :machine
 param "name", "the name of the package to install", :mandatory => true, :allows_multiple_values => true, :default_param => true
 
 on_machine do |machine, params|
   
-  # filter packages that are already installed
   already_installed = machine.installed_rpm_package_names
   to_install = params["name"]
   to_install.each do |name|
@@ -14,7 +13,7 @@ on_machine do |machine, params|
     end
   end
   
-  if to_install.size > 0
+  if to_install.size > 0    
     command = case machine.linux_distribution.split("_").first
     when "centos"
       "yum"
