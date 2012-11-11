@@ -38,6 +38,10 @@ on_machine do |machine, params|
       tabs << ["list_vms_with_memory", "VMs w/ memory"]
     end
     
+    if @op.list_plugins.include?('vmware_rvc') and @op.machine_by_name("machine" => params["machine"])["type"] == "host"
+      tabs << [ "list_vms", "Virtual Guests" ]
+    end
+    
     if service_names.include?("vz")
       tabs << ["list_openvz_vms", "OpenVZ guests"]
     end
@@ -81,13 +85,8 @@ on_machine do |machine, params|
     tabs << [ "nagios_checks", "Monitoring" ]
   end
   
-  
-  if @op.list_plugins.include?('vmware_rvc') and @op.machine_by_name("machine" => params["machine"])["type"] == "host"
-    tabs << [ "list_vms", "Virtual Guests" ]
-  end
-
-  if /^philipp\./.match(params["machine"])
-    tabs << [ "fan", "FAN" ]    
+  if @op.list_plugins.include?('xoplogs') and machine.list_services_with_access_logs.size > 0
+    tabs << [ "machine_traffic", "Traffic" ]
   end
 
 # 

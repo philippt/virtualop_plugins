@@ -32,7 +32,7 @@ execute do |params|
         end
       end
       
-      if cursor != nil # suppress startup
+      if cursor != nil # suppress startup # TODO actually, we should probably process the startup as well
         if changes[:projects].size > 0
           @op.initialize_new_dropbox_projects()
         end 

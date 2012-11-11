@@ -36,10 +36,16 @@ on_machine do |machine, params|
     # end
   end
   
-  nagios_public_key = @op.with_machine("nagios@#{config_string('nagios_machine_name')}") do |nagios|
+  nagios_public_key = @op.with_machine(config_string('nagios_machine_name'), "nagios") do |nagios|
     nagios.list_authorized_keys.first
   end
   machine.add_authorized_key("public_key" => nagios_public_key) unless machine.list_authorized_keys.include? nagios_public_key
+  
+  machine.list_services.each do |service|
+    if service.has_key?("domain")
+      machine.add_service_config("check_command" => "check_http_domain!#{service["domain"]}", "service_description" => "#{service["domain"]}")
+    end
+  end
   
   @op.reload_nagios
   

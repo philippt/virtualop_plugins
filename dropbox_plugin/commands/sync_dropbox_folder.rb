@@ -45,7 +45,22 @@ on_machine do |machine, params|
     # TODO use local_files to find out which files need to be deleted, add to remote_files with nil metadata objects 
   end
    
-  synced_files = sync_record.clone
+  for_the_record = {}
+  
+  write_record = lambda do |record|
+    machine.mkdir("dir_name" => File.dirname(sync_record_file))
+    
+    sync_record.merge! record
+    
+    # TODO maybe store the dropbox username as well?
+    record = {
+      "path" => params["path"],
+      "files" => sync_record
+    }
+    machine.write_file("target_filename" => sync_record_file, "content" => record.to_yaml())
+    
+    record = {}  
+  end
   
   sync_file = lambda do |full_path, file|
     machine.mkdir("dir_name" => File.dirname(full_path))
@@ -53,10 +68,12 @@ on_machine do |machine, params|
       machine.write_file("target_filename" => full_path, "content" => @op.dropbox_read_file("path" => file["path"]))
     end
     
-    machine.allow_access_for_apache("file_name" => File.dirname(full_path))
-    synced_files[full_path] = file["rev"]
+    #machine.allow_access_for_apache("file_name" => File.dirname(full_path))
+    for_the_record[full_path] = file["rev"]
+    write_record.call(for_the_record) if for_the_record.size > 10
   end
-    
+  
+  
   remote_files.each do |remote_file|
     path, file = remote_file.first, remote_file.last
     
@@ -79,14 +96,10 @@ on_machine do |machine, params|
     else
       # TODO delete local files that don't exist remote anymore
     end
+    
   end
   
+  write_record.call(for_the_record)
   
-  machine.mkdir("dir_name" => File.dirname(sync_record_file))
-  # TODO maybe store the dropbox username as well?
-  record = {
-    "path" => params["path"],
-    "files" => synced_files
-  }
-  machine.write_file("target_filename" => sync_record_file, "content" => record.to_yaml())
+  machine.allow_access_for_apache("file_name" => params["directory"])
 end
