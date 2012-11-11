@@ -20,7 +20,7 @@ on_machine do |machine, params|
   
   params.delete("service")
   
-  pp params
+  #pp params
   
   if params.has_key?('extra_params')
     puts "got extra params:"

@@ -38,19 +38,19 @@ execute do |params|
         end 
         #changes[:projects].each do |project_name, change|
         #end
-        
-        if params.has_key?("machine")
-          @op.with_machine(params["machine"]) do |machine|
-            machine.list_dropbox_working_copies.each do |working_copy|
-              project_name = working_copy["name"]
-              if changes[:files].has_key? project_name
-                machine.sync_dropbox_folder(
-                  "path" => "/projects/#{project_name}", 
-                  "directory" => working_copy["path"], 
-                  "remote_files" => changes[:files][project_name]
-                )
-              end                             
-            end
+      end
+      
+      if params.has_key?("machine")
+        @op.with_machine(params["machine"]) do |machine|
+          machine.list_dropbox_working_copies.each do |working_copy|
+            project_name = working_copy["name"]
+            if changes[:files].has_key? project_name
+              machine.sync_dropbox_folder(
+                "path" => "/projects/#{project_name}", 
+                "directory" => working_copy["path"], 
+                "remote_files" => changes[:files][project_name]
+              )
+            end                             
           end
         end
       end

@@ -12,7 +12,7 @@ execute do |params|
     url += "?hosts\\[\\]=#{params["machine"]}"
     url += "&services\\[\\]=#{params["service"]}" if params.has_key?("service")
     url += "&line=#{params["line"]}"
-    url += "&interval_hours=6"
+    url += "&interval_hours=2"
     @op.http_get("url" => url)
   end
 end
