@@ -4,6 +4,8 @@ param :machine_group, "the machine group to get data for", :allows_multiple_valu
 param! "overlay_command", "the command that should be executed"
 param "overlay_column", "if the command returns a table, this parameter specifies which column(s) to display"
 
+accept_extra_params
+
 # TODO this doesn't seem to work for nil values in the hash
 #display_type :hash
 
@@ -26,9 +28,17 @@ execute do |params|
           begin
             #status = Timeout::timeout(result[machine_group_name].size == 0 ? 120 : 5) {
             status = Timeout::timeout(5) {
-              data = @op.send(params["overlay_command"].to_sym, {"machine" => machine_name})
+              options = {
+                "machine" => machine_name
+              }
+              if params.has_key?("extra_params") and params["extra_params"] != ''
+                params["extra_params"].each do |k,v|
+                  options[k] = v
+                end
+              end
+              data = @op.send(params["overlay_command"].to_sym, options)
               if data != nil
-                $logger.info "#{machine_group_name} : #{data}"
+                $logger.info "#{machine_name} : #{data}"
                 result[machine_group_name] += data
               end
             }  
@@ -44,7 +54,6 @@ execute do |params|
   
   if params.has_key?("overlay_column")
     column_name = params["overlay_column"]
-    $logger.info "picking out #{column_name}"
     result.each do |k,v|
       v.map! { |x| x[column_name] }
     end
