@@ -65,7 +65,7 @@ on_machine do |machine, params|
       end  
     
       case machine.linux_distribution.split("_").first
-      when "centos", "sles"
+      when "centos", "sles" # TODO do we really want centos repos on SLES?
         if package_files.include? "rpm_repos"
           lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/rpm_repos")
           machine.install_rpm_repo("repo_url" => lines) unless lines.size == 0
@@ -85,7 +85,13 @@ on_machine do |machine, params|
           lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/apt")    
           machine.install_apt_package("name" => lines) unless lines.size == 0
         end
+      when "sles"
+        if package_files.include? "sles"
+          lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/sles").select { |x| ! /^#/.match(x) }
+          machine.install_rpm_packages_from_file("lines" => lines) unless lines.size == 0
+        end
       end
+      
       
       if package_files.include? "gem"
         lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/gem")    

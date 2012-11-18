@@ -4,10 +4,15 @@ param :machine
 param! "name", "the part of the package name to search for", :default_param => true
 
 on_machine do |machine, params|
-  case machine.linux_distribution.split("_").first
+  distro = machine.linux_distribution.split("_").first
+  case distro
   when "centos"
     machine.yum_search(params)
   when "ubuntu"
     machine.apt_search(params)
+  when "sles"
+    machine.zypper_search(params)
+  else
+    raise "don't know how to search for packages on #{distro}"
   end
 end
