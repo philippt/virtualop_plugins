@@ -28,6 +28,19 @@ on_machine do |machine, params|
         #$logger.info "configured vhosts : #{machine.list_configured_vhosts.map { |x| ">>#{x["domain"]}<<" }.join("\n")}"
       end
     end
+    
+    if service.has_key? "log_file"
+      log_file = service["log_file"]
+      log_file = service["service_root"] + '/' + log_file unless /^\//.match(log_file)      
+      if machine.file_exists("file_name" => log_file) 
+        result << {
+          "service" => service["name"],
+          "path" => log_file,
+          "source" => service["name"],
+          "format" => "freestyle"          
+        }
+      end
+    end
   end  
   result
 end

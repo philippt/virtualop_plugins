@@ -1,4 +1,4 @@
-dependencies [ :core, :machines, :erb_processor, :my_sql, :service_descriptors ]
+dependencies [ :core, :machines, :erb_processor, :my_sql, :service_descriptors, :machine_groups ]
 
 config_param! "xoplogs_machine", "the machine where the xoplogs application is running"
 

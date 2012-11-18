@@ -5,6 +5,11 @@ param :service, "the service to work with", :mandatory => false
 
 param! "line", "the 'line' of data that should be retrieved", :lookup_method => lambda { %w|count_success count_errors count_total response_time_ms| }
 
+param "interval_hours", "the number of hours that should be displayed (counting backwards from now)", :default_value => 2
+
+#mark_as_read_only
+# TODO expires => 15.minutes would be nice here
+
 execute do |params|
   @op.with_machine(config_string('xoplogs_machine')) do |xoplogs|
     url = 'http://' + xoplogs.service_details("service" => "xoplogs")["domain"].first.first # TODO we know that one
@@ -12,7 +17,7 @@ execute do |params|
     url += "?hosts\\[\\]=#{params["machine"]}"
     url += "&services\\[\\]=#{params["service"]}" if params.has_key?("service")
     url += "&line=#{params["line"]}"
-    url += "&interval_hours=2"
+    url += "&interval_hours=#{params["interval_hours"]}"
     @op.http_get("url" => url)
   end
 end
