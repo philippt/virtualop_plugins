@@ -2,9 +2,12 @@ class ServiceDescriptorLoader
   
   attr_reader :services
   
-  def initialize(op)
+  def initialize(op, plugin)
     @op = op
+    @plugin = plugin
     @services = []
+    
+    plugin.load_helper_classes(self) unless plugin == nil
     
     #@command_loader = CommandLoader.new()
   end
@@ -102,8 +105,8 @@ class ServiceDescriptorLoader
     end
   end
   
-  def self.read(op, name, source)
-    loader = new(op)
+  def self.read(op, plugin, name, source)
+    loader = new(op, plugin)
 
     loader.new_service(name)
     loader.instance_eval source

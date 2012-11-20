@@ -17,6 +17,11 @@ param "location", "installation source for guest virtual machine kernel+initrd p
 
 param "canned_service", "name of a canned service to install on the machine", :allows_multiple_values => true
 
+# TODO add environment here?
+#param "environment", "if specified, the environment is written into a config file so that it's available through $VOP_ENV", :lookup_method => lambda do
+#  %w|development staging production|
+#end
+
 accept_extra_params
 
 on_machine do |machine, params|  

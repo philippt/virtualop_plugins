@@ -11,9 +11,8 @@ on_machine do |machine, params|
   full_name = params["file_name"]
   source = machine.read_file("file_name" => full_name)
       
-  $logger.debug "found #{full_name} : ***\n#{source}\n***\n"
   name = full_name.split("/").last.split(".").first
-  service = ServiceDescriptorLoader.read(@op, name, source).services.first
+  service = ServiceDescriptorLoader.read(@op, nil, name, source).services.first
   
   service["file_name"] = full_name
   

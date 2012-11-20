@@ -52,7 +52,7 @@ execute do |params|
         name = matched.captures.first
         source, metadata = client.get_file_and_metadata(service_file["path"])
         
-        service = ServiceDescriptorLoader.read(@op, name, source).services.first
+        service = ServiceDescriptorLoader.read(@op, the_plugin, name, source).services.first
         service["full_name"] = [ params["project"], name ].join("/")
         result << service.clone()
       end

@@ -96,7 +96,7 @@ execute do |params|
   end
   
   services_to_load.each do |service_name, source|
-    service = ServiceDescriptorLoader.read(@op, service_name, source).services.first
+    service = ServiceDescriptorLoader.read(@op, the_plugin, service_name, source).services.first
     service["full_name"] = [ plugin_name, service_name ].join("/")
     result << service.clone()   
   end
