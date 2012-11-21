@@ -24,13 +24,8 @@ on_machine do |host, params|
   )
   
   host.setup_vm(
-    "vm_name" => "xoplogs",
-    "memory_size" => 1024,
-    "disk_size" => 100,
-    "github_project" => "philippt/xoplogs",
-    "extra_params" => {
-      "domain" => "xoplogs.#{params["domain"]}"
-    }
+    "vm_name" => "powerdns",
+    "canned_service" => "powerdns/powerdns"    
   )
 
   

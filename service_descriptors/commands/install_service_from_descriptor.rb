@@ -214,6 +214,7 @@ on_machine do |machine, params|
     end
     
     if service.has_key?("tcp_endpoint")
+      # TODO actually, this seems to be a udp endpoint ;-)
       port = service["tcp_endpoint"]
       host_name = machine.name.split('.')[1..10].join('.')
       @op.with_machine(host_name) do |host|
@@ -226,6 +227,11 @@ on_machine do |machine, params|
           "source_machine" => machine.name,
           "service" => service_name,
           "content" => "iptables -A INPUT -d $IP_HOST -p udp --dport #{port} -m state --state NEW -j ACCEPT"
+        )
+        host.add_forward_include(
+          "source_machine" => machine.name,
+          "service" => service_name,
+          "content" => "iptables -A FORWARD -d #{machine.ipaddress} -p udp --dport #{port} -m state --state NEW -j ACCEPT"
         )
         #iptables -A FORWARD -d $IP_PRIVATE_PROXY -p tcp --dport 80 -m state --state NEW -j ACCEPT
         
