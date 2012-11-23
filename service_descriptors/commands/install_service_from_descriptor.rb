@@ -146,18 +146,8 @@ on_machine do |machine, params|
         raise detail
       end
     end
-    
-    if params.has_key? 'service_root'
-      service_root = params['service_root']
-      
-      # TODO move this to the end (use service_details instead of list_services_in_directory), otherwise this won't fly for canned services
-      service = descriptor_machine.list_services_in_directory("directory" => service_root).select { |x| x["full_name"] == "#{plugin_name}/#{service_name}"}.first
-      if service != nil && service.has_key?("cron")
-        script_path = machine.write_background_start_script("service" => service_name)
-        machine.add_crontab_entry("data" => read_local_template(:crontab, binding()))
-      end
-    end
-    
+
+    # TODO should probably move this to the end as well    
     if dotvop_content.include? "nagios_commands"
       descriptor_machine.list_files("directory" => "#{descriptor_dir}/nagios_commands").each do |nagios_command|
         @op.add_extra_command(
@@ -192,6 +182,11 @@ on_machine do |machine, params|
   service = machine.service_details("service" => service_name) 
   
   if service != nil
+    
+    if service.has_key?("cron")
+      script_path = machine.write_background_start_script("service" => service_name)
+      machine.add_crontab_entry("data" => read_local_template(:crontab, binding()))
+    end
     
     if service.has_key?("outgoing_tcp") and service["outgoing_tcp"] != nil and service["outgoing_tcp"].class == Array
       service["outgoing_tcp"].each do |outgoing|
