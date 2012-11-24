@@ -43,7 +43,13 @@ execute do |params|
   @op.configure_nagios_status("nagios_bin_url" => "http://nagios.ci.virtualop.org/nagios/cgi-bin", "nagios_user" => "nagiosadmin", "nagios_password" => "the_password")
   @op.generate_nagios_config("machine" => "vop_ci_website.zapata.virtualop")
   
-  @op.configure_xoplogs("xoplogs_machine" => "vop_ci_xoplogs.zapata.virtualop")
+  @op.configure_xoplogs("xoplogs_machine" => "vop_ci_xoplogs.zapata.virtualop", "auto_import_machine_groups" => [ 'zapata.virtualop' ])
+  
+  # TODO restart application services
+  @op.with_machine('localhost') do |localhost|
+    localhost.change_runlevel("runlevel" => "maintenance")
+    localhost.change_runlevel("runlevel" => "running")
+  end
   
   @op.create_jenkins_job("job_name" => "nagios ci", "command_string" => "kaboom_vm machine=vop_ci_nagios.zapata.virtualop canned_service=nagios/nagios domain=nagios.ci.virtualop.org")
   @op.create_jenkins_job("job_name" => "xoplogs ci", "command_string" => "kaboom_vm machine=vop_ci_xoplogs.zapata.virtualop github_project=philippt/xoplogs domain=xoplogs.ci.virtualop.org")
