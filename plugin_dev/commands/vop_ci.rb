@@ -45,7 +45,11 @@ execute do |params|
   
   @op.configure_xoplogs("xoplogs_machine" => "vop_ci_xoplogs.zapata.virtualop", "auto_import_machine_groups" => [ 'zapata.virtualop' ])
   
-  # TODO restart application services
+  @op.with_machine('localhost') do |localhost|
+    localhost.install_service_from_working_copy("working_copy" => "virtualop", "service" => "import_logs")
+  end
+  
+  # restart application services
   @op.with_machine('localhost') do |localhost|
     localhost.change_runlevel("runlevel" => "maintenance")
     localhost.change_runlevel("runlevel" => "running")

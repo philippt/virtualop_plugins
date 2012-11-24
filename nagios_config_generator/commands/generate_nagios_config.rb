@@ -37,7 +37,8 @@ on_machine do |machine, params|
   end
   
   nagios_public_key = @op.with_machine(config_string('nagios_machine_name'), "nagios") do |nagios|
-    nagios.list_authorized_keys.first
+    #nagios.list_authorized_keys.first
+    nagios.read_file("file_name" => '.ssh/id_rsa.pub')
   end
   machine.add_authorized_key("public_key" => nagios_public_key) unless machine.list_authorized_keys.include? nagios_public_key
   
