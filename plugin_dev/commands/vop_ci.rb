@@ -49,10 +49,10 @@ execute do |params|
     localhost.install_service_from_working_copy("working_copy" => "virtualop", "service" => "import_logs")
   end
   
-  # restart application services
   @op.with_machine('localhost') do |localhost|
-    localhost.change_runlevel("runlevel" => "maintenance")
-    localhost.change_runlevel("runlevel" => "running")
+    %w|rails_dev_server executor|.each do |service|
+      localhost.restart_service("service" => service)
+    end
   end
   
   @op.create_jenkins_job("job_name" => "nagios ci", "command_string" => "kaboom_vm machine=vop_ci_nagios.zapata.virtualop canned_service=nagios/nagios domain=nagios.ci.virtualop.org")
