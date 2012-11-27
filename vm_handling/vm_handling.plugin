@@ -14,4 +14,6 @@ config_param "kickstart_url_vm", "the HTTP url to the kickstart script to use fo
   
 config_param! "installation_target", "a virtualization host on which VMs can be created", :lookup_method => lambda { @op.list_machines.map { |x| x["name"] } }, :allows_multiple_values => true    
   
+config_param 'installation_timeout_secs', 'number of seconds to wait for an installation to finish', :default_value => 1200  
+  
 tags :installation

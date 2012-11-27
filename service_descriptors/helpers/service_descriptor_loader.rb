@@ -73,6 +73,15 @@ class ServiceDescriptorLoader
    @service["unix_service"] = arg
   end
   
+  def run_command(command, options = {})
+    @service["run_command"] = command
+    if options.size > 0
+      options.each do |k,v|
+        @service["run_command.#{k}"] = v
+      end
+    end 
+  end
+  
   def post_restart(&block)
     @service["post_restart"] = lambda do |machine, params|
       block.call(machine, params)
@@ -86,7 +95,7 @@ class ServiceDescriptorLoader
   end
   
   def method_missing(m, *args)
-    targets = [ :unix_service, :run_command, :redirect_log, :start_command, :stop_command, :on_install ]
+    targets = [ :redirect_log, :start_command, :stop_command, :on_install ]
     targets += [ :port, :process_regex, :log_file ]
     targets += [ :cron, :every ]
     targets += [ :http_endpoint, :tcp_endpoint ]

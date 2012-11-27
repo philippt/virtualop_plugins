@@ -14,6 +14,8 @@ on_machine do |machine, params|
   machine.mkdir("dir_name" => script_dir)
   script_path = script_dir + '/vop_start_background_process_' + service["name"] + Time.now().to_i.to_s + '.sh' 
   
+  spawn = service.has_key?("run_command.spawn") ? service["run_command.spawn"].to_i : 1  
+  
   process_local_template(:start_background_process, machine, script_path, binding())
   machine.chmod("file_name" => script_path, "permissions" => "+x")
   

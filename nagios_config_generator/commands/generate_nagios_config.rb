@@ -1,7 +1,7 @@
 description "generates nagios configuration for a machine"
 
 param :machine
-param "alternative_mysql_host_name", "if mysql checks are generated, the value of this parameter is used instead of the host address as mysql hostname to connect against"
+#param "alternative_mysql_host_name", "if mysql checks are generated, the value of this parameter is used instead of the host address as mysql hostname to connect against"
 
 on_machine do |machine, params|
   target_file = machine.nagios_file_name
@@ -29,6 +29,7 @@ on_machine do |machine, params|
       nagios.append_to_file("file_name" => target_file, "content" => apache_checks)
     end
     
+    # TODO i think this should be covered by more recent changes in the my_sql plugin - check and kill
     # if unix_services.include?('mysql') and machine.status_unix_service("name" => 'mysql')
       # mysql_target = params.has_key?('alternative_mysql_host_name') ? params['alternative_mysql_host_name'] : '$HOSTADDRESS$'
       # mysql_checks = read_local_template(:mysql, binding())

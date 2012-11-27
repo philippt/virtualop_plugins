@@ -12,12 +12,20 @@ execute do |params|
   # $logger.info "read #{the_log.size} entries"
   # 
   # the_log.each do |data|
-  c = Carrot.new(:host => @op.plugin_by_name("rabbitmq_plugin").config_string('rabbitmq_hostname'))
+  
+  unless plugin.state.has_key?(:carrot)
+    host_name = @op.plugin_by_name("rabbitmq_plugin").config_string('rabbitmq_hostname')
+    plugin.state[:carrot] = Carrot.new(:host => host_name)
+    $logger.info "established connection to rabbitmq host #{host_name}"
+  end 
+  
+  c = plugin.state[:carrot]
   q = c.queue('raw_logging')
 
   result = []
   
-  $logger.debug "count: #{q.message_count}"
+  #$logger.info "count: #{q.message_count}"
+  print "\n"
   while msg = q.pop(:ack => true)
     #puts msg
     data = msg
@@ -166,7 +174,12 @@ execute do |params|
       dbh.query(statement)    
     end
     print "."
+    $stdout.flush()
     q.ack
   end
+  
+  # TODO might want to close at some point, though (there's no close, but something called Carrot.stop)
+  #c.close()
+  
   ""
 end
