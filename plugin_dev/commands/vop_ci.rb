@@ -41,7 +41,7 @@ execute do |params|
   
   @op.configure_nagios_config_generator("nagios_machine_name" => "vop_ci_nagios.zapata.virtualop", "default_services" => ["ssh"])
   @op.configure_nagios_status("nagios_bin_url" => "http://nagios.ci.virtualop.org/nagios/cgi-bin", "nagios_user" => "nagiosadmin", "nagios_password" => "the_password")
-  @op.generate_nagios_config("machine" => "vop_ci_website.zapata.virtualop")
+  #@op.generate_nagios_config("machine" => "vop_ci_website.zapata.virtualop")
   
   @op.configure_xoplogs("xoplogs_machine" => "vop_ci_xoplogs.zapata.virtualop", "auto_import_machine_groups" => [ 'zapata.virtualop' ])
   
