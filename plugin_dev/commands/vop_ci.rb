@@ -50,7 +50,7 @@ execute do |params|
   end
   
   @op.with_machine('localhost') do |localhost|
-    %w|rails_dev_server executor|.each do |service|
+    %w|rails_dev_server executor message_processor|.each do |service|
       localhost.restart_service("service" => service)
     end
   end
