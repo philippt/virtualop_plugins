@@ -13,7 +13,6 @@ on_machine do |machine, params|
   tabs = [
     ["machine_overview", "Overview"],
     ["working_copies", "Working Copies"],
-    ["unix_services", "Unix Services"],   
     #["log_files", "Log Files"],
     #["machine_traffic", "Traffic"],
     ["disk_space", "Diskspace"],
@@ -25,6 +24,13 @@ on_machine do |machine, params|
     #["nagios_checks", "Nagios Checks"],
     #["active_versions", "Active Versions"]
   ]
+  
+  case machine.machine_detail["os"]
+  when "windows"
+    tabs << [ "windows_services", "Windows Services" ]
+  when "linux"
+    tabs << ["unix_services", "Unix Services"]
+  end
   
   begin
     service_names = machine.list_unix_services #.map { |row| row["name"] }
