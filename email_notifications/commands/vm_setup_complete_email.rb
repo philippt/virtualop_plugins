@@ -1,9 +1,9 @@
-params_as :notify_vm_setup_complete
+#params_as :notify_vm_setup_complete
 
-contributes_to :notify_vm_setup_complete
+contributes_to :notify_setup_vm_stop_ok
 
 on_machine do |machine, params|
-  puts "+++ vm_setup_complete_email +++"
+  puts "+++ setup_vm stop_ok +++"
   request = Thread.current['request']
   pp request
   

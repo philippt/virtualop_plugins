@@ -33,6 +33,8 @@ class ServiceDescriptorLoader
     @service["local_files"] = []
     @service["outgoing_tcp"] = []
     
+    @service["nagios_checks"] = {}
+    
     @service
   end
   
@@ -80,6 +82,10 @@ class ServiceDescriptorLoader
         @service["run_command.#{k}"] = v
       end
     end 
+  end
+  
+  def nagios_check(check_hash)
+    @service["nagios_checks"].merge! check_hash
   end
   
   def post_restart(&block)

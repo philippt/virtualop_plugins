@@ -47,20 +47,26 @@ on_machine do |machine, params|
           unless /\//.match(service_spec)
             service_spec += '/' + service_spec
           end
+          # TODO version
           machine.install_canned_service("service" => service_spec)
         end    
       end
       
       if package_files.include? "github"
-        installed_github_projects = machine.list_working_copies_with_projects
+        working_copies = machine.list_working_copies_with_projects
 
         descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/github").each do |line|
           next if /^#/.match(line)
-          if installed_github_projects.select { |row| row["project"] == line }.size > 0
-            $logger.info("github dependency #{line} already exists locally")
-            next
+          found = working_copies.select { |row| row["project"] == line }
+          if found.size > 0
+            working_copy = found.first
+            $logger.info("working copy for github dependency #{line} already exists locally")
+            machine.install_service_from_working_copy("working_copy" => working_copy["name"], "service" => working_copy["name"])
+          else
+            # TODO checkout working copy
+            # TODO version
+            machine.install_service_from_github({"github_project" => line}.merge_from params, :git_branch, :git_tag)
           end
-          machine.install_service_from_github("github_project" => line)
         end
       end  
     
@@ -275,11 +281,11 @@ on_machine do |machine, params|
     # TODO [optimization] would be helpful if we could just load the details without cache without reloading the lookups
     @op.without_cache do
       details = machine.service_details("service" => service["name"])
-    end
-    begin
-      details["post_installation"].call(machine, params)
-    rescue => detail
-      raise "problem in post_installation block for service #{service["name"]} on #{params["machine"]} : #{detail.message}"
+      begin
+        details["post_installation"].call(machine, params)
+      rescue => detail
+        raise "problem in post_installation block for service #{service["name"]} on #{params["machine"]} : #{detail.message}"
+      end
     end
   end
 end

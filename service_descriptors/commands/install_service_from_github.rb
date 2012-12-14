@@ -5,6 +5,7 @@ github_params
 param :machine
 param! :github_project
 param :git_branch
+param :git_tag
 
 accept_extra_params
 
@@ -27,8 +28,9 @@ on_machine do |machine, params|
       
   p = {
     "directory" => service_root,
-    "git_url" => git_url 
+    "git_url" => git_url
   }
+  p.merge_from params, :git_tag, :git_branch
   if params.has_key?("git_branch")
     p["git_branch"] = params["git_branch"]
   end 

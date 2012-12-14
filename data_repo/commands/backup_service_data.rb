@@ -11,7 +11,6 @@ on_machine do |machine, params|
   
   timestamp_to_use = params.has_key?('timestamp') ? params['timestamp'] : Time.now().strftime("%Y%m%d%H%M")
   
-  # databases
   details = machine.service_details("service" => params["service"])
   
   details["databases"].each do |database|
@@ -50,7 +49,9 @@ on_machine do |machine, params|
     }
   end
   
-  # TODO invalidate
+  @op.without_cache do
+    machine.list_local_backups
+  end
   
   result
 end  

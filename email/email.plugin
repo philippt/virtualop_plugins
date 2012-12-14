@@ -11,3 +11,5 @@ on_activation do |plugin, config|
   require 'net/smtp'
   require 'smtp_tls'
 end
+
+tags :plumbing

@@ -4,6 +4,13 @@ def param_git_branch(options = {})
   RHCP::CommandParam.new("git_branch", "the branch that should be default after checkout (defaults to HEAD/master)", options)
 end
 
+def param_git_tag(options = {})
+  merge_options_with_defaults(options, {
+    
+  })
+  RHCP::CommandParam.new("git_tag", "a git tag that should be used for deploying", options)
+end
+
 def param_remote(options = {})
   merge_options_with_defaults(options, {
     :mandatory => true,

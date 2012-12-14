@@ -2,10 +2,10 @@ description 'clones a git repository into a new directory'
 
 param :machine
 
-param "git_url", "the git URL to use", :mandatory => true
-param "directory", "the target directory to checkout into (defaults to $HOME/project_name)"
+param! "git_url", "the git URL to use"
 param :git_branch
 param "git_tag", "the name of a tag that should be checked out"
+param "directory", "the target directory to checkout into (defaults to $HOME/project_name)"
 
 on_machine do |machine, params|
   command = "git clone "
