@@ -13,7 +13,6 @@ on_machine do |machine, params|
   tabs = [
     ["machine_overview", "Overview"],
     ["working_copies", "Working Copies"],
-    ["unix_services", "Unix Services"],   
     #["log_files", "Log Files"],
     #["machine_traffic", "Traffic"],
     ["disk_space", "Diskspace"],
@@ -26,6 +25,13 @@ on_machine do |machine, params|
     #["active_versions", "Active Versions"]
   ]
   
+  case machine.machine_detail["os"]
+  when "windows"
+    tabs << [ "windows_services", "Windows Services" ]
+  when "linux"
+    tabs << ["unix_services", "Unix Services"]
+  end
+  
   begin
     service_names = machine.list_unix_services #.map { |row| row["name"] }
     
@@ -36,10 +42,6 @@ on_machine do |machine, params|
     if service_names.include?("libvirtd")
       tabs << ["list_vms", "Virtual Guests"] 
       tabs << ["list_vms_with_memory", "VMs w/ memory"]
-    end
-    
-    if @op.list_plugins.include?('vmware_rvc') and @op.machine_by_name("machine" => params["machine"])["type"] == "host"
-      tabs << [ "list_vms", "Virtual Guests" ]
     end
     
     if service_names.include?("vz")
@@ -87,6 +89,10 @@ on_machine do |machine, params|
   
   if @op.list_plugins.include?('xoplogs') and machine.list_services_with_access_logs.size > 0
     tabs << [ "machine_traffic", "Traffic" ]
+  end
+  
+  if @op.list_plugins.include?('vmware_rvc') and @op.machine_by_name("machine" => params["machine"])["type"] == "host"
+    tabs << [ "list_vms", "Virtual Guests" ]
   end
 
 # 
