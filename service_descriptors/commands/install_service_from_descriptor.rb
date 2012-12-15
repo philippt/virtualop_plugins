@@ -65,7 +65,7 @@ on_machine do |machine, params|
           else
             # TODO checkout working copy
             # TODO version
-            machine.install_service_from_github({"github_project" => line}.merge_from params, :git_branch, :git_tag)
+            machine.install_service_from_github({"github_project" => line}.merge_from(params, :git_branch, :git_tag))
           end
         end
       end  
