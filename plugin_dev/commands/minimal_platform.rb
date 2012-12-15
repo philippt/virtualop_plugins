@@ -24,6 +24,24 @@ on_machine do |host, params|
   )
   
   host.setup_vm(
+    "vm_name" => "datarepo",
+    "disk_size" => 100,
+    "canned_service" => "datarepo/datarepo",
+    "extra_params" => {
+      "domain" => "datarepo.#{params["domain"]}",
+      "repo_dir" => "/var/www/html"
+    }
+  )
+  
+  host.setup_vm(
+    "vm_name" => "website",
+    "github_project" => "philippt/virtualop_website",
+    "extra_params" => {
+      "domain" => "#{params["domain"]}"
+    }
+  )
+  
+  host.setup_vm(
     "vm_name" => "powerdns",
     "canned_service" => "powerdns/powerdns"    
   )

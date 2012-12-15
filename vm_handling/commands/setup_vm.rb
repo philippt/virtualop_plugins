@@ -138,17 +138,18 @@ on_machine do |machine, params|
     )
    
     MAX_ATTEMPTS = 3
+    YUM_UPDATE_TIMEOUT_MIN = 15
     attempts = 0
     updated = false
     while (attempts < MAX_ATTEMPTS) do
       attempts += 1    
       begin
-        Timeout::timeout(10 * 60) {
+        Timeout::timeout(YUM_UPDATE_TIMEOUT_MIN * 60) {
           vm.yum_update
           updated = true
         }
       rescue => detail
-        $logger.warn "yum update didn't complete within 10 minutes - #{MAX_ATTEMPTS - attempts} attempts left.."
+        $logger.warn "yum update didn't complete within #{YUM_UPDATE_TIMEOUT_MIN} minutes - #{MAX_ATTEMPTS - attempts} attempts left.."
         machine.kill_processes_like("string" => "yum")
       end
     end
