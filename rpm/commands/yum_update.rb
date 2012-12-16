@@ -15,7 +15,7 @@ on_machine do |machine, params|
         "yum check-update",
         "yum update"
       ].each do |command|
-        machine.ssh_and_check_result("command" => command_string)
+        machine.ssh_and_check_result("command" => command)
       end
     else
       raise error

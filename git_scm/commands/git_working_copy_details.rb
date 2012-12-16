@@ -36,6 +36,8 @@ on_machine do |machine, params|
     rescue => detail
       $logger.warn("could not fetch origin information for project #{corrected_path} : #{detail}")
     end
+    
+    wc["active_branch"] = machine.list_branches_for_working_copy("working_copy" => params["working_copy"]).select { |x| x["active"] == "true" }.first["name"]
   end
   
   #pp wc
