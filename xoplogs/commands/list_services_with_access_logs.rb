@@ -4,6 +4,8 @@ param :machine, "machine filter", :mandatory => false
 
 add_columns [ :host_name, :service_name ]
 
+mark_as_read_only
+
 execute do |params|
   result = []
   @op.with_machine(config_string('xoplogs_machine')) do |xoplogs|

@@ -3,11 +3,13 @@ description "returns the data for graphing access logs for the selected service"
 param :machine
 param :service, "the service to work with", :mandatory => false
 
-param! "line", "the 'line' of data that should be retrieved", :lookup_method => lambda { %w|count_success count_errors count_total response_time_ms| }
+param! "line", "the 'line' of data that should be retrieved", 
+  :lookup_method => lambda { @op.list_data_lines }
 
-param "interval_hours", "the number of hours that should be displayed (counting backwards from now)", :default_value => 2
+param "interval_hours", "the number of hours that should be displayed (counting backwards from now)", 
+  :default_value => 2
 
-#mark_as_read_only
+mark_as_read_only
 # TODO expires => 15.minutes would be nice here
 
 execute do |params|
@@ -18,6 +20,6 @@ execute do |params|
     url += "&services\\[\\]=#{params["service"]}" if params.has_key?("service")
     url += "&line=#{params["line"]}"
     url += "&interval_hours=#{params["interval_hours"]}"
-    @op.http_get("url" => url)
+    JSON.parse(@op.http_get("url" => url))
   end
 end

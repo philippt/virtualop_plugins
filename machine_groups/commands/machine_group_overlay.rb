@@ -43,7 +43,7 @@ execute do |params|
               end
             }  
           rescue => detail
-            $logger.warn("couldn't get data for overlay '#{params["overlay_command"]}' from machine '#{machine_name}' : #{detail.message}")
+            $logger.warn("couldn't get data for overlay '#{params["overlay_command"]}' from machine '#{machine_name}' : #{detail.message} at #{detail.backtrace.join("\n")}")
           end
         end
       end
