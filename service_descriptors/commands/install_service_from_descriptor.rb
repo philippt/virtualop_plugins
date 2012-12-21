@@ -174,7 +174,7 @@ on_machine do |machine, params|
   @op.without_cache do
     #machine.list_working_copies
     machine.list_installed_services
-    
+    # TODO we want to invalidate list_services, but list_services is too expensive
     #machine.list_services
     
     # TODO actually, it would be ok if we invalidated these asynchronously

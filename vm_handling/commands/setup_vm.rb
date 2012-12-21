@@ -50,7 +50,7 @@ on_machine do |machine, params|
   
   @op.notify_vm_setup_start("machine_name" => full_name, "data" => params)
   
-  #@op.with_lock("name" => "setup_vm", "machine" => full_name) do
+  @op.with_lock("name" => "setup_vm", "machine" => full_name) do
     new_vm_params = params.clone
     new_vm_params.delete("domain")
     new_vm_params.delete("script_url")
@@ -69,7 +69,7 @@ on_machine do |machine, params|
       @op.list_known_machines
       @op.list_machines
     end
-  #end
+  end
   
   # wait until shutdown after installation
   @op.wait_until(
