@@ -50,24 +50,26 @@ on_machine do |machine, params|
   
   @op.notify_vm_setup_start("machine_name" => full_name, "data" => params)
   
-  new_vm_params = params.clone
-  new_vm_params.delete("domain")
-  new_vm_params.delete("script_url")
-  new_vm_params.delete("github_project")
-  new_vm_params.delete("git_branch")
-  machine.new_vm_from_kickstart(new_vm_params)
-
-  # TODO does not work without memcached
-  # TODO do we need this?
-  @op.flush_cache
+  #@op.with_lock("name" => "setup_vm", "machine" => full_name) do
+    new_vm_params = params.clone
+    new_vm_params.delete("domain")
+    new_vm_params.delete("script_url")
+    new_vm_params.delete("github_project")
+    new_vm_params.delete("git_branch")
+    machine.new_vm_from_kickstart(new_vm_params)
   
-  machine.generate_and_execute_iptables_script
-  
-  machine.add_installed_vms_to_known_machines
-  @op.without_cache do
-    @op.list_known_machines
-    @op.list_machines
-  end
+    # TODO does not work without memcached
+    # TODO do we need this?
+    @op.flush_cache
+    
+    machine.generate_and_execute_iptables_script
+    
+    machine.add_installed_vms_to_known_machines
+    @op.without_cache do
+      @op.list_known_machines
+      @op.list_machines
+    end
+  #end
   
   # wait until shutdown after installation
   @op.wait_until(
