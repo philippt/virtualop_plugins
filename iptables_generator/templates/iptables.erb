@@ -86,6 +86,8 @@ iptables -A INPUT -p tcp --dport 22 -m state --state NEW -j ACCEPT
 iptables -A INPUT -p tcp --dport 2042 -m state --state NEW -j ACCEPT
 iptables -A INPUT -p tcp --dport 2242 -m state --state NEW -j ACCEPT
 
+<%= @includes[:input] %>
+
 ## Bestimmte ICMP-Pakete erlauben ## 
 iptables -A INPUT -p icmp --icmp-type echo-reply -j ACCEPT
 iptables -A OUTPUT -p icmp --icmp-type echo-reply -j ACCEPT

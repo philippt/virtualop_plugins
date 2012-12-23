@@ -116,7 +116,7 @@ on_machine do |machine, params|
     # TODO add public keys and deactivate password login
     vm.ssh_and_check_result("command" => "/etc/init.d/sshd restart")
     
-    #vm.write_own_centos_repo()
+    vm.write_own_centos_repo()
     
     sleep 15
     

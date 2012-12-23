@@ -1,4 +1,4 @@
-dependencies [ :core, :machines, :erb_processor ]
+dependencies [ :core, :machines, :erb_processor, :drop_dir ]
 
 config_param "dropdir", "the directory holding machine groups", :default_value => "#{@op.config_base_dir}/machine_groups"
 
@@ -15,10 +15,4 @@ on_init do |plugin, config|
   )
   plugin.state[:drop_dir] = provider
   Dir.mkdir(dir_name) unless File.exists?(dir_name)
-end
-
-on_activation do |plugin, config|
-  #sources = plugin.state[:drop_dir].read_local_dropdir
-  #active_sources = sources.select { |source| source["enabled"]}
-  #@op.load_plugins active_sources.map { |source| source["path"] }
 end

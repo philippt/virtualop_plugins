@@ -12,16 +12,13 @@
 
 [base]
 name=CentOS-$releasever - Base
-#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=os
-baseurl=http://centos_mirror.virtualop.org/pub/Mirrors/centos/$releasever/os/$basearch/
+baseurl=<%= mirror_base %>/pub/Mirrors/centos/$releasever/os/$basearch/
 gpgcheck=0
-#gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
 
 #released updates 
 [updates]
 name=CentOS-$releasever - Updates
-#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=updates
-baseurl=http://centos_mirror.virtualop.org/pub/Mirrors/centos/$releasever/updates/$basearch/
+baseurl=<%= mirror_base %>/pub/Mirrors/centos/$releasever/updates/$basearch/
 gpgcheck=0
 #gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
 

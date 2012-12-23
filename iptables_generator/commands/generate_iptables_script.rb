@@ -8,7 +8,7 @@ on_machine do |machine, params|
   @includes = {}
   
   if machine.file_exists("file_name" => drop_dir)
-    %w|prerouting forward|.each do |phase|
+    %w|prerouting input forward output|.each do |phase|
       phase_dir = drop_dir + '/' + phase
       if machine.file_exists("file_name" => phase_dir)
         @includes[phase.to_sym] = "## #{phase} rules included from #{phase_dir}\n"

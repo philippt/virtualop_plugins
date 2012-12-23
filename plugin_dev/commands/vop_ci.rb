@@ -57,4 +57,6 @@ execute do |params|
   
   @op.create_jenkins_job("job_name" => "nagios ci", "command_string" => "kaboom_vm machine=vop_ci_nagios.zapata.virtualop canned_service=nagios/nagios domain=nagios.ci.virtualop.org")
   @op.create_jenkins_job("job_name" => "xoplogs ci", "command_string" => "kaboom_vm machine=vop_ci_xoplogs.zapata.virtualop github_project=philippt/xoplogs domain=xoplogs.ci.virtualop.org")
+  
+  @op.trigger_build("jenkins_job" => "nagios ci")
 end
