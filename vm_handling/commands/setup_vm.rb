@@ -73,7 +73,7 @@ on_machine do |machine, params|
   
   # wait until shutdown after installation
   @op.wait_until(
-    "interval" => 5, "timeout" => config_string('installation_timeout_secs', 1200), 
+    "interval" => 5, "timeout" => config_string('installation_timeout_secs', 1800), 
     "error_text" => "could not find a machine with name '#{params["vm_name"]}' that is shut off",
     "condition" => lambda do
       candidates = machine.list_vms.select do |row|
@@ -91,7 +91,7 @@ on_machine do |machine, params|
   sleep 15
   
   @op.wait_until(
-    "interval" => 5, "timeout" => 120, 
+    "interval" => 5, "timeout" => 180, 
     "error_text" => "could not find a running machine with name '#{params["vm_name"]}'",
     "condition" => lambda do
       result = false

@@ -59,4 +59,5 @@ execute do |params|
   @op.create_jenkins_job("job_name" => "xoplogs", "command_string" => "kaboom_vm machine=vop_ci_xoplogs.zapata.virtualop github_project=philippt/xoplogs domain=xoplogs.ci.virtualop.org")
   
   @op.trigger_build("jenkins_job" => "nagios")
+  @op.trigger_build("jenkins_job" => "xoplogs")
 end
