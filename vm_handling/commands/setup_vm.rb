@@ -117,6 +117,11 @@ on_machine do |machine, params|
     vm.ssh_and_check_result("command" => "/etc/init.d/sshd restart")
     
     vm.write_own_centos_repo()
+
+    # TODO seems this is not invalidated through the flush_cache() call above - not quite sure why, though    
+    @op.without_cache do
+      vm.list_services
+    end
     
     sleep 15
     
