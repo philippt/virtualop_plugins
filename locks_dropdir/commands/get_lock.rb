@@ -21,7 +21,6 @@ execute do |params|
       sleep attempt_interval
     else
       current_command = Thread.current['broker'].get_command('get_lock')
-      puts "current command : #{current_command.name}"
       
       params["owner"] = myself
       
