@@ -125,6 +125,8 @@ on_machine do |machine, params|
     
     sleep 15
     
+    #vm.os_update
+    
     # there might be already a yum process running - started by the OS
     @op.wait_until(
       "interval" => 5, "timeout" => 120, 
@@ -168,8 +170,14 @@ on_machine do |machine, params|
     end
     
     machine.install_rpm_package("name" => [ "git", "vim", "screen", "man", "rubygems" ])
+    
     machine.ssh_and_check_result("command" => "gem update --system")
+    
     machine.mkdir('dir_name' => @op.plugin_by_name('service_descriptors').config_string('service_config_dir'))
+    
+    %w|check_mem check_load|.each do |service_name|
+      machine.install_canned_service("service" => "#{service_name}/#{service_name}")
+    end
     
     if params.has_key?('canned_service')
       params['canned_service'].each do |canned_service|

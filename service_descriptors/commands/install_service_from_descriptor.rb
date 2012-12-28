@@ -234,11 +234,9 @@ on_machine do |machine, params|
           "service" => service_name,
           "content" => "iptables -A FORWARD -d #{machine.ipaddress} -p udp --dport #{port} -m state --state NEW -j ACCEPT"
         )
-        #iptables -A FORWARD -d $IP_PRIVATE_PROXY -p tcp --dport 80 -m state --state NEW -j ACCEPT
         
         host.generate_and_execute_iptables_script()
       end
-      #iptables -t nat -A PREROUTING  -p tcp  -d $IP_HOST --dport <%= vm["ssh_port"] %>  -j DNAT --to-destination <%= vm["ipaddress"] %>:22
     end
     
     if service.has_key?("http_endpoint")
