@@ -53,6 +53,12 @@ on_machine do |machine, params|
       machine.add_service_config("check_command" => "check_http_domain!#{service["domain"]}", "service_description" => "#{service["domain"]}")
     end
     
+    if service.has_key?("nagios_commands")
+      service["nagios_commands"].each do |name, content|
+        @op.add_extra_command("file_name" => name, "content" => content)
+      end
+    end
+    
     if service.has_key?("nagios_checks")
       service["nagios_checks"].each do |name, check|
         machine.add_service_config("check_command" => check, "service_description" => name)

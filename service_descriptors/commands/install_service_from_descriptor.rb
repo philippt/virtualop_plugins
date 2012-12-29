@@ -153,16 +153,6 @@ on_machine do |machine, params|
       end
     end
 
-    # TODO should probably move this to the end as well    
-    if dotvop_content.include? "nagios_commands"
-      descriptor_machine.list_files("directory" => "#{descriptor_dir}/nagios_commands").each do |nagios_command|
-        @op.add_extra_command(
-          "file_name" => nagios_command, 
-          "content" => descriptor_machine.read_file("file_name" =>  "#{descriptor_dir}/nagios_commands/#{nagios_command}")
-        )
-      end      
-    end
-    
     if machine.file_exists("file_name" => machine.config_dir)
       machine.hash_to_file(
         "file_name" => "#{machine.config_dir}/#{service_name}", 
