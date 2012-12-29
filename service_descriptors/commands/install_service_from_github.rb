@@ -26,12 +26,11 @@ on_machine do |machine, params|
     raise detail unless /^need either/.match(detail.message)
   end
       
-  p = {
+  clone_params = {
     "directory" => service_root,
     "git_url" => git_url
-  }
-  p.merge_from params, :git_tag, :git_branch
-  machine.git_clone(p) unless machine.file_exists("file_name" => service_root)  
+  }.merge_from params, :git_tag, :git_branch
+  machine.git_clone(clone_params) unless machine.file_exists("file_name" => service_root)  
   
   machine.list_services_in_working_copies
   
@@ -43,6 +42,8 @@ on_machine do |machine, params|
       params[k] = v
     end
   end
+  
+  params["version"] = {}.merge_from params, :github_project, :git_branch, :git_tag
   
   machine.install_service_from_working_copy(params)
 end

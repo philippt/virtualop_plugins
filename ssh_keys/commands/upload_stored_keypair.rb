@@ -14,5 +14,7 @@ on_machine do |machine, params|
     
     machine.write_file("target_filename" => "/root/.ssh/id_rsa#{name_suffix}", "content" => private_key)
     machine.write_file("target_filename" => "/root/.ssh/id_rsa#{name_suffix}.pub", "content" => public_key)
+    
+    machine.add_authorized_key("public_key" => public_key)
   end 
 end

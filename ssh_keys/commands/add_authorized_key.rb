@@ -1,8 +1,7 @@
 description 'adds a public key to a user directory on a machine so that it is authorized to login'
 
 param :machine
-#param "user", "the user account that should be used"
-param "public_key", "the actual public key that should be added", :mandatory => true
+param! "public_key", "the actual public key that should be added", :default_param => true
 
 on_machine do |machine, params|
   machine.mkdir("dir_name" => ".ssh", "permissions" => "700")
