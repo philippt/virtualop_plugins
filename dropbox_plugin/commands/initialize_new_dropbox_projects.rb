@@ -11,10 +11,7 @@ execute do |params|
     next if project["has_metadata"]
     puts "initializing #{project["name"]}"
     @op.initialize_dropbox_project("project" => project["name"])
-    c = [ "# service #{project["name"]}",
-          "static_html"
-        ].join("\n")
-    @op.add_service_to_dropbox_project("project" => project["name"], "name" => project["name"], "content" => c)
+    
     @op.without_cache do
       @op.troll_dropbox_folders("path" => project["path"])
     end

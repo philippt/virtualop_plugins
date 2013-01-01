@@ -104,7 +104,7 @@ class ServiceDescriptorLoader
     targets = [ :redirect_log, :start_command, :stop_command, :on_install ]
     targets += [ :port, :process_regex, :log_file ]
     targets += [ :cron, :every ]
-    targets += [ :http_endpoint, :tcp_endpoint ]
+    targets += [ :http_endpoint, :tcp_endpoint, :udp_endpoint ]
     targets += [ :static_html ]
     #targets += [ :database ]
     #targets += [ :runlevel ]

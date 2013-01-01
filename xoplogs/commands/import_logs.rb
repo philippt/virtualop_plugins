@@ -17,8 +17,10 @@ on_machine do |machine, params|
         "target_file" => path_for_import
       )
       service_root = xoplogs.service_details("service" => "xoplogs")["service_root"]
-      xoplogs.ssh_and_check_result("command" => "cd #{service_root} && `which rails` runner app/scripts/import_access_log.rb #{path_for_import} xop_apache #{params["machine"]} #{log["service"]}")
-      result << { "path" => file_name }
+      if log["source"] == "apache" and log["format"] == "vop" 
+        xoplogs.ssh_and_check_result("command" => "cd #{service_root} && `which rails` runner app/scripts/import_access_log.rb #{path_for_import} xop_apache #{params["machine"]} #{log["service"]}")
+        result << { "path" => file_name }
+      end
     end
   end
   result

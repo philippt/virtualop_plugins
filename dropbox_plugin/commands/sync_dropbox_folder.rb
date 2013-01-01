@@ -101,5 +101,6 @@ on_machine do |machine, params|
   
   write_record.call(for_the_record)
   
+  # TODO this does not work if there's no apache installed
   machine.allow_access_for_apache("file_name" => params["directory"])
 end

@@ -4,6 +4,13 @@ param :machine
 #param "alternative_mysql_host_name", "if mysql checks are generated, the value of this parameter is used instead of the host address as mysql hostname to connect against"
 
 on_machine do |machine, params|
+  %w|check_mem check_load|.each do |service_name|
+    machine.install_canned_service("service" => "#{service_name}/#{service_name}")
+  end
+  @op.without_cache do
+    machine.list_services
+  end
+  
   target_file = machine.nagios_file_name
 
   local_partitions = machine.disk_space.select do |row|

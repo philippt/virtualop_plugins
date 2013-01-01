@@ -175,10 +175,6 @@ on_machine do |machine, params|
     
     machine.mkdir('dir_name' => @op.plugin_by_name('service_descriptors').config_string('service_config_dir'))
     
-    %w|check_mem check_load|.each do |service_name|
-      machine.install_canned_service("service" => "#{service_name}/#{service_name}")
-    end
-    
     if params.has_key?('canned_service')
       params['canned_service'].each do |canned_service|
         p = {
@@ -187,21 +183,12 @@ on_machine do |machine, params|
         if params.has_key?("extra_params")
           p["extra_params"] = params["extra_params"]
         end
-          # params["extra_params"].each do |k,v|
-            # p[k] = v
-          # end
-        # end
         machine.install_canned_service(p)
       end
     end
     
     
     if params.has_key?('github_project')
-      #install_params = {
-      #  "github_project" => params["github_project"]      
-      #}
-      #install_params["git_branch"] = params["git_branch"] if params.has_key?('git_branch')
-      #install_params["domain"] = params["domain"] if params.has_key?('domain')
       machine.install_service_from_github(params) 
     end  
     
@@ -213,4 +200,6 @@ on_machine do |machine, params|
     
     machine.notify_vm_setup_complete("data" => params)    
   end
+  
+  full_name
 end

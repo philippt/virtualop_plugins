@@ -48,8 +48,9 @@ on_machine do |machine, params|
           unless /\//.match(service_spec)
             service_spec += '/' + service_spec
           end
+          service_name = service_spec.split("/").first
           # TODO version
-          machine.install_canned_service("service" => service_spec)
+          machine.install_canned_service("service" => service_spec) unless machine.list_installed_services.include?(service_name)
         end    
       end
       
@@ -62,7 +63,9 @@ on_machine do |machine, params|
           if found.size > 0
             working_copy = found.first
             $logger.info("working copy for github dependency #{line} already exists locally")
-            machine.install_service_from_working_copy("working_copy" => working_copy["name"], "service" => working_copy["name"])
+            if not machine.list_installed_services.include?(working_copy["name"])
+              machine.install_service_from_working_copy("working_copy" => working_copy["name"], "service" => working_copy["name"])
+            end
           else
             # TODO checkout working copy
             # TODO version
@@ -205,28 +208,30 @@ on_machine do |machine, params|
       end
     end
     
-    if service.has_key?("tcp_endpoint")
-      # TODO actually, this seems to be a udp endpoint ;-)
-      port = service["tcp_endpoint"]
-      host_name = machine.name.split('.')[1..10].join('.')
-      @op.with_machine(host_name) do |host|
-        host.add_prerouting_include(
-          "source_machine" => machine.name,
-          "service" => service_name,
-          "content" => "iptables -t nat -A PREROUTING -p udp  -d $IP_HOST --dport #{port}  -j DNAT --to-destination #{machine.ipaddress}:#{port}"
-        )
-        host.add_forward_include(
-          "source_machine" => machine.name,
-          "service" => service_name,
-          "content" => "iptables -A INPUT -d $IP_HOST -p udp --dport #{port} -m state --state NEW -j ACCEPT"
-        )
-        host.add_forward_include(
-          "source_machine" => machine.name,
-          "service" => service_name,
-          "content" => "iptables -A FORWARD -d #{machine.ipaddress} -p udp --dport #{port} -m state --state NEW -j ACCEPT"
-        )
-        
-        host.generate_and_execute_iptables_script()
+    %w|tcp udp|.each do |protocol|
+      endpoint = "#{protocol}_endpoint"
+      if service.has_key?(endpoint)
+        port = service[endpoint]
+        host_name = machine.name.split('.')[1..10].join('.')
+        @op.with_machine(host_name) do |host|
+          host.add_prerouting_include(
+            "source_machine" => machine.name,
+            "service" => service_name,
+            "content" => "iptables -t nat -A PREROUTING -p #{protocol} -d $IP_HOST --dport #{port}  -j DNAT --to-destination #{machine.ipaddress}:#{port}"
+          )
+          host.add_forward_include(
+            "source_machine" => machine.name,
+            "service" => service_name,
+            "content" => "iptables -A INPUT -d $IP_HOST -p #{protocol} --dport #{port} -m state --state NEW -j ACCEPT"
+          )
+          host.add_forward_include(
+            "source_machine" => machine.name,
+            "service" => service_name,
+            "content" => "iptables -A FORWARD -d #{machine.ipaddress} -p #{protocol} --dport #{port} -m state --state NEW -j ACCEPT"
+          )
+          
+          host.generate_and_execute_iptables_script()
+        end
       end
     end
     

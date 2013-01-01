@@ -20,6 +20,11 @@ execute do |params|
     
   end
   
+  c = [ "# service #{params["project"]}",
+          "static_html"
+        ].join("\n")
+  @op.add_service_to_dropbox_project("project" => params["project"], "name" => params["project"], "content" => c)
+  
   @op.without_cache do
     @op.list_dropbox_projects
   end
