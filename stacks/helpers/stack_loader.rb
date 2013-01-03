@@ -97,7 +97,7 @@ class StackLoader
     end
     
     def github(project_name, options = {})
-      @github_project = project_name
+      @data["github_project"] = project_name
       @data["git_branch"] = options[:branch] if options[:branch]
     end
     

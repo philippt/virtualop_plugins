@@ -16,3 +16,7 @@ on_activation do |plugin, config|
   #require 'rubygems'
   #require 'carrot'  
 end  
+
+on_shutdown do |plugin, config|
+  @op.flush_buffer
+end

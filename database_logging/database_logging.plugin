@@ -12,7 +12,9 @@ config_param "archive_min_age", "the age logging tables can reach before they ar
 on_activation do |plugin, config|
   require 'mysql'
   
-  plugin.state[:dbh] = Mysql.real_connect(config["db_host"], config["db_user"], config["db_pass"], config["db_name"])      
+  dbh = Mysql.real_connect(config["db_host"], config["db_user"], config["db_pass"], config["db_name"])
+  dbh.autocommit(false)
+  plugin.state[:dbh] = dbh      
   $logger.info("database logging activated (db name : #{config["db_name"]})")
 end
 

@@ -14,7 +14,7 @@ class MemcachedBroker < RHCP::Broker
 
       @cache = MemCache.new(
         [memcached_server],
-        :timeout => 1
+        :timeout => 2
       )
       $logger.info("memcached plugin active (connected to '#{memcached_server}')")
     else

@@ -48,9 +48,9 @@ on_machine do |machine, params|
           unless /\//.match(service_spec)
             service_spec += '/' + service_spec
           end
-          service_name = service_spec.split("/").first
+          vop_service_name = service_spec.split("/").first
           # TODO version
-          machine.install_canned_service("service" => service_spec) unless machine.list_installed_services.include?(service_name)
+          machine.install_canned_service("service" => service_spec) unless machine.list_installed_services.include?(vop_service_name)
         end    
       end
       
@@ -110,6 +110,8 @@ on_machine do |machine, params|
       
     end
     
+    @op.comment "installed dependencies for #{plugin_name}"
+    
     # load as a vop plugin
     if ((plugin_name != nil) and (not @op.list_plugins.include?(plugin_name)))
       plugin_file = descriptor_dir + "/#{plugin_name}.plugin"
@@ -149,6 +151,7 @@ on_machine do |machine, params|
       end
       $logger.info("params_to_use : \n#{params_to_use.map { |k,v| "\t#{k}\t#{v}" }.join("\n")}")
       
+      @op.comment "invoking #{install_command.name}..."
       begin
         @op.send(install_command.name.to_sym, params_to_use)
       rescue => detail
@@ -164,6 +167,8 @@ on_machine do |machine, params|
       )
     end
   end
+  
+  @op.comment "installation complete for #{service_name}, gonna invalidate and post-process"
   
   @op.without_cache do
     #machine.list_working_copies
@@ -282,4 +287,6 @@ on_machine do |machine, params|
       end
     end
   end
+  
+  @op.comment "post-processing complete for installation of service #{service_name}"
 end

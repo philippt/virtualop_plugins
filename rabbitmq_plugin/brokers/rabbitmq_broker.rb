@@ -1,5 +1,32 @@
 class RabbitmqBroker < RHCP::LoggingBroker
   
+  MAX_BUFFER_SIZE = 100
+  
+  @@buffer = []
+  
+  @@buffer_lock = Mutex.new
+  
+  @@flusher = Thread.new do
+    while (true) do
+      flush_buffer
+      sleep 10
+    end
+  end
+  
+  def self.flush_buffer(op)
+    @@buffer_lock.synchronize {
+      op.hello_rabbit("queue" => "raw_logging", "message" => JSON.generate(@@buffer))
+      @@buffer = []
+    }
+  end
+  
+  def to_rabbit(payload)
+    @@buffer << payload
+    if @@buffer.size >= MAX_BUFFER_SIZE
+      self.class.flush_buffer(@op)
+    end
+  end
+  
   def initialize(broker, plugin)
     super(broker)
     @op = plugin.op
@@ -54,7 +81,6 @@ class RabbitmqBroker < RHCP::LoggingBroker
   def log_request_start(request_id, level, mode, current_stack, request, start_ts)
     request_id = Thread.current[var_name("request_id")]
     
-    #return unless @plugin.config_string('broker_enabled') == 'true'
     return unless broker_enabled? request
     
     return if /^database_logging\./.match(request.command.full_name)
@@ -65,13 +91,14 @@ class RabbitmqBroker < RHCP::LoggingBroker
       param_values << "#{k} => #{v}"
     end
     
-    @op.hello_rabbit(
-      "queue" => "text_logging",
-      "message" => "#{request_id} #{level} > #{current_stack} [#{mode}] #{request.command.name} (#{param_values.join(", ")})"
-    )
+    # TODO reactivate text log?
+    #@op.hello_rabbit(
+    #  "queue" => "text_logging",
+    #  "message" => "#{request_id} #{level} > #{current_stack} [#{mode}] #{request.command.name} (#{param_values.join(", ")})"
+    #)
     
     #  Die Timestamps wenn es geht im ISO8601 format bidde
-    j = JSON.generate({
+    j = {
       :request_id => request_id,
       :phase => 'start',
       :level => level,
@@ -79,17 +106,18 @@ class RabbitmqBroker < RHCP::LoggingBroker
       :current_stack => current_stack,
       :request => request.as_json(),
       :start_ts => start_ts.utc.iso8601()
-    })
-    @op.hello_rabbit("queue" => "raw_logging", "message" => j)
+    }
+    
+    to_rabbit(j)
   end
   
   def log_request_stop(request_id, level, mode, current_stack, request, response, duration)
     return unless broker_enabled? request
     
     request_id = Thread.current[var_name("request_id")]
-    @op.hello_rabbit("queue" => "text_logging", "message" => "#{request_id} #{level} < #{current_stack} #{response != nil ? response.status : '-'} #{duration}s")
+    #@op.hello_rabbit("queue" => "text_logging", "message" => "#{request_id} #{level} < #{current_stack} #{response != nil ? response.status : '-'} #{duration}s")
     
-    j = JSON.generate({
+    j = {
       :request_id => request_id,
       :phase => 'stop',
       :level => level,
@@ -98,8 +126,8 @@ class RabbitmqBroker < RHCP::LoggingBroker
       :request => request.as_json(),
       :response => response.as_json(),
       :duration => duration
-    })
-    @op.hello_rabbit("queue" => "raw_logging", "message" => j)
+    }
+    to_rabbit(j)
   end
   
   
