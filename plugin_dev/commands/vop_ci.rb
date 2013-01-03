@@ -43,7 +43,7 @@ on_machine do |machine, params|
   
   @op.configure_my_sql("mysql_user" => "root", "mysql_password" => "the_password")
   
-  @op.configure_nagios_config_generator("nagios_machine_name" => "vop_ci_nagios.#{host_name}", "default_services" => ["ssh"])
+  @op.configure_nagios_config_generator("nagios_machine_name" => "ci_nagios.#{host_name}", "default_services" => ["ssh"])
   @op.configure_nagios_status("nagios_bin_url" => "http://nagios.ci.virtualop.org/nagios/cgi-bin", "nagios_user" => "nagiosadmin", "nagios_password" => "the_password")
   #@op.generate_nagios_config("machine" => "vop_ci_website.zapata.virtualop")
   
