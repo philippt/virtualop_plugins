@@ -43,6 +43,7 @@ execute do |params|
       rescue Exception => msg
         $logger.error(msg)
       ensure
+        @op.flush_buffer
         q.ack
       end
     end

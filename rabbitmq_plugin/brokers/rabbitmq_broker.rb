@@ -43,6 +43,7 @@ class RabbitmqBroker < RHCP::LoggingBroker
     # commands << "default_user"
     # commands << "default_port"
     
+    commands << "flush_buffer"
     commands << "hello_rabbit"
     commands << "listen_to_rabbit"
     commands << "ssh_options_for_machine"
