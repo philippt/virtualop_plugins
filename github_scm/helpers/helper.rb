@@ -9,7 +9,7 @@ def github_url(params, uri)
 end
 
 def parse_event(event)
-  event["actor_login"] = event["actor"]["login"] if event.has_key?("actor") and event["actor"].has_key?("login")
+  event["user"] = event["actor"]["login"] if event.has_key?("actor") and event["actor"].has_key?("login")
     
   event["message"] = event["payload"]["commits"].first["message"] if event.has_key?("payload") and event["payload"].has_key?("commits") and
     event["payload"]["commits"].size > 0 and event["payload"]["commits"].first.has_key?("message")
@@ -17,6 +17,8 @@ def parse_event(event)
   if event.has_key?("type") and event["type"] == "CreateEvent" and event.has_key?("payload") and event["payload"].has_key?("ref")
     event["message"] = "created tag #{event["payload"]["ref"]}"      
   end
+  
+  event["timestamp"] = DateTime.parse(event["created_at"])
   
   event
 end

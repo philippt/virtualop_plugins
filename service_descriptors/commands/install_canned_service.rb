@@ -16,19 +16,21 @@ on_machine do |machine, params|
   
   params["descriptor"] = service_row["file_name"]  
   
-  $logger.info("installing canned service #{params["service"]} onto #{params["machine"]}")
-  
-  params.delete("service")
-  
-  #pp params
-  
-  if params.has_key?('extra_params')
-    puts "got extra params:"
-    pp params['extra_params']
-    params["extra_params"].each do |k,v|
-      params[k] = v
+  if machine.list_installed_services.include? params["service"]
+    @op.comment("service #{service_name} already installed, nothing to do.")
+  else
+    $logger.info("installing canned service #{params["service"]} onto #{params["machine"]}")
+    
+    params.delete("service")
+    
+    if params.has_key?('extra_params')
+      puts "got extra params:"
+      pp params['extra_params']
+      params["extra_params"].each do |k,v|
+        params[k] = v
+      end
     end
+    
+    @op.install_service_from_descriptor(params)  
   end
-  
-  @op.install_service_from_descriptor(params)  
 end

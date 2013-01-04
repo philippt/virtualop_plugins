@@ -2,7 +2,7 @@ github_params
 
 param! "user_name", "github username of the user for which events should be displayed"
 
-add_columns [ :created_at, :actor_login, :message ]
+add_columns [ :created_at, :user, :message ]
 
 mark_as_read_only # TODO expires 15.minutes
 
