@@ -25,7 +25,7 @@ on_machine do |machine, params|
     machine_def.data.each do |k,v|
       option_string += " #{k}=#{v}"
     end
-    @op.create_jenkins_job("job_name" => full_name, "command_string" => "kaboom_vm machine=#{full_name} #{option_string}")
+    @op.create_jenkins_job("job_name" => full_name, "command_string" => "kaboom machine=#{full_name} #{option_string}")
     result << {
       "name" => machine_def.name,
       "status" => "ok"

@@ -24,7 +24,7 @@ on_machine do |machine, params|
     full_name = vm_name + '.' + machine.name
     
     if machine.list_vms.select { |x| x["name"] == vm_name }.size > 0
-      command_name = "kaboom_vm"
+      command_name = "kaboom"
       options["machine"] = full_name
     else
       command_name = "setup_vm"
