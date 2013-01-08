@@ -18,6 +18,8 @@ param "location", "installation source for guest virtual machine kernel+initrd p
 
 param "canned_service", "name of a canned service to install on the machine", :allows_multiple_values => true
 
+param "http_proxy", "if specified, the http proxy is used for the installation and configured on the new machine"
+
 # TODO add environment here?
 #param "environment", "if specified, the environment is written into a config file so that it's available through $VOP_ENV", :lookup_method => lambda do
 #  %w|development staging production|
@@ -96,8 +98,8 @@ on_machine do |machine, params|
     "condition" => lambda do
       result = false
       begin
-        @op.with_machine(full_name) do |machine|
-          machine.hostname
+        @op.with_machine(full_name) do |m|
+          m.hostname
         end      
         result = true
       rescue Exception => e
@@ -117,6 +119,7 @@ on_machine do |machine, params|
     vm.ssh_and_check_result("command" => "/etc/init.d/sshd restart")
     
     vm.write_own_centos_repo()
+    process_local_template(:http_proxy, vm, "/etc/profile.d/http_proxy.sh", binding()) if params.has_key?('http_proxy')
 
     # TODO seems this is not invalidated through the flush_cache() call above - not quite sure why, though    
     @op.without_cache do

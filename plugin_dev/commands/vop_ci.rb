@@ -45,11 +45,11 @@ on_machine do |machine, params|
   
   @op.configure_nagios_config_generator("nagios_machine_name" => "ci_nagios.#{host_name}", "default_services" => ["ssh"])
   @op.configure_nagios_status("nagios_bin_url" => "http://nagios.ci.virtualop.org/nagios/cgi-bin", "nagios_user" => "nagiosadmin", "nagios_password" => "the_password")
+  #@op.generate_nagios_config("machine" => "vop_ci_website.zapata.virtualop")
   
   @op.configure_xoplogs("xoplogs_machine" => "ci_xoplogs.#{host_name}", "auto_import_machine_groups" => [ host_name ])
   
-  #@op.generate_nagios_config("machine" => "vop_ci_website.zapata.virtualop")
-  
+  @op.add_data_repo("alias" => "ci", "machine" => "ci_datarepo.#{host_name}", "url" => "http://datarepo.ci.virtualop.org")
   
   @op.with_machine('localhost') do |localhost|
     localhost.install_service_from_working_copy("working_copy" => "virtualop", "service" => "import_logs")

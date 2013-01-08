@@ -1,4 +1,5 @@
 dependency :core
+dependency :erb_processor
 dependency :libvirt
 dependency :rpm
 dependency :service_descriptors

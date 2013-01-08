@@ -20,6 +20,8 @@ param "location", "installation source for guest virtual machine kernel+initrd p
 
 param "canned_service", "name of a canned service to install on the machine", :allows_multiple_values => true
 
+param "http_proxy", "if specified, the http proxy is used for the installation and configured on the new machine"
+
 accept_extra_params
 
 on_machine do |machine, params|
