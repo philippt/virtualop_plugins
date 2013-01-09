@@ -110,73 +110,9 @@ on_machine do |machine, params|
   )
   
   @op.with_machine(full_name) do |vm|
-    # TODO persist this
-    vm.ssh_and_check_result("command" => "setenforce Permissive")
-    vm.ssh_and_check_result("command" => "restorecon -R -v /root/.ssh")
+    vm.base_install
     
-    vm.ssh_and_check_result("command" => "sed -i -e 's!#PermitUserEnvironment no!PermitUserEnvironment yes!' /etc/ssh/sshd_config")
-    # TODO add public keys and deactivate password login
-    vm.ssh_and_check_result("command" => "/etc/init.d/sshd restart")
-    
-    vm.write_own_centos_repo()
-    process_local_template(:http_proxy, vm, "/etc/profile.d/http_proxy.sh", binding()) if params.has_key?('http_proxy')
-
-    # TODO seems this is not invalidated through the flush_cache() call above - not quite sure why, though    
-    @op.without_cache do
-      vm.list_services
-    end
-    
-    sleep 15
-    
-    #vm.os_update
-    
-    # there might be already a yum process running - started by the OS
-    @op.wait_until(
-      "interval" => 5, "timeout" => 120, 
-      "error_text" => "there seems to be a yum process already running",
-      "condition" => lambda do
-        result = false
-        begin
-          procs = vm.processes.select do |p|
-            /yum/.match(p["command"])
-          end
-          
-          result = procs.size == 0
-        rescue Exception => e
-          $logger.info("got an exception while trying to connect to machine : #{e.message}")
-        end
-        result
-      end
-    )
-   
-    MAX_ATTEMPTS = 3
-    YUM_UPDATE_TIMEOUT_MIN = 15
-    attempts = 0
-    updated = false
-    while (attempts < MAX_ATTEMPTS) do
-      attempts += 1    
-      begin
-        Timeout::timeout(YUM_UPDATE_TIMEOUT_MIN * 60) {
-          vm.yum_update
-          updated = true
-        }
-      rescue => detail
-        $logger.warn "yum update didn't complete within #{YUM_UPDATE_TIMEOUT_MIN} minutes - #{MAX_ATTEMPTS - attempts} attempts left.."
-        machine.kill_processes_like("string" => "yum")
-      end
-    end
-    
-    if updated
-      @op.comment("message" => "OS package update complete (took #{attempts} attempt(s)).")
-    else
-      raise "couldn't update OS packages"
-    end
-    
-    machine.install_rpm_package("name" => [ "git", "vim", "screen", "man", "rubygems" ])
-    
-    machine.ssh_and_check_result("command" => "gem update --system")
-    
-    machine.mkdir('dir_name' => @op.plugin_by_name('service_descriptors').config_string('service_config_dir'))
+    vm.os_update   
     
     if params.has_key?('canned_service')
       params['canned_service'].each do |canned_service|
@@ -186,22 +122,22 @@ on_machine do |machine, params|
         if params.has_key?("extra_params")
           p["extra_params"] = params["extra_params"]
         end
-        machine.install_canned_service(p)
+        vm.install_canned_service(p)
       end
     end
     
     
     if params.has_key?('github_project')
-      machine.install_service_from_github(params) 
+      vm.install_service_from_github(params) 
     end  
     
     if params.has_key?('script_url')
       vm.execute_remote_command("url" => params['script_url'])
     end
     
-    machine.change_runlevel("runlevel" => "running")
+    vm.change_runlevel("runlevel" => "running")
     
-    machine.notify_vm_setup_complete("data" => params)    
+    vm.notify_vm_setup_complete("data" => params)    
   end
   
   full_name
