@@ -1,0 +1,5 @@
+dependencies [ :core, :libvirt, :machines, :erb_processor, :drop_dir ]
+
+config_param "include_dropdir", "a directory holding snippets to be included into the generated iptables script", :default_value => "/var/lib/virtualop/iptables.d"
+
+tags :networking

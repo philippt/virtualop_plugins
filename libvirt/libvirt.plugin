@@ -1,0 +1,5 @@
+dependency :core
+dependency :machines
+
+tags :installation
+tags :virtualisation

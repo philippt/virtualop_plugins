@@ -1,0 +1,12 @@
+dependencies [ :core, :machines, :erb_processor, :machine_crawler ]
+
+config_param! "nagios_bin_url", "http url pointing to the cgi-bin dir of the nagios instance"
+config_param! "nagios_user", "the user for http basic auth"
+config_param! "nagios_password", "password for nagios_user" 
+
+tags :monitoring
+
+on_activation do |plugin, config|
+  require 'rubygems'
+  require 'nagiosharder'
+end
