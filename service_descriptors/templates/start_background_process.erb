@@ -1,9 +1,0 @@
-#!/bin/bash
-
-. /etc/profile
-cd <%= service["service_root"] %>
-<% 1.upto(spawn).each do |idx| 
-  log_suffix = spawn > 1 ? "_#{idx}" : ''
-%>
-nohup <%= service["run_command"] %> > <%= redirect_log_file + log_suffix %> 2>&1 &
-<% end %>

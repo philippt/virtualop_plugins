@@ -1,7 +1,0 @@
-dependency :core
-
-on_activation do |plugin, config|
-  require 'net/imap'
-end
-
-tags :plumbing

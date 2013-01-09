@@ -1,7 +1,0 @@
-dependency :core
-dependency :machines
-
-config_param! "nagios_machine", "the alias name for the nagios machine to work with"
-config_param "nagios_command_pipe", "fully qualified path to the nagios command pipe on 'nagios_machine'", :default_value => "/usr/local/nagios/var/rw/nagios.cmd"
-
-tags :monitoring

@@ -1,3 +1,0 @@
-dependencies [ :core, :machines ]
-
-tags :administration, :unix, :linux

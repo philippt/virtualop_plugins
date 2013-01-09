@@ -1,2 +1,0 @@
-dependencies [ :core, :machines, :erb_processor, :service_descriptors ]
-
