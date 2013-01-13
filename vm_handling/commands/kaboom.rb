@@ -1,9 +1,10 @@
 description "terminates a machine and re-installs it"
 
-param! 'machine', 'fully-qualified machine name', 
+param! 'machine', 'fully-qualified machine name', {
   :lookup_method => lambda { @op.list_machines.map { |x| x['name'] } }, 
   :allows_extra_values => true,
   :default_param => true
+}  
 
 param "memory_size", "the amount of memory (in MB) that should be allocated for the new VM", :default_value => 512
 param "disk_size", "disk size in GB for the new VM", :default_value => 25

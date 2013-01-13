@@ -10,7 +10,9 @@ param "force", "if set to true, will re-read the dropbox folder metadata without
 
 param "remote_files", "a list of remote file metadata that should be used for syncing (hack for processing the input of the dropbox APIs delta() method)", :allows_multiple_values => true
 
+
 on_machine do |machine, params|
+  # TODO this should be /var/lib, methinks
   sync_record_file = "/var/log/virtualop/dropbox_sync" + params["directory"]
   sync_record = {}
   if machine.file_exists("file_name" => sync_record_file)
@@ -24,12 +26,14 @@ on_machine do |machine, params|
 
   local_files = machine.find("path" => params["directory"])
   
+  blacklist = %w|.git tmp|
+  
   remote_files = nil
   if params.has_key?("remote_files")
     remote_files = params["remote_files"]
   else
     reload_block = lambda do
-      @op.troll_dropbox_folders("path" => params["path"])
+      @op.troll_dropbox_folders("path" => params["path"], "blacklist" => blacklist)
     end
     
     remote_files = if params.has_key?("force") && params["force"] == "true"
@@ -43,6 +47,10 @@ on_machine do |machine, params|
       [ x["path"], x ]
     end
     # TODO use local_files to find out which files need to be deleted, add to remote_files with nil metadata objects 
+  end
+  
+  blacklist.each do |black|
+    remote_files.delete_if { |x| x.first.include? "/#{black}/" }
   end
    
   for_the_record = {}

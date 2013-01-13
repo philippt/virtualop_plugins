@@ -1,4 +1,4 @@
-dependencies [ :core, :machines, :my_sql, :service_descriptors ]
+dependencies [ :core, :machines, :my_sql, :service_descriptors, :drop_dir ]
 
 config_param "account_dropdir", "the directory with repository account details", :default_value => "#{@op.config_base_dir}/accounts/data_repo"
 config_param "local_backup_dir", "the directory on the target machines where backups should be stored"
@@ -7,19 +7,15 @@ config_param "default_permissions", "default permissions for backup files"
 
 tags :backup
 
-on_activation do |plugin, config|
-  require 'helpers/drop_dir_provider'
-  
-  dir_name = config["account_dropdir"]
-  
-  provider = DropDirProvider.new(@op,
-	  :host => "localhost",
-	  :user => "root",
-	  :directory => dir_name,
-	  :extension_filter => '\.conf'
-  )
-  plugin.state[:drop_dir] = provider
-  Dir.mkdir(dir_name) unless File.exists?(dir_name)
+has_accounts({
+  :list => 'list_data_repos',
+  :add => 'add_data_repo',
+  :remove => 'remove_data_repo'
+})
+
+on_init do |plugin, config|
+  require 'helpers/init_dropdir'
+  init_dropdir plugin, config["account_dropdir"]
 end
 
 on_preflight do |request, response|

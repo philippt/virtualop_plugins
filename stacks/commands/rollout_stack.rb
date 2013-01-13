@@ -23,14 +23,10 @@ on_machine do |machine, params|
     vm_name = (params["prefix"] || '') + machine_def.name
     full_name = vm_name + '.' + machine.name
     
-    if machine.list_vms.select { |x| x["name"] == vm_name }.size > 0
-      command_name = "kaboom"
-      options["machine"] = full_name
-    else
-      command_name = "setup_vm"
-      options["machine"] = machine.name
-      options["vm_name"] = vm_name
-    end
+    
+    command_name = "kaboom"
+    options["machine"] = full_name
+    
     options.merge! machine_def.data
     $logger.info "#{command_name} #{options.to_json()}"
     

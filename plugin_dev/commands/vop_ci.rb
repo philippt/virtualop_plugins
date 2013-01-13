@@ -3,7 +3,7 @@ description "tests if a vop machine can setup new machines"
 param :machine, "a host to work with"
 
 on_machine do |machine, params|
-  @op.find_vms
+  #@op.find_vms
   
   
   # @op.kaboom_vm(
@@ -68,5 +68,6 @@ on_machine do |machine, params|
   #@op.create_jenkins_job("job_name" => "xoplogs", "command_string" => "kaboom_vm machine=vop_ci_xoplogs.zapata.virtualop github_project=philippt/xoplogs domain=xoplogs.ci.virtualop.org")
   
   @op.trigger_build("jenkins_job" => "ci_nagios.#{host_name}")
+  @op.trigger_build("jenkins_job" => "ci_xoplogs.#{host_name}")
   #@op.trigger_build("jenkins_job" => "xoplogs")
 end

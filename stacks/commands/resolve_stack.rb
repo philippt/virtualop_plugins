@@ -1,13 +1,21 @@
-param! "stack", "the stack that should be evaluated", :lookup_method => lambda { @op.list_stacks.map { |x| x["name"] } }
+#param! "stack", "the stack that should be evaluated", 
+#  :lookup_method => lambda { @op.list_stacks.map { |x| x["name"] } }, :allows_multiple_values => true
+param :stack
+param "blacklist", "name of a machine that should be ignored", :allows_multiple_values => true
 
 accept_extra_params
 
 execute do |params|
   result = []
-  stack = @op.list_stacks.select { |x| x["name"] == params["stack"] }.first
-  stack["machines"].each do |machine_def|
+  stacks = @op.list_stacks.select { |x| params["stack"].include? x["name"] }
+  machines = []
+  stacks.each do |stack|
+    machines += stack["machines"]
+  end 
+  machines.each do |machine_def|
+    next if params.has_key?("blacklist") and params["blacklist"].include? machine_def.name
     begin
-      params["extra_params"].each do |k,v|
+      (params["extra_params"] || []).each do |k,v|
         if v.class == Array.class
           v = v.first
         end 

@@ -12,8 +12,8 @@ on_machine do |machine, params|
     service = machine.service_details("service" => the_backup["service"])
     candidates = service["local_files"].select { |x| x["alias"] == the_backup["alias"] }
     raise "the service #{the_backup["service"]} on #{machine.name} does not seem to have a local files definition with alias '#{the_backup["alias"]}'" unless candidates.size > 0
-    local_files = candidates.first
-    local_directory = service["service_root"] + '/' + local_files["path"]
+    local_files = candidates.first    
+    local_directory = /^\//.match(local_files["path"]) ? local_files["path"] : service["service_root"] + '/' + local_files["path"]
     
     $logger.info "restoring backup #{the_backup["name"]} into #{local_directory}"
     
