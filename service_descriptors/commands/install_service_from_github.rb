@@ -17,7 +17,8 @@ on_machine do |machine, params|
     service_root = "/var/www/#{project_name}"
   end
   
-  git_url = "git://github.com/#{params["github_project"]}.git"
+  #git_url = "git://github.com/#{params["github_project"]}.git"
+  git_url = "https://github.com/#{params["github_project"]}.git"
   
   begin  
     project_row = @op.list_github_repos(params).select { |x| x["full_name"] == params["github_project"] }.first
