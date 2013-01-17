@@ -8,7 +8,9 @@ display_type :hash
 mark_as_read_only
 
 on_machine do |machine, params|
-  content = machine.read_file("file_name" => machine.config_dir + '/' + params["service"])
+  content = machine.machine_detail["os"] == "windows" ?
+    machine.win_read_file("file_name" => '.vop/services/' + params["service"]) :
+    machine.read_file("file_name" => machine.config_dir + '/' + params["service"])
   
   result = YAML.load(content)
   

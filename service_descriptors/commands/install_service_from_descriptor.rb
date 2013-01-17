@@ -74,39 +74,49 @@ on_machine do |machine, params|
         end
       end  
     
-      case machine.linux_distribution.split("_").first
-      when "centos", "sles" # TODO do we really want centos repos on SLES?
-        if package_files.include? "rpm_repos"
-          lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/rpm_repos")
-          machine.install_rpm_repo("repo_url" => lines) unless lines.size == 0
-        end  
-        
-        if package_files.include? "rpm"
-          lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/rpm")    
-          machine.install_rpm_packages_from_file("lines" => lines) unless lines.size == 0
-        end
-      when "ubuntu"
-        if package_files.include? "apt_repos"
-          lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/apt_repos")    
-          machine.install_apt_repo("repo_url" => lines) unless lines.size == 0
-        end
-        
-        if package_files.include? "apt"
-          lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/apt")    
-          machine.install_apt_package("name" => lines) unless lines.size == 0
-        end
-      when "sles"
-        if package_files.include? "sles"
-          lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/sles").select { |x| ! /^#/.match(x) }
-          machine.install_rpm_packages_from_file("lines" => lines) unless lines.size == 0
-        end
-      end
+      if machine.machine_detail["os"] == "windows"
       
+      else
+        case machine.linux_distribution.split("_").first
+        when "centos"          
+          if package_files.include? "rpm_repos"
+            lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/rpm_repos")
+            machine.install_rpm_repo("repo_url" => lines) unless lines.size == 0
+          end  
+          
+          if package_files.include? "rpm"
+            lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/rpm")    
+            machine.install_rpm_packages_from_file("lines" => lines) unless lines.size == 0
+          end
+        when "ubuntu"
+          if package_files.include? "apt_repos"
+            lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/apt_repos")    
+            machine.install_apt_repo("repo_url" => lines) unless lines.size == 0
+          end
+          
+          if package_files.include? "apt"
+            lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/apt")    
+            machine.install_apt_package("name" => lines) unless lines.size == 0
+          end
+        when "sles"
+          if package_files.include? "sles_repos"
+            lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/sles_repos").select { |x| ! /^#/.match(x) }
+            machine.install_zypper_repo("line" => lines) unless lines.size == 0
+          end
+
+          if package_files.include? "sles"
+            lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/sles").select { |x| ! /^#/.match(x) }
+            machine.install_rpm_packages_from_file("lines" => lines) unless lines.size == 0
+          end
+        end
+      end 
       
       if package_files.include? "gem"
         lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/gem")    
         machine.install_gems_from_file("lines" => lines) unless lines.size == 0
       end
+
+      # TODO uranos
       
     end
     
@@ -160,11 +170,18 @@ on_machine do |machine, params|
       end
     end
 
-    if machine.file_exists("file_name" => machine.config_dir)
-      machine.hash_to_file(
-        "file_name" => "#{machine.config_dir}/#{service_name}", 
-        "content" => params
-      )
+    if machine.machine_detail["os"] == "windows"
+      config_dir = '.vop/services'
+      if machine.win_file_exists("file_name" => config_dir)
+        machine.win_write_file("target_filename" => "#{config_dir}/#{service_name}", "content" => params.to_yaml)
+      end    
+    else
+      if machine.file_exists("file_name" => machine.config_dir)
+        machine.hash_to_file(
+          "file_name" => "#{machine.config_dir}/#{service_name}", 
+          "content" => params
+        )
+      end
     end
   end
   
@@ -248,10 +265,10 @@ on_machine do |machine, params|
       domain = params["extra_params"]["domain"]
       machine.install_canned_service("service" => "apache/apache")
   
-      machine.add_reverse_proxy("server_name" => domain, "target_url" => "http://localhost:#{service["http_endpoint"]}/")
-      machine.restart_unix_service("name" => "httpd")
+      machine.add_reverse_proxy("server_name" => domain, "target_url" => "http://127.0.0.1:#{service["http_endpoint"]}/")
+      machine.restart_service("service" => "apache")
       
-      machine.configure_reverse_proxy("domain" => domain)
+      machine.configure_reverse_proxy("domain" => domain) if machine.proxy
     end    
     
     if service.has_key?("static_html")

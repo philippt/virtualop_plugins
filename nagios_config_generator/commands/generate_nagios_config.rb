@@ -19,8 +19,9 @@ on_machine do |machine, params|
 
   template_name = machine.machine_detail.has_key?('dns_name') ?
     :ec2_instance :
-    :machine
-    
+    (machine.machine_detail.has_key?("os") and machine.machine_detail["os"] == "windows") ?
+      :windows_machine : :machine
+
   @op.with_machine(config_string('nagios_machine_name')) do |nagios|
     process_local_template(template_name, nagios, target_file, binding())    
     nagios.chmod("file_name" => target_file, "permissions" => "644")
@@ -30,10 +31,13 @@ on_machine do |machine, params|
       machine.add_config_from_template("template_name" => name)
     end
   
-    unix_services = machine.list_unix_services
-    if unix_services.include?('apache2') and machine.status_unix_service("name" => 'apache2')
-      apache_checks = read_local_template(:apache, binding())
-      nagios.append_to_file("file_name" => target_file, "content" => apache_checks)
+    # TODO reactivate through apache service descriptor
+    if ('world' == 'perfect')
+      unix_services = machine.list_unix_services
+      if unix_services.include?('apache2') and machine.status_unix_service("name" => 'apache2')
+        apache_checks = read_local_template(:apache, binding())
+        nagios.append_to_file("file_name" => target_file, "content" => apache_checks)
+      end
     end
     
     # TODO i think this should be covered by more recent changes in the my_sql plugin - check and kill
