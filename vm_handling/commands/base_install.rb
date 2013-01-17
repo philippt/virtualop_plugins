@@ -1,6 +1,9 @@
 description "performs the base installation for a new machine"
 
 param :machine
+param "http_proxy", "if specified, the http proxy is used for the installation and configured on the new machine"
+
+ignore_extra_params
 
 on_machine do |machine, params|
   machine.install_rpm_package("name" => [ "git", "vim", "screen", "man", "rubygems" ])

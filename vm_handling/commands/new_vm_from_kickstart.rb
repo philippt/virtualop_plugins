@@ -17,6 +17,8 @@ param! "ip", "the static IP address for the new machine"
 param! "gateway", "the network gateway that should be used by the new machine"
 param! "nameserver", "the nameserver that should be configured into the new machine"
 
+param "http_proxy", "if specified, the http proxy is used for the installation and configured on the new machine"
+
 ignore_extra_params
 
 on_machine do |machine, p|

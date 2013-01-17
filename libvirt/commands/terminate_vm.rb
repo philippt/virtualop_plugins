@@ -4,9 +4,12 @@ param :machine
 param :vm
 
 on_machine do |machine, params|
-  state = machine.list_vms.select do |vm|
-    vm["name"] == params["name"]
-  end.first["state"]
+  state = "unknown"
+  @op.without_cache do # to prevent situations where the vop has the wrong state
+    state = machine.list_vms.select do |vm|
+      vm["name"] == params["name"]
+    end.first["state"]
+  end
   
   if state == "running"
     machine.destroy_vm("name" => params["name"])

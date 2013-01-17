@@ -1,6 +1,6 @@
 description "takes a list of machines, goes through all of them and executes a command on them, returning a hash with the output"
 
-param :machine, "the machine thing", :allows_multiple_values => true
+param :machine, "the machine thing", :allows_multiple_values => true, :allows_extra_values => true
 param! "overlay_command", "the command that should be executed on the machine"
 param "overlay_column", "if the command returns a table, this parameter specifies which column(s) to display", :allows_multiple_values => true
 
@@ -18,8 +18,8 @@ execute do |params|
   
   results = params["machine"].map do |machine_name|
     h = {}
-    @op.with_machine(machine_name) do |machine|
-      begin
+    begin
+      @op.with_machine(machine_name) do |machine|
         if machine.reachable_through_ssh
           $logger.info "getting overlay data from #{machine_name}..."
           
@@ -45,9 +45,9 @@ execute do |params|
         else
           h[machine_name] = []
         end
-      rescue => detail
-        $logger.warn("couldn't get data for overlay '#{params["overlay_command"]}' from machine '#{machine_name}' : #{detail.message}")
       end
+    rescue => detail
+      $logger.warn("couldn't get data for overlay '#{params["overlay_command"]}' from machine '#{machine_name}' : #{detail.message}")
     end
     h
   end

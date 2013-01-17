@@ -12,13 +12,19 @@ param "location", "Installation source for guest virtual machine kernel+initrd p
 param "extra_arg", "extra arguments to pass to the installer when performing an installation from 'location'", :allows_multiple_values => true
 param "extra_disk", "relative image name and disk size in GB, separated by comma, for extra volumes to be created", :allows_multiple_values => true
 param "os_variant", "...", :default_value => 'virtio26'
-param "os_type", "...", :default_value => 'linux' 
+param "os_type", "...", :default_value => 'linux'
+
+param "http_proxy", "if specified, the http proxy is used for the installation and configured on the new machine" 
 
 on_machine do |machine, params|
   image_dir = "/var/lib/libvirt/images"
   image_path = "#{image_dir}/#{params["vm_name"]}.img"
   
   command = "virt-install --name #{params["vm_name"]} --ram #{params["memory_size"]} --vcpus=#{params["vcpu_count"]}"
+  
+  if params.has_key?("http_proxy")
+    command = "http_proxy=#{params["http_proxy"]} #{command}"
+  end
   
   command += " --disk path=#{image_path},size=#{params["disk_size"]},sparse=#{params["sparse"]},cache=none"
   

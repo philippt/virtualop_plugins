@@ -110,7 +110,7 @@ on_machine do |machine, params|
   )
   
   @op.with_machine(full_name) do |vm|
-    vm.base_install
+    vm.base_install(params)
     
     vm.os_update   
     
