@@ -20,7 +20,8 @@ on_machine do |machine, params|
     full_name = m["full_name"]
     
     option_string = ''
-    machine_def.data.each do |k,v|
+    m.each do |k,v|
+      next if %w|vm_name full_name name|.include? k
       option_string += " #{k}=#{v}"
     end
     @op.create_jenkins_job("job_name" => full_name, "command_string" => "kaboom machine=#{full_name} #{option_string}")
