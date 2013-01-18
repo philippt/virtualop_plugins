@@ -163,7 +163,13 @@ class StackLoader
       pp request.values
       p.merge! request.values
       p.merge! request.values["extra_params"]
-      p["extra_params"] = p # TODO this must be what madness feels like
+      
+      p.each do |k,v|
+        next if k == "extra_params"
+        p["extra_params"][k] = v
+      end
+      #p.delete("extra_params")
+      #p["extra_params"] = p # TODO this must be what going mad feels like
       pp p
       stack = {}
       @op.resolve_stack(p).each do |m|
