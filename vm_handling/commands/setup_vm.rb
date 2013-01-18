@@ -18,7 +18,7 @@ param "location", "installation source for guest virtual machine kernel+initrd p
 
 param "canned_service", "name of a canned service to install on the machine", :allows_multiple_values => true
 
-param "http_proxy", "if specified, the http proxy is used for the installation and configured on the new machine"
+param "http_proxy", "if specified, the http proxy is used for the installation and configured on the new machine", :default_value => config_string('http_proxy')
 
 # TODO add environment here?
 #param "environment", "if specified, the environment is written into a config file so that it's available through $VOP_ENV", :lookup_method => lambda do

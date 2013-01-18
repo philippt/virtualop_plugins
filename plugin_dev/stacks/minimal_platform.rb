@@ -1,6 +1,7 @@
 description "minimal set of infrastructure for running a web platform"
 
 param! "domain", :description => "the domain root for the web application"
+param "datarepo_init_url", "http URL to initialize the datarepo from"
 
 stack :nagios do |m, p|
   m.canned_service :nagios
@@ -59,6 +60,9 @@ on_install do |stacked, params|
     "machine" => stacked["datarepo"].first["full_name"], 
     "url" => "http://#{stacked["datarepo"].first["domain"]}"
   )
+  if params.has_key?("datarepo_init_url")
+    @op.populate_repo_from_url("machine" => stacked["datarepo"].first["full_name"], "source_url" => params["datarepo_init_url"])
+  end
   
   @op.with_machine('localhost') do |localhost|
     localhost.install_service_from_working_copy("working_copy" => "virtualop", "service" => "import_logs")
