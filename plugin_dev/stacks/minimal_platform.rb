@@ -47,7 +47,7 @@ on_install do |stacked, params|
   @op.configure_nagios_config_generator("nagios_machine_name" => stacked["nagios"].first["full_name"], "default_services" => ["ssh"])
   @op.configure_nagios_status("nagios_bin_url" => "http://#{stacked["nagios"].first["domain"]}/nagios/cgi-bin", "nagios_user" => "nagiosadmin", "nagios_password" => "the_password")
   
-  @op.configure_xoplogs("xoplogs_machine" => stacked["nagios"].first["full_name"], "auto_import_machine_groups" => [ host_name ])
+  @op.configure_xoplogs("xoplogs_machine" => stacked["xoplogs"].first["full_name"], "auto_import_machine_groups" => [ host_name ])
   
   @op.configure_data_repo
   datarepo_alias = (
