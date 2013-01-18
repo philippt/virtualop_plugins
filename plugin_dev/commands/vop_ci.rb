@@ -8,5 +8,5 @@ execute do |params|
   
   @op.trigger_stack_rollout("machine" => params["host"], "stack" => "minimal_platform", "extra_params" => {
     "prefix" => "ci_", "domain" => "ci.virtualop.org" 
-  })
+  })  
 end

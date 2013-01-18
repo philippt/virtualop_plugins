@@ -135,6 +135,9 @@ on_machine do |machine, params|
       vm.execute_remote_command("url" => params['script_url'])
     end
     
+    # kind of sad, but seems to make more sense for now to use the proxy for the installation only
+    vm.rm("file_name" => "/etc/profile.d/http_proxy.sh")
+    
     vm.change_runlevel("runlevel" => "running")
     
     vm.notify_vm_setup_complete("data" => params)    
