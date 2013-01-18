@@ -39,7 +39,7 @@ on_machine do |machine, params|
   # )
   
   
-  # host_name = params["machine"]
+   host_name = params["machine"]
 #   
   # @op.configure_my_sql("mysql_user" => "root", "mysql_password" => "the_password")
 #   
