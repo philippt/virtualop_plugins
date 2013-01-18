@@ -59,7 +59,7 @@ on_machine do |machine, params|
     # end
   # end
   
-  @op.configure_stacks
+  @op.configure_stacks unless @op.list_plugins.include? "stacks"
   @op.load_plugin("machine" => "localhost", "plugin_file_name" => "/root/virtualop_plugins/plugin_dev/plugin_dev.plugin")
   @op.generate_jenkins_jobs_for_stack("machine" => host_name, "stack" => "minimal_platform", "prefix" => "ci_", "extra_params" => { "domain" => "ci.virtualop.org" })
   
