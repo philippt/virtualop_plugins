@@ -9,7 +9,7 @@ add_columns [ :name, :status ]
 on_machine do |machine, params|
   result = []
   
-  @op.resolve_stack(params).each do |machine_def|
+  @op.resolve_stack(params).each do |m|
     command_name = nil
     
     options = {}
