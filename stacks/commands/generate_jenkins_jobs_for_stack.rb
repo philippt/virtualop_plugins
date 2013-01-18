@@ -14,8 +14,10 @@ on_machine do |machine, params|
     
     options = {}
     
-    vm_name = (params["prefix"] || '') + machine_def.name
-    full_name = vm_name + '.' + machine.name
+    #vm_name = (params["prefix"] || '') + machine_def.name
+    #full_name = vm_name + '.' + machine.name
+    vm_name = m["name"]
+    full_name = m["full_name"]
     
     option_string = ''
     machine_def.data.each do |k,v|
@@ -23,7 +25,7 @@ on_machine do |machine, params|
     end
     @op.create_jenkins_job("job_name" => full_name, "command_string" => "kaboom machine=#{full_name} #{option_string}")
     result << {
-      "name" => machine_def.name,
+      "name" => vm_name,
       "status" => "ok"
     }
   end
