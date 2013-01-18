@@ -50,8 +50,11 @@ on_install do |stacked, params|
   @op.configure_xoplogs("xoplogs_machine" => stacked["nagios"].first["full_name"], "auto_import_machine_groups" => [ host_name ])
   
   @op.configure_data_repo
-  datarepo_alias = params.has_key?("extra_params") and params["extra_params"] != nil and params["extra_params"].has_key?("prefix") ?
-    params["extra_params"]["prefix"][0..-1] : stacked["datarepo"].first["full_name"]
+  datarepo_alias = (
+    (params.has_key?("extra_params") and params["extra_params"] != nil and params["extra_params"].has_key?("prefix")) ?
+    params["extra_params"]["prefix"][0..-1] : 
+    stacked["datarepo"].first["full_name"]
+  )
   @op.add_data_repo("alias" => datarepo_alias, 
     "machine" => stacked["datarepo"].first["full_name"], 
     "url" => "http://#{stacked["datarepo"].first["domain"]}"
