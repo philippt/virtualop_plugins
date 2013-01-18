@@ -8,14 +8,10 @@ add_columns [ :name, :status ]
 
 on_machine do |machine, params|
   result = []
-  p = params.clone
-  p.delete("machine")
   
-  
-  @op.resolve_stack(p).each do |machine_def|
+  @op.resolve_stack(params).each do |machine_def|
     command_name = nil
     
-    #options = params["extra_params"].clone()
     options = {}
     
     vm_name = (params["prefix"] || '') + machine_def.name
