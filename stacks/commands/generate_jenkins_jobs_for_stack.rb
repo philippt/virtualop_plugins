@@ -1,10 +1,9 @@
 param :machine, "the host onto which to deploy"
 param :stack
-param "prefix", "prefix for the VM names"
 
 accept_extra_params
 
-add_columns [ :name, :status ]
+add_columns [ :full_name, :status ]
 
 on_machine do |machine, params|
   result = []
@@ -14,8 +13,6 @@ on_machine do |machine, params|
     
     options = {}
     
-    #vm_name = (params["prefix"] || '') + machine_def.name
-    #full_name = vm_name + '.' + machine.name
     vm_name = m["name"]
     full_name = m["full_name"]
     
@@ -27,6 +24,7 @@ on_machine do |machine, params|
     @op.create_jenkins_job("job_name" => full_name, "command_string" => "kaboom machine=#{full_name} #{option_string}")
     result << {
       "name" => vm_name,
+      "full_name" => full_name,
       "status" => "ok"
     }
   end

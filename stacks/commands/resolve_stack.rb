@@ -3,7 +3,7 @@ param "blacklist", "name of a machine that should be ignored", :allows_multiple_
 param "whitelist", "name of a machine that should be included", :allows_multiple_values => true
 
 param :machine, "a host onto which to deploy"
-param "prefix", "prefix for the VM names", :default_value => ''
+param "prefix", "prefix for the VM names"
 
 accept_extra_params
 
@@ -42,7 +42,8 @@ execute do |params|
       $logger.info "resolving machine definition #{machine_def.name}:\n#{param_string}"
       machine_def.block.call(machine_def, params)
       
-      vm_name = params["prefix"].first + machine_def.name
+      prefix = params.has_key?("prefix") ? params["prefix"].first : ''
+      vm_name = prefix + machine_def.name
       
       h = {
         "name" => machine_def.name,
