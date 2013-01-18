@@ -13,16 +13,13 @@ on_machine do |machine, params|
   p = params.clone
   p.delete("machine")
   
-  
   @op.resolve_stack(p).each do |machine_def|
     command_name = nil
     
-    #options = params["extra_params"].clone()
     options = {}
     
     vm_name = (params["prefix"] || '') + machine_def.name
     full_name = vm_name + '.' + machine.name
-    
     
     command_name = "kaboom"
     options["machine"] = full_name
@@ -33,7 +30,6 @@ on_machine do |machine, params|
     status = nil
     begin
       @op.send(command_name.to_sym, options)
-      #raise "foo" if vm_name == "ci_powerdns"
       status = "ok"
     rescue => detail
       $logger.warn("could not rollout to #{full_name} : #{detail.message}\n#{detail.backtrace.join("\n")}")

@@ -14,11 +14,20 @@ class StackLoader
   def new_stack(name)
     @stack = { 
       "name" => name,
-      "machines" => [] 
+      "machines" => [],
+      "blocks" => {}
     }
     @stacks << @stack
     stack_name = @stack["name"]
-    @install_command = RHCP::Command.new(stack_name + "_stackinstall", "installs the stack #{stack_name}")
+    @install_command = RHCP::Command.new("stacks." + stack_name + "_stackinstall", "installs the stack #{stack_name}")
+    @install_command.add_param(param_machine)
+    @install_command.add_param(RHCP::CommandParam.new("extra_params", "a hash of extra parameters for the service install command"))
+    @install_command.accept_extra_params
+    begin
+      @op.local_broker.register_command(@install_command)
+    rescue => ex
+      raise ex unless /duplicate/.match(ex.message)
+    end
   end
     
   def self.read(op, plugin, name, source)
@@ -72,6 +81,8 @@ class StackLoader
   class MachineDefinition
     
     attr_accessor :name, :block
+    
+    attr_accessor :vm_name, :full_name
 
     attr_accessor :params
 
@@ -83,6 +94,8 @@ class StackLoader
     def initialize(name, block)
       @name = name
       @block = block
+      
+      @vm_name = @full_name = nil
       
       @data = {}
       @params = {}
@@ -108,7 +121,7 @@ class StackLoader
     def memory(*args)
       arg = args.first.first
       if arg.class == Array.class
-        @data["memory_size"] = arg.first
+        @data["memory_size"] = arg.size == 3 ? arg[1] : arg.first
       else
         @data["memory_size"] = arg
       end
@@ -137,6 +150,41 @@ class StackLoader
     }
     m = MachineDefinition.new(name_sym.to_s, block)
     @stack["machines"] << m    
+  end
+  
+  
+  
+  def on_install(&block)
+    # TODO that's more or less identical to CommandLoader.exceute
+    @install_command.block = lambda do |request, response|
+       
+      p = { "stack" => @stack["name"] }
+      puts "request values:"
+      pp request.values
+      p.merge! request.values
+      p.merge! request.values["extra_params"]
+      p["extra_params"] = p # TODO this must be what madness feels like
+      pp p
+      stack = {}
+      @op.resolve_stack(p).each do |m|
+        stack[m["name"]] = [] unless stack.has_key? m["name"]
+        stack[m["name"]] << m
+      end
+      
+      params = {}
+    
+      @install_command.params.each do |current_param|
+        if request.has_param_value(current_param.name)
+          params[current_param.name] = request.get_param_value(current_param.name) || p[current_param.name]
+        end
+      end
+      
+      begin
+        block.call(stack, params)
+      rescue => ex
+        raise "could not execute installation block for stack #{@stack["name"]} : #{ex.message}\n#{ex.backtrace.join("\n")}"
+      end
+    end
   end
   
 end
