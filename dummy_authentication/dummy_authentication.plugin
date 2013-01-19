@@ -1,4 +1,0 @@
-dependencies [ :core, :machines, :erb_processor ]
-
-config_param! "user"
-config_param! "password"

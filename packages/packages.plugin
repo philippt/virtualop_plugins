@@ -1,3 +1,0 @@
-dependencies [ :core, :machines ]
-
-description "wrapper for package panagement tools (rpm/yum, apt, zypper, gem etc.)"
