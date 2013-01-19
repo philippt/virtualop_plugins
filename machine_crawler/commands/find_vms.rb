@@ -6,6 +6,7 @@ execute do |params|
   result = []
   
   puts "STEP1: Hosts"
+  @op.flush_cache()
   hosts = @op.find_hosts
   
   

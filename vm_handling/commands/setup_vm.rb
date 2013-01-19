@@ -93,7 +93,7 @@ on_machine do |machine, params|
   sleep 15
   
   @op.wait_until(
-    "interval" => 5, "timeout" => 180, 
+    "interval" => 5, "timeout" => 300, 
     "error_text" => "could not find a running machine with name '#{params["vm_name"]}'",
     "condition" => lambda do
       result = false
