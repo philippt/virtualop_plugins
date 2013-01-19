@@ -1,0 +1,20 @@
+From: Marvin The Android <<%= @op.plugin_by_name('email').config_string('sender_address') %>>
+To: A Test User <<%= params['to'] %>>
+Subject: vm setup completed : <%= machine.name %>
+
+Hi,
+
+a new VM has been prepared for you.
+
+It's name is <%= machine.name %>.
+
+It should be reachable through SSH using something like this:
+<%= machine.ssh_connection_string %>
+
+Complete data of your request in JSON:
+<%= params["data"] %>
+
+Thank you for flying Air Penguin!
+
+Cheers,
+Marvin

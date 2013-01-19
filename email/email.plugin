@@ -1,0 +1,15 @@
+dependency :core
+dependency :erb_processor
+
+config_param! "smtp_host_name"
+config_param "smtp_port", "tcp port to use for connecting to the SMTP server", :default_value => "587"
+config_param! "smtp_user"
+config_param! "smtp_password"
+config_param! "sender_address", "email address that should be used as sender address"
+
+on_activation do |plugin, config|
+  require 'net/smtp'
+  require 'smtp_tls'
+end
+
+tags :plumbing
