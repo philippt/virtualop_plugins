@@ -10,7 +10,7 @@ end
 stack :vop do |m, p|
   m.github 'virtualop/virtualop_webapp', :branch => 'rails3'
   m.domain_prefix 'vop'
-  m.memory [ 512, 1024, 2048 ]
+  m.memory [ 512, 2048, 4096 ]
   m.disk 50
 end
 
