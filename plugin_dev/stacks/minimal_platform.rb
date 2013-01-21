@@ -14,7 +14,6 @@ stack :xoplogs do |m, params|
   m.github 'philippt/xoplogs'
   m.domain_prefix 'xoplogs'
   m.memory [ 512, 1024, 2048 ]
-  m.disk 100
 end
  
 stack :datarepo do |m, params|
@@ -50,7 +49,19 @@ on_install do |stacked, params|
   
   @op.configure_xoplogs("xoplogs_machine" => stacked["xoplogs"].first["full_name"], "auto_import_machine_groups" => [ host_name ])
   
-  @op.configure_data_repo
+  old_repos = @op.list_data_repos.select { |x| x["alias"] == "old_data_repo" }
+  if old_repos.size > 0
+    old_repo = old_repos.first
+    #@op.with_machine(@op.whoareyou.split('@').last)
+    @op.with_machine('localhost') do |localhost|
+      localhost.restore_data()
+      
+      vop_webapp_path = localhost.service_details("service" => "virtualop_webapp")["service_root"]
+      localhost.ssh_and_check_result("command" => "cd #{vop_webapp_path} && rake db:migrate")
+    end
+  end
+  
+  #@op.configure_data_repo
   datarepo_alias = (
     (params.has_key?("extra_params") and params["extra_params"] != nil and params["extra_params"].has_key?("prefix")) ?
     params["extra_params"]["prefix"][0..-1] : 
@@ -60,9 +71,13 @@ on_install do |stacked, params|
     "machine" => stacked["datarepo"].first["full_name"], 
     "url" => "http://#{stacked["datarepo"].first["domain"]}"
   )
-  if params.has_key?("datarepo_init_url")
-    @op.populate_repo_from_url("machine" => stacked["datarepo"].first["full_name"], "source_url" => params["datarepo_init_url"])
-  end
+  
+  
+  
+  # TODO this should happen after the datarepo has been rolled out
+  #if params.has_key?("datarepo_init_url")
+  #  @op.populate_repo_from_url("machine" => stacked["datarepo"].first["full_name"], "source_url" => params["datarepo_init_url"])
+  #end
   
   @op.with_machine('localhost') do |localhost|
     localhost.install_service_from_working_copy("working_copy" => "virtualop", "service" => "import_logs")

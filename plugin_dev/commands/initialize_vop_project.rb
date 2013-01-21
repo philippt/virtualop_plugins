@@ -9,5 +9,5 @@ on_machine do |machine, params|
   machine.mkdir("dir_name" => dotvop_dir)
   machine.initialize_plugin("directory" => dotvop_dir, "name" => params["name"])
   
-  
+  @op.add_service(params)
 end

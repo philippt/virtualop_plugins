@@ -9,9 +9,7 @@ on_machine do |machine, params|
   params["stack"].each do |stack_name|
     p = params.clone
     p["stack"] = stack_name
-    @op.generate_jenkins_jobs_for_stack(p).each do |job|
-      @op.trigger_build("jenkins_job" => job["full_name"])
-    end
+    jenkins_jobs = @op.generate_jenkins_jobs_for_stack(p)
     
     command_name = stack_name + "_stackinstall"
     p.delete("stack")
@@ -25,6 +23,10 @@ on_machine do |machine, params|
     
     #p.merge! params["extra_params"]
     @op.send(command_name.to_sym, p)
+    
+    jenkins_jobs.each do |job|
+      @op.trigger_build("jenkins_job" => job["full_name"])
+    end
   end
   
 end
