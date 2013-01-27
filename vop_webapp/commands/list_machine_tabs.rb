@@ -94,6 +94,8 @@ on_machine do |machine, params|
   if @op.list_plugins.include?('vmware_rvc') and @op.machine_by_name("machine" => params["machine"])["type"] == "host"
     tabs << [ "list_vms", "Virtual Guests" ]
   end
+ 
+  tabs << [ "machine_history", "History" ]
 
 # 
   # if @show_mysql_replication_tab

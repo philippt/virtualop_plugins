@@ -8,7 +8,7 @@ on_machine do |machine, params|
   result = []
   log_name = "/var/log/yum_update*.log"
   if machine.file_exists("file_name" => log_name)
-    result += machine.tail(log_name)
+    result += machine.tail("file_name" => log_name)
   end
   result
 end
