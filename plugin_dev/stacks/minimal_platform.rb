@@ -91,7 +91,7 @@ on_install do |stacked, params|
   
   @op.with_machine('localhost') do |localhost|
     localhost.install_service_from_working_copy("working_copy" => "virtualop", "service" => "import_logs")
-    %w|rails_dev_server executor message_processor|.each do |service|
+    %w|thin executor message_processor|.each do |service|
       localhost.restart_service("service" => service)
     end
   end
