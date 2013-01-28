@@ -100,11 +100,11 @@ execute do |params|
             param_string = '(' + params.join(' ') + ')'
           end
           
-          do_sql(dbh, "INSERT INTO requests (request_id, command_name, param_string, uid, mode, start_ts)
+          do_sql(dbh, "INSERT INTO requests_#{partition} (request_id, command_name, param_string, uid, mode, start_ts)
                     VALUES ('#{request_id}', '#{request["command_name"]}', '#{dbh.escape_string(param_string)}', #{uid != nil ? "'#{uid}'" : 'NULL'}, '#{entry["mode"]}', '#{entry["start_ts"]}')")
         when "stop"
           escaped_response = dbh.escape_string(JSON.generate(entry["response"]))
-          do_sql(dbh, "UPDATE requests SET response_code = '#{entry["response"]["status"]}', stop_ts = FROM_UNIXTIME(UNIX_TIMESTAMP(start_ts) + #{entry["duration"]}) " +
+          do_sql(dbh, "UPDATE requests_#{partition} SET response_code = '#{entry["response"]["status"]}', stop_ts = FROM_UNIXTIME(UNIX_TIMESTAMP(start_ts) + #{entry["duration"]}) " +
                        "WHERE request_id = '#{entry["request_id"]}'")        
         end
       end
