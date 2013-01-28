@@ -44,7 +44,7 @@ class ServiceDescriptorLoader
     @service["runlevel"] = sym.to_s
   end
   
-  def database(name, options = { :mode => 'read-write', :exclude_tables => [], :include_tables => [] })
+  def database(name, options = { :mode => 'read-write' })
     options[:name] = name
     # TODO cleanup
     options.each do |k,v|
