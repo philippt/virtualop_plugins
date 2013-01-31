@@ -34,6 +34,8 @@ class ServiceDescriptorLoader
     @service["outgoing_tcp"] = []
     
     @service["nagios_checks"] = {}
+    @service["tcp_endpoint"] = []
+    @service["udp_endpoint"] = []
     
     @service
   end
@@ -42,7 +44,7 @@ class ServiceDescriptorLoader
     @service["runlevel"] = sym.to_s
   end
   
-  def database(name, options = { :mode => 'read-write', :exclude_tables => [], :include_tables => [] })
+  def database(name, options = { :mode => 'read-write' })
     options[:name] = name
     # TODO cleanup
     options.each do |k,v|
@@ -104,11 +106,27 @@ class ServiceDescriptorLoader
     end
   end
   
+  def tcp_endpoint(t)
+    if t.class == Array
+      @service["tcp_endpoint"] += t
+    else
+      @service["tcp_endpoint"] << t
+    end
+  end
+  
+  def udp_endpoint(t)
+    if t.class == Array
+      @service["udp_endpoint"] += t
+    else
+      @service["udp_endpoint"] << t
+    end
+  end
+  
   def method_missing(m, *args)
     targets = [ :redirect_log, :start_command, :stop_command, :on_install ]
     targets += [ :port, :process_regex, :log_file ]
     targets += [ :cron, :every ]
-    targets += [ :http_endpoint, :tcp_endpoint, :udp_endpoint ]
+    targets += [ :http_endpoint ]
     targets += [ :static_html ]
     #targets += [ :database ]
     #targets += [ :runlevel ]

@@ -10,4 +10,4 @@ CREATE TABLE IF NOT EXISTS <%= partitioned_table_name %> (
   `start_ts` datetime default NULL,
   `stop_ts` datetime default NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;

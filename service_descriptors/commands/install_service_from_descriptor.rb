@@ -233,26 +233,36 @@ on_machine do |machine, params|
     %w|tcp udp|.each do |protocol|
       endpoint = "#{protocol}_endpoint"
       if service.has_key?(endpoint)
-        port = service[endpoint]
-        host_name = machine.name.split('.')[1..10].join('.')
-        @op.with_machine(host_name) do |host|
-          host.add_prerouting_include(
-            "source_machine" => machine.name,
-            "service" => service_name,
-            "content" => "iptables -t nat -A PREROUTING -p #{protocol} -d $IP_HOST --dport #{port}  -j DNAT --to-destination #{machine.ipaddress}:#{port}"
-          )
-          host.add_forward_include(
-            "source_machine" => machine.name,
-            "service" => service_name,
-            "content" => "iptables -A INPUT -d $IP_HOST -p #{protocol} --dport #{port} -m state --state NEW -j ACCEPT"
-          )
-          host.add_forward_include(
-            "source_machine" => machine.name,
-            "service" => service_name,
-            "content" => "iptables -A FORWARD -d #{machine.ipaddress} -p #{protocol} --dport #{port} -m state --state NEW -j ACCEPT"
-          )
+        service[endpoint].each do |endpoint|
+          port = endpoint
+          host_name = machine.name.split('.')[1..10].join('.')
           
-          host.generate_and_execute_iptables_script()
+          @op.configure_endpoint( 
+            "machine" => host_name, 
+            "source_machine" => machine.name, "service" => service["name"],
+            "protocol" => protocol, "port" => port )
+          
+          # port = service[endpoint]
+          # host_name = machine.name.split('.')[1..10].join('.')
+          # @op.with_machine(host_name) do |host|
+            # host.add_prerouting_include(
+              # "source_machine" => machine.name,
+              # "service" => service_name,
+              # "content" => "iptables -t nat -A PREROUTING -p #{protocol} -d $IP_HOST --dport #{port}  -j DNAT --to-destination #{machine.ipaddress}:#{port}"
+            # )
+            # host.add_forward_include(
+              # "source_machine" => machine.name,
+              # "service" => service_name,
+              # "content" => "iptables -A INPUT -d $IP_HOST -p #{protocol} --dport #{port} -m state --state NEW -j ACCEPT"
+            # )
+            # host.add_forward_include(
+              # "source_machine" => machine.name,
+              # "service" => service_name,
+              # "content" => "iptables -A FORWARD -d #{machine.ipaddress} -p #{protocol} --dport #{port} -m state --state NEW -j ACCEPT"
+            # )
+#             
+            # host.generate_and_execute_iptables_script()
+          # end
         end
       end
     end

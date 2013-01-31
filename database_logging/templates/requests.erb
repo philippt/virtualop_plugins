@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS `<%= partitioned_table_name %>` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `command_name` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `mode` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `response_code` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `start_ts` datetime DEFAULT NULL,
+  `stop_ts` datetime DEFAULT NULL,
+  `uid` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `param_string` varchar(1024) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `request_id` varchar(1024) COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=502 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
