@@ -32,12 +32,12 @@ on_machine do |machine, params|
     tabs << ["unix_services", "Unix Services"]
   end
   
+  tabs << ["list_services", "Services"]
+  
   begin
     service_names = machine.list_unix_services #.map { |row| row["name"] }
     
-    tabs << ["ssh_logs", "SSH Logins"]
-    
-    tabs << ["list_services", "Services" ]
+    #tabs << ["ssh_logs", "SSH Logins"]
   
     if service_names.include?("libvirtd")
       tabs << ["list_vms", "Virtual Guests"] 

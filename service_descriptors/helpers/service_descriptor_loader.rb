@@ -72,7 +72,11 @@ class ServiceDescriptorLoader
   end
   
   def unix_service(arg)
-   @service["unix_service"] = arg
+    @service["unix_service"] = arg
+  end
+  
+  def windows_service(arg)
+    @service["windows_service"] = arg
   end
   
   def run_command(command, options = {})

@@ -34,7 +34,7 @@ on_machine do |machine, params|
   %w|start stop status|.each do |operation|
     if result.has_key?("unix_service") and not result.has_key?("#{operation}_command")
       unix_service = result["unix_service"]
-      pp unix_service
+      #pp unix_service
       unix_service_name = unix_service
       if unix_service.class == Hash
         distribution = machine.linux_distribution.split("_").first
@@ -50,7 +50,7 @@ on_machine do |machine, params|
     end
   end
   
-  result["is_startable"] = result.has_key?("start_command") || result.has_key?("run_command")
+  result["is_startable"] = result.has_key?("start_command") || result.has_key?("run_command") || result.has_key?("windows_service")
   
   result["runlevel"] ||= "application"
   
