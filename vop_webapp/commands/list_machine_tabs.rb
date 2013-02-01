@@ -96,6 +96,7 @@ on_machine do |machine, params|
   end
  
   tabs << [ "machine_history", "History" ]
+  tabs << [ "machine_permissions", "Permissions" ]
 
 # 
   # if @show_mysql_replication_tab

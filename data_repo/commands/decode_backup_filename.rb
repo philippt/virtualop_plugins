@@ -10,6 +10,7 @@ execute do |params|
   result = []
   matcher = /((db|file)_backup_(.*?))(\.tgz)?$/.match(params["filename"])
   if matcher then
+    # TODO this fails for machine names with underscores
     name_components = matcher.captures[2].split("_")
     result_hash = {
       "type" => matcher.captures[1],
