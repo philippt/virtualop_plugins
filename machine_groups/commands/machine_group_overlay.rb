@@ -39,7 +39,11 @@ execute do |params|
               data = @op.send(params["overlay_command"].to_sym, options)
               if data != nil
                 $logger.info "#{machine_name} : #{data}"
-                result[machine_group_name] += data
+                if data.class == Array
+                  result[machine_group_name] += data
+                else
+                  result[machine_group_name] << data
+                end
               end
             }  
           rescue => detail
