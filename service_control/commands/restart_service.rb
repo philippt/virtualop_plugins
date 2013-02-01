@@ -5,6 +5,7 @@ param :service
 
 on_machine do |machine, params|
   machine.stop_service(params) if machine.status_service(params) == "true"
+  sleep 1
   machine.start_service(params)
   
   details = machine.service_details("service" => params["service"])

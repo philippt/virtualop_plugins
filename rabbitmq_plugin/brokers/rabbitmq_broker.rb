@@ -1,6 +1,6 @@
 class RabbitmqBroker < RHCP::LoggingBroker
   
-  MAX_BUFFER_SIZE = 100
+  MAX_BUFFER_SIZE = 25
   
   @@buffer = []
   
@@ -15,6 +15,7 @@ class RabbitmqBroker < RHCP::LoggingBroker
   
   def self.flush_buffer(op)
     @@buffer_lock.synchronize {
+      $logger.info "sending rabbitmq buffer : #{@@buffer.size}" 
       op.hello_rabbit("queue" => "raw_logging", "message" => JSON.generate(@@buffer))
       @@buffer = []
     }
