@@ -7,7 +7,7 @@ add_columns [ :status ]
 
 on_machine do |machine, params|
   machine.list_services.select do |service|
-    "true" == service["is_startable"]
+    service["is_startable"]
   end.map do |service|
     service["status"] = machine.status_service("service" => service["name"])
     service["is_running"] = service["status"] == "true"
