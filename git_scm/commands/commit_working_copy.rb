@@ -1,4 +1,4 @@
-description "commits changes in all tracked files and pushes the changes to the default remote repository"
+description "commits changes in all tracked files"
 
 param :machine
 param :working_copy
@@ -9,9 +9,7 @@ on_machine do |machine, params|
     w["name"] == params["working_copy"]
   end.first["path"]
   
-  @op.commit_working_copy(params)
-  
-  machine.push_working_copy("working_copy" => params["working_copy"])
+  machine.ssh_and_check_result("command" => "cd #{path} && git commit -a -m \"#{params["comment"]}\"")
   
   @op.without_cache do
     machine.list_changes_in_working_copy("working_copy" => params["working_copy"])

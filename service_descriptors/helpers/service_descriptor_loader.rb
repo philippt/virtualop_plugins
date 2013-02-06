@@ -36,6 +36,7 @@ class ServiceDescriptorLoader
     @service["nagios_checks"] = {}
     @service["tcp_endpoint"] = []
     @service["udp_endpoint"] = []
+    @service["log_files"] = []
     
     @service
   end
@@ -122,9 +123,19 @@ class ServiceDescriptorLoader
     end
   end
   
+  def log_file(path, options = {})
+    h = {
+      "path" => path 
+    }
+    options.each do |k,v|
+      h[k.to_s] = v
+    end        
+    @service["log_files"] << h 
+  end
+  
   def method_missing(m, *args)
     targets = [ :redirect_log, :start_command, :stop_command, :on_install ]
-    targets += [ :port, :process_regex, :log_file ]
+    targets += [ :port, :process_regex ]
     targets += [ :cron, :every ]
     targets += [ :http_endpoint ]
     targets += [ :static_html ]

@@ -3,6 +3,8 @@ description 'destroys and undefines a VM'
 param :machine
 param :vm
 
+notifications
+
 on_machine do |machine, params|
   state = "unknown"
   @op.without_cache do # to prevent situations where the vop has the wrong state

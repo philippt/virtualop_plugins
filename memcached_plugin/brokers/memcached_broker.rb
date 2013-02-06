@@ -51,15 +51,25 @@ class MemcachedBroker < RHCP::Broker
     end
     cache_key = request.command.name + '_' + Digest::SHA1.hexdigest(sorted_param_values.join('|'))
 
-    should_read_from_cache = 
-      (command.is_read_only) &&
-      ( (not command.result_hints.has_key?(:cache)) || (command.result_hints[:cache]) ) &&
+    command_is_cacheable = (command.is_read_only) &&
+      ( (not command.result_hints.has_key?(:cache)) || (command.result_hints[:cache]) )
+      
+    request_cookies = (request.context == nil ? {} : request.context.cookies) 
+
+    should_read_from_cache = command_is_cacheable &&
       ((request.context == nil) or (not request.context.cookies.has_key?('__caching.disable.read')))
 
-    should_write_into_cache =
-      (command.is_read_only) &&
-      ( (not command.result_hints.has_key?(:cache)) || (command.result_hints[:cache]) ) &&
+    should_write_into_cache =  command_is_cacheable &&
       ((request.context == nil) or (not request.context.cookies.has_key?('__caching.disable.write')))
+      
+    if should_read_from_cache
+      if request_cookies.has_key?('__caching.bomb') and request_cookies['__caching.bomb'].to_i > 0
+        puts "cache bomb prevents cache read for #{command.name}"
+        #pp request_cookies
+        request_cookies['__caching.bomb'] = request_cookies['__caching.bomb'].to_i - 1
+        should_read_from_cache = false
+      end
+    end
 
     if should_read_from_cache
       

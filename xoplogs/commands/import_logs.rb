@@ -17,9 +17,25 @@ on_machine do |machine, params|
         "target_file" => path_for_import
       )
       service_root = xoplogs.service_details("service" => "xoplogs")["service_root"]
-      if log["source"] == "apache" and log["format"] == "vop" 
-        xoplogs.ssh_and_check_result("command" => "cd #{service_root} && `which rails` runner app/scripts/import_access_log.rb #{path_for_import} xop_apache #{params["machine"]} #{log["service"]}")
+      
+      if log["source"] == "apache"
+        
+        parser = case log["format"]
+        when "vop"
+          "xop_apache"
+        when "combined"
+          "apache"
+        else
+          nil
+        end
+        
+        $logger.warn "no known parser for log file #{log["path"]}" if nil == parser
+          
+        xoplogs.ssh_and_check_result("command" => "cd #{service_root} && `which rails` runner app/scripts/import_access_log.rb #{path_for_import} #{parser} #{params["machine"]} #{log["service"]}")
         result << { "path" => file_name }
+      elsif log.has_key? "parser"
+        xoplogs.ssh_and_check_result("command" => "cd #{service_root} && `which rails` runner app/scripts/import_access_log.rb #{path_for_import} #{log["parser"]} #{params["machine"]} #{log["service"]}")
+        result << { "path" => file_name }        
       end
     end
   end
