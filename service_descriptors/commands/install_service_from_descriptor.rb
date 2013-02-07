@@ -267,7 +267,7 @@ on_machine do |machine, params|
       end
     end
     
-    if service.has_key?("http_endpoint")
+    if service.has_key?("http_endpoint") and service["http_endpoint"].size > 0
       unless params.has_key?("extra_params") and params["extra_params"].has_key?("domain")
         raise "http_endpoint configuration found for service #{service["name"]}, but no domain parameter is present. not handling http_endpoint #{service["http_endpoint"]}"
       end
