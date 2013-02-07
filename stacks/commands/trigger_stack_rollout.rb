@@ -24,8 +24,17 @@ on_machine do |machine, params|
     #p.merge! params["extra_params"]
     @op.send(command_name.to_sym, p)
     
+    sleep 30
+    
+    idx = 0
     jenkins_jobs.each do |job|
       @op.trigger_build("jenkins_job" => job["full_name"])
+      if idx == 0
+        how_many = 180
+        @op.comment "sleeping #{how_many} seconds after launching first jenkins job"
+        sleep how_many
+      end
+      idx += 1
     end
   end
   
