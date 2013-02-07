@@ -13,7 +13,7 @@ on_machine do |machine, params|
   tabs = [
     ["machine_overview", "Overview"],
     ["working_copies", "Working Copies"],
-    #["log_files", "Log Files"],
+    ["log_files", "Log Files"],
     #["machine_traffic", "Traffic"],
     ["disk_space", "Diskspace"],
     ["listen_ports", "Listen Ports"],

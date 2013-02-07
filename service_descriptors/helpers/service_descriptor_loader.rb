@@ -34,6 +34,7 @@ class ServiceDescriptorLoader
     @service["outgoing_tcp"] = []
     
     @service["nagios_checks"] = {}
+    @service["http_endpoint"] = []
     @service["tcp_endpoint"] = []
     @service["udp_endpoint"] = []
     @service["log_files"] = []
@@ -107,6 +108,14 @@ class ServiceDescriptorLoader
     end
   end
   
+  def http_endpoint(foo)
+    if foo.class == Array
+      @service["http_endpoint"] += foo
+    else
+      @service["http_endpoint"] << foo
+    end
+  end
+  
   def tcp_endpoint(t)
     if t.class == Array
       @service["tcp_endpoint"] += t
@@ -137,7 +146,7 @@ class ServiceDescriptorLoader
     targets = [ :redirect_log, :start_command, :stop_command, :on_install ]
     targets += [ :port, :process_regex ]
     targets += [ :cron, :every ]
-    targets += [ :http_endpoint ]
+    #targets += [ :http_endpoint ]
     targets += [ :static_html ]
     #targets += [ :database ]
     #targets += [ :runlevel ]

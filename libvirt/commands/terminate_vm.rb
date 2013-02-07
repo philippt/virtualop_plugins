@@ -32,13 +32,8 @@ on_machine do |machine, params|
   machine.undefine_vm("name" => params["name"])
   
   machine.ssh_and_check_result("command" => "virsh vol-delete #{params["name"]}.img --pool default")
-  
-  begin
-    @op.remove_known_machine("name" => params["name"])
-    machine.remove_installed_vm_entry("name" => params["name"])
-  rescue Exception => e
-    $logger.warn("could not remove machine entry : #{e.message}")
-  end
+    
+  @op.cleanup_machine("machine" => params["name"] + '.' + params["machine"])
   
   @op.without_cache do 
     machine.list_vms

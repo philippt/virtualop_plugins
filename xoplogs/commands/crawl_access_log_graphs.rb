@@ -7,9 +7,6 @@ on_machine do |machine, params|
   next unless @op.list_services_with_access_logs.select { |x| x["host_name"] == machine.name }.size > 0
   
   @op.list_intervals.each do |i|
-    @op.list_data_lines.each do |line|
-      next if line == "count_total"
-      machine.access_log_graph(params.merge("interval_hours" => i, "line" => line))
-    end
+    machine.access_log_graph(params.merge("interval_hours" => i, "line" => %w|count_success count_errors response_time_ms|))
   end  
 end  

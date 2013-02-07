@@ -275,7 +275,10 @@ on_machine do |machine, params|
       domain = params["extra_params"]["domain"]
       machine.install_canned_service("service" => "apache/apache")
   
-      machine.add_reverse_proxy("server_name" => domain, "target_url" => "http://127.0.0.1:#{service["http_endpoint"]}/")
+      target_urls = service["http_endpoint"].map do |endpoint|
+        "http://127.0.0.1:#{endpoint}"
+      end
+      machine.add_reverse_proxy("server_name" => domain, "target_url" => target_urls)
       machine.restart_service("service" => "apache")
       
       machine.configure_reverse_proxy("domain" => domain) if machine.proxy

@@ -1,13 +1,15 @@
-params_as :notify_vm_setup_start
+params_as :notify_setup_vm_start
 
 param :current_user
 
-contributes_to :notify_vm_setup_start
+contributes_to :notify_setup_vm_start
 
 execute do |params|
   
+  machine_name = params["vm_name"] + '.' + params["machine"]
+  
   data = {
-    "name" => params["machine_name"],
+    "name" => machine_name,
     "user" => params["current_user"]
   }
   

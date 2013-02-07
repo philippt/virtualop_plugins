@@ -5,6 +5,7 @@ dependency :rpm
 dependency :service_descriptors
 dependency :github_scm
 dependency :git_scm
+dependency :environments
 
 config_param "install_kernel_location", "the location from which the kernel+initrd pair should be retrieved for an installation", 
   :default_value => "http://ftp-stud.fht-esslingen.de/pub/Mirrors/centos/6/os/x86_64/"

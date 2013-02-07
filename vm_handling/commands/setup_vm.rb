@@ -21,9 +21,9 @@ param "canned_service", "name of a canned service to install on the machine", :a
 param "http_proxy", "if specified, the http proxy is used for the installation and configured on the new machine", :default_value => config_string('http_proxy')
 
 # TODO add environment here?
-#param "environment", "if specified, the environment is written into a config file so that it's available through $VOP_ENV", :lookup_method => lambda do
-#  %w|development staging production|
-#end
+param "environment", "if specified, the environment is written into a config file so that it's available through $VOP_ENV", :lookup_method => lambda {
+  @op.list_environments
+}
 
 accept_extra_params
 
@@ -110,6 +110,10 @@ on_machine do |machine, params|
   )
   
   @op.with_machine(full_name) do |vm|
+    if params.has_key? 'environment'
+      vm.write_file('target_filename' => '/etc/profile.d/vop_env.sh', 'content' => "export VOP_ENV=#{params["environment"]}")
+    end
+    
     vm.base_install(params)
     
     vm.os_update   

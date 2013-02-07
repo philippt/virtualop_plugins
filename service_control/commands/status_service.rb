@@ -9,11 +9,11 @@ on_machine do |machine, params|
   result = "unknown"  
   if service.has_key? "status_command"
     status = machine.ssh_extended("command" => service["status_command"])
-    result = (status["result_code"] == 0).to_s
+    result = status["result_code"] == 0
   elsif service.has_key? "process_regex"
-    result = (machine.processes_like("string" => service["process_regex"]).size > 0).to_s
+    result = machine.processes_like("string" => service["process_regex"]).size > 0
   elsif service.has_key? "run_command"
-    result = (machine.processes_like("string" => service["run_command"]).size > 0).to_s
+    result = machine.processes_like("string" => service["run_command"]).size > 0
   elsif service.has_key? "windows_service"
     result = machine.status_windows_service("service" => service["windows_service"])
   end

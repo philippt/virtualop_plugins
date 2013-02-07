@@ -18,6 +18,7 @@ define host{
         <% if @plugin.config.has_key?('default_check_command') %>
         check_command 			<%= config_string('default_check_command') %>
         <% end %>
+        #notes_url				http://vop.dev.virtualop.org/inventory/machine/<%= machine.name %>/list_services
 }
 
 
