@@ -1,4 +1,4 @@
-description "returns the data for graphing access logs for the selected service"
+description "returns graphable access log stats from the xoplogs database"
 
 param :machine
 param :service, "the service to work with", :mandatory => false

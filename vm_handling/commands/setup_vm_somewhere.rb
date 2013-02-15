@@ -27,6 +27,7 @@ execute do |params|
     # ).save()
   
   raise "no installation target configured" unless config_string('installation_target')
+  
   # TODO we could use a slightly more complicated algorithm here
   first_target = config_string('installation_target').first
   @op.setup_vm(params.merge({

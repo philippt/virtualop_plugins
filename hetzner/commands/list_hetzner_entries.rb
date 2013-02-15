@@ -15,10 +15,10 @@ execute do |params|
   end.first
   
   @op.with_machine("localhost") do |machine|
-    failover_yaml_data = machine.ssh_and_check_result("command" => "curl -s -u '#{hetzner_config['user']}:#{hetzner_config['password']}' https://robot-ws.your-server.de/server.yaml")
+    yaml_data = machine.ssh_and_check_result("command" => "curl -s -u '#{hetzner_config['user']}:#{hetzner_config['password']}' https://robot-ws.your-server.de/server.yaml")
   
-    yaml_data = YAML.load(failover_yaml_data)
-    yaml_data.each do |data_row|
+    data = YAML.load(yaml_data)
+    data.each do |data_row|
       if data_row.has_key?('server')
         the_data = data_row['server']
         extra_data = {
