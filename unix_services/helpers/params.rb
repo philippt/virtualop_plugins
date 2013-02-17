@@ -1,15 +1,14 @@
-def param_unix_service(description = 'the service to work with')
-  RHCP::CommandParam.new("name", description,
-    {
-      :mandatory => true,
-      :lookup_method => lambda { |request|
-        @op.with_machine(request.get_param_value('machine')) do |host|
-          host.list_unix_services#.map do |service|
-          #  service["name"]
-          #end
-        end
+def param_unix_service(options = {})
+  merge_options_with_defaults(options, {
+    :mandatory => true,
+    :lookup_method => lambda { |request|
+      @op.with_machine(request.get_param_value('machine')) do |host|
+        host.list_unix_services#.map do |service|
+        #  service["name"]
+        #end
+      end
 
-      }
     }
-  )
+  })
+  RHCP::CommandParam.new("name", "a unix service to work with", options)
 end

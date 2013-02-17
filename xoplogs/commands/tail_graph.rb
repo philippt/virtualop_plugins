@@ -10,12 +10,16 @@ on_machine do |machine, params|
   
   lines = machine.tail("lines" => 1000, "file_name" => params["path"])
   
+  log_file = machine.find_logs.select { |x| x["path"] == params["path"] }.first
+  raise "no log file definition found for #{params["path"]} on #{machine.name}" unless log_file
+  raise "no parser defined for log file #{params["path"]}" unless log_file.has_key?("parser") and log_file["parser"] != ""
+  
   tempfile = @op.write_tempfile("data" => lines)
   JSON.parse(@op.http_form_upload(
     "machine" => "localhost",
     "target_url" => xoplogs_url + '/import_log/parse_and_aggregate', 
     "file_name" => tempfile.path,
     "param_name" => "pic",
-    "extra_content" => "parser=xop_apache" # TODO
+    "extra_content" => "parser=#{log_file["parser"]}"
   ))
 end  

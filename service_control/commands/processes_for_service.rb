@@ -1,5 +1,5 @@
 param :machine
-param :service
+param :service, :default_param => true
 
 result_as :processes
 

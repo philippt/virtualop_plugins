@@ -22,12 +22,13 @@ on_machine do |machine, params|
           all_vhosts.delete(vhost)
           
           if vhost.has_key?("log_path") and machine.file_exists("file_name" => vhost["log_path"])
-            result << {
+            h = {
               "service" => service["name"],
               "path" => vhost["log_path"],
               "source" => "apache",
               "format" => vhost["log_format"]
             }
+            result << h
           end  
         end
       else
@@ -62,6 +63,10 @@ on_machine do |machine, params|
         "format" => vhost["log_format"]
       }
     end
+  end
+  
+  result.each do |entry|
+    entry["parser"] = "xop_apache" if entry["source"] == "apache" and entry["format"] == "vop"
   end
   
   result

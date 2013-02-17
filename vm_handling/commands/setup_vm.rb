@@ -1,5 +1,7 @@
 description 'setup a new vm, providing some defaults for new_vm_from_kickstart'
 
+#param! :current_user
+
 param :machine
 
 param "vm_name", "the name for the VM to be created", :mandatory => true
@@ -50,7 +52,7 @@ on_machine do |machine, params|
     params[k] = v unless params.has_key?(k)
   end
   
-  @op.notify_vm_setup_start("machine_name" => full_name, "data" => params)
+  #@op.notify_vm_setup_start("machine_name" => full_name, "data" => params)
   
   @op.with_lock("name" => "setup_vm", "extra_params" => { "machine" => params["machine"] }) do
     new_vm_params = params.clone
@@ -144,7 +146,7 @@ on_machine do |machine, params|
     
     vm.change_runlevel("runlevel" => "running")
     
-    vm.notify_vm_setup_complete("data" => params)    
+    #vm.notify_vm_setup_complete("data" => params)    
   end
   
   full_name

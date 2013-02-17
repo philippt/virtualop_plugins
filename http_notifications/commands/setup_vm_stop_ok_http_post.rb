@@ -1,9 +1,11 @@
-params_as :notify_setup_vm_stop_ok
-
 contributes_to :notify_setup_vm_stop_ok
 
+param :current_user
+
+accept_extra_params
+
 execute do |params|
-  machine_name = params["vm_name"] + '.' + params["machine"]
+  machine_name = "#{params["extra_params"]["vm_name"]}.#{params["extra_params"]["machine"]}"
   
   data = @op.with_machine(machine_name) do |machine|  
     ssh_options = {}
@@ -17,8 +19,8 @@ execute do |params|
       "ssh" => ssh_options
     }
     
-    if params["data"].has_key?('domain')
-      payload["domain"] = params["data"]["domain"]
+    if params["extra_params"].has_key?('domain')
+      payload["domain"] = params["extra_params"]["domain"]
     end
       
     {
