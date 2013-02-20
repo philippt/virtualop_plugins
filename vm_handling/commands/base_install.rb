@@ -9,6 +9,10 @@ on_machine do |machine, params|
   machine.write_own_centos_repo()
   process_local_template(:http_proxy, machine, "/etc/profile.d/http_proxy.sh", binding()) if params.has_key?('http_proxy')
   
+  machine.ssh_and_check_result("command" => "sed -ie 's/HOSTNAME=.*/HOSTNAME=#{machine.name.split('.').first}/' /etc/sysconfig/network")
+  # TODO machine.append_to_file("file_name" => "/etc/hosts", "content" => "127.0.0.1 #{machine.name}")
+  # TODO append "search #{domain_thing}" => "/etc/resolv.conf"
+  
   machine.install_rpm_package("name" => [ "git", "vim", "screen", "man", "rubygems" ])
     
   machine.ssh_and_check_result("command" => "gem update --system")
