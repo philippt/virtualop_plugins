@@ -36,9 +36,26 @@ stack :vop_website do |m, params|
   m.github 'philippt/virtualop_website'
   m.domain params["domain"].first
 end
+
+stack :openfire do |m, params|
+  m.canned_service :openfire
+  m.domain_prefix 'openfire'
+end
+
+stack :owncloud do |m, params|
+  m.canned_service :owncloud_server
+  m.domain_prefix 'owncloud'
+end
+
+stack :ldap do |m, params|
+  m.canned_service :centos_ldap 
+end
  
 on_install do |stacked, params|
   @op.comment("foo minimal_platform $29.00 foo")
+  
+  #@op.stop_service("machine" => "localhost", "service" => "message_processor")
+    
   s = ""
   stacked.keys.each do |stack_name|
     s += "\t#{stack_name} : #{stacked[stack_name].first["full_name"]}\t#{stacked[stack_name].first["domain"]}\n"
@@ -69,6 +86,8 @@ on_install do |stacked, params|
       localhost.ssh_and_check_result("command" => "cd #{vop_webapp_path} && rake db:migrate")
     end
   end
+  
+  #@op.start_service("machine" => "localhost", "service" => "message_processor")
   
   #@op.configure_data_repo
   datarepo_alias = (

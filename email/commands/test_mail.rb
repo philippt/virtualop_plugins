@@ -2,7 +2,7 @@ description "sends a test mail"
 
 param "to", "the recipient address", :is_default_param => true
 
-on_machine do |machine, params|
+execute do |params|
   puts "FOO40"
   message = read_local_template(:test, binding())
     

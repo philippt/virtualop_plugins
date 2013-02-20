@@ -9,7 +9,7 @@ param "extra_folder", "name of extra folders that should be created inside the .
 on_machine do |machine, params|
   plugin_dir = params["directory"]
   
-  (%w|commands helpers templates| + (params["extra_folders"] || [])).each do |x|      
+  (%w|commands helpers templates| + (params["extra_folder"] || [])).each do |x|      
     machine.mkdir("dir_name" => plugin_dir + '/' + x)
   end
   

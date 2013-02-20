@@ -10,7 +10,6 @@ execute do |params|
   
   result = []
   @op.on_ldap("ldap_server" => params["ldap_server"], "what" => lambda { |ldap|
-    pp ldap
     ldap.search( :base => treebase, :filter => filter ) do |entry|
       result << entry
     end

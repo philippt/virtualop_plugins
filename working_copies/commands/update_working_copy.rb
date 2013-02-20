@@ -6,6 +6,7 @@ param :working_copy
 on_machine do |machine, params|
   wc = machine.working_copy_details(params)
   
+  # TODO circular dependency kind of thing
   case wc["type"]
   when "git"
     machine.update_git_working_copy(params)
