@@ -6,17 +6,15 @@ on_machine do |machine, params|
   # there might be already a yum process running - started by the OS
   @op.wait_until(
     "interval" => 5, "timeout" => 120, 
-    "error_text" => "there seems to be a yum process already running",
-    "condition" => lambda do
-      result = false
-      begin
-        result = machine.processes_like("string" => "yum").size == 0
-      rescue Exception => e
-        $logger.info("got an exception while trying to connect to machine : #{e.message}")
-      end
-      result
+    "error_text" => "there seems to be a yum process already running") do
+    result = false
+    begin
+      result = machine.processes_like("string" => "yum").size == 0
+    rescue Exception => e
+      $logger.info("got an exception while trying to connect to machine : #{e.message}")
     end
-  )
+    result
+  end
    
   MAX_ATTEMPTS = 3
   YUM_UPDATE_TIMEOUT_MIN = config_string('yum_update_timeout_min', 15)

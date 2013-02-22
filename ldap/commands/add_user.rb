@@ -23,7 +23,8 @@ execute do |params|
     :mail => params["email"],
     :userPassword => (params.has_key?("password") ? params["password"] : 'change_me'),
   }
-  attr.merge_from params, :first_name => :given_name, :last_name => :sn
+  attr.merge_from params, { :first_name => :givenname, :last_name => :sn }
+  pp attr
 
   $logger.info "new user : #{dn}"
   @op.with_ldap("ldap_server" => params["ldap_server"]) do |ldap|

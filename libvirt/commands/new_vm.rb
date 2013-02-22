@@ -74,12 +74,9 @@ on_machine do |machine, params|
   machine.ssh_and_check_result("command" => command)
   
   # ugly little side-effect: record this installation (e.g. for the iptables generator)
-  # TODO reactivate
-  if true
-    dir_name = "/var/lib/virtualop/machines"
-    machine.hash_to_file(
-      "file_name" => "#{dir_name}/#{params["vm_name"]}", 
-      "content" => params
-    )
-  end
+  dir_name = "/var/lib/virtualop/machines"
+  machine.hash_to_file(
+    "file_name" => "#{dir_name}/#{params["vm_name"]}", 
+    "content" => params
+  )
 end

@@ -16,17 +16,14 @@ on_machine do |machine, params|
   if state == "running"
     machine.destroy_vm("name" => params["name"])
     
-    @op.wait_until(
-      "interval" => 5, "timeout" => 30, 
-      "error_text" => "could not find a machine with name '#{params["name"]}' that is shut off",
-      "condition" => lambda do
-        candidates = machine.list_vms.select do |row|
-          row["name"] == params["name"] and
-          row["state"] == "shut off"
-        end
-        candidates.size > 0
+    @op.wait_until("interval" => 5, "timeout" => 30, 
+      "error_text" => "could not find a machine with name '#{params["name"]}' that is shut off") do
+      candidates = machine.list_vms.select do |row|
+        row["name"] == params["name"] and
+        row["state"] == "shut off"
       end
-    )
+      candidates.size > 0
+    end
   end
   
   machine.undefine_vm("name" => params["name"])

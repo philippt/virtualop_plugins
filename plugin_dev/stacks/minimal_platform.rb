@@ -48,7 +48,8 @@ stack :owncloud do |m, params|
 end
 
 stack :ldap do |m, params|
-  m.canned_service :centos_ldap 
+  m.canned_service :centos_ldap
+  m.domain params["domain"].first
 end
  
 on_install do |stacked, params|

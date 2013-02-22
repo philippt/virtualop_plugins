@@ -76,40 +76,34 @@ on_machine do |machine, params|
   end
   
   # wait until shutdown after installation
-  @op.wait_until(
-    "interval" => 5, "timeout" => config_string('installation_timeout_secs'), 
-    "error_text" => "could not find a machine with name '#{params["vm_name"]}' that is shut off",
-    "condition" => lambda do
-      candidates = machine.list_vms.select do |row|
-        row["name"] == params["vm_name"] and
-        row["state"] == "shut off"
-      end
-      candidates.size > 0
+  @op.wait_until("interval" => 5, "timeout" => config_string('installation_timeout_secs'), 
+    "error_text" => "could not find a machine with name '#{params["vm_name"]}' that is shut off") do
+    candidates = machine.list_vms.select do |row|
+      row["name"] == params["vm_name"] and
+      row["state"] == "shut off"
     end
-  )
+    candidates.size > 0
+  end
   
-  machine.fix_libvirt_timezone_config("vm_name" => params["vm_name"])
+  machine.fix_libvirt_timezone_config("name" => params["vm_name"])
   
   machine.start_vm("name" => params["vm_name"])
   
   sleep 15
   
-  @op.wait_until(
-    "interval" => 5, "timeout" => config_string('vm_start_timeout_secs'), 
-    "error_text" => "could not find a running machine with name '#{params["vm_name"]}'",
-    "condition" => lambda do
-      result = false
-      begin
-        @op.with_machine(full_name) do |m|
-          m.hostname
-        end      
-        result = true
-      rescue Exception => e
-        $logger.info("got an exception while trying to connect to machine : #{e.message}")
-      end
-      result
+  @op.wait_until("interval" => 5, "timeout" => config_string('vm_start_timeout_secs'), 
+    "error_text" => "could not find a running machine with name '#{params["vm_name"]}'") do
+    result = false
+    begin
+      @op.with_machine(full_name) do |m|
+        m.hostname
+      end      
+      result = true
+    rescue Exception => e
+      $logger.info("got an exception while trying to connect to machine : #{e.message}")
     end
-  )
+    result
+  end
   
   @op.with_machine(full_name) do |vm|
     if params.has_key? 'environment'
