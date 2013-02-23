@@ -22,7 +22,6 @@ param "canned_service", "name of a canned service to install on the machine", :a
 
 param "http_proxy", "if specified, the http proxy is used for the installation and configured on the new machine", :default_value => config_string('http_proxy')
 
-# TODO add environment here?
 param "environment", "if specified, the environment is written into a config file so that it's available through $VOP_ENV", :lookup_method => lambda {
   @op.list_environments
 }
@@ -51,8 +50,6 @@ on_machine do |machine, params|
   defaults.each do |k,v|
     params[k] = v unless params.has_key?(k)
   end
-  
-  #@op.notify_vm_setup_start("machine_name" => full_name, "data" => params)
   
   @op.with_lock("name" => "setup_vm", "extra_params" => { "machine" => params["machine"] }) do
     new_vm_params = params.clone
@@ -139,8 +136,6 @@ on_machine do |machine, params|
     vm.rm("file_name" => "/etc/profile.d/http_proxy.sh")
     
     vm.change_runlevel("runlevel" => "running")
-    
-    #vm.notify_vm_setup_complete("data" => params)    
   end
   
   full_name

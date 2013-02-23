@@ -1,10 +1,8 @@
 description "terminates a machine and re-installs it"
 
-param! 'machine', 'fully-qualified machine name', {
-  :lookup_method => lambda { @op.list_machines.map { |x| x['name'] } }, 
+param! :machine, 'the machine to kaboom', 
   :allows_extra_values => true,
   :default_param => true
-}  
 
 param "memory_size", "the amount of memory (in MB) that should be allocated for the new VM", :default_value => 512
 param "disk_size", "disk size in GB for the new VM", :default_value => 25
@@ -25,7 +23,7 @@ param "http_proxy", "if specified, the http proxy is used for the installation a
 
 accept_extra_params
 
-on_machine do |machine, params|
+execute do |params|
   parts = params['machine'].split('.')
   vm_name = parts.shift
   host_name = parts.join('.')
