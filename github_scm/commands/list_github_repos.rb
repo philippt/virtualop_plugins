@@ -12,16 +12,16 @@ ignore_extra_params
 execute do |params|
   result = []
   
-  if params.has_key?('github_user') and params.has_key?('github_password')
-    result = JSON.parse(@op.http_get("url" => "https://#{params["github_user"]}:#{params["github_password"]}@api.github.com/user/repos"))
-  elsif params.has_key?('github_token') and params["github_token"]
-    result = JSON.parse(@op.http_get("url" => "https://api.github.com/user/repos?access_token=#{params["github_token"]}"))
-  else
-    raise "need either github user/password or access token to authenticate against github"
-  end
+  result = JSON.parse(@op.http_get("url" => github_url(params, '/user/repos')))
   
   result.each do |x|
     x["full_name"] = x["owner"]["login"] + '/' + x["name"]
+    # TODO branch support?
+    begin
+      x["has_metadata"] = @op.get_tree(params.merge({ "github_project" => x["full_name"] })).select { |y| y["path"] == ".vop" }.size > 0
+    rescue
+      x["has_metadata"] = false
+    end
   end
   
   result

@@ -14,8 +14,9 @@ on_machine do |machine, params|
   
   @op.rename_vm("machine" => details["host_name"], "name" => short_name, "new_name" => params["new_name"])
   
+  new_full_name = params["new_name"] + '.' + details["host_name"]
   new_details = {
-    "name" => params["new_name"] + '.' + details["host_name"]
+    "name" => new_full_name
   }
   details.each do |k,v|
     if %w|host_name os ssh_host ssh_key ssh_password ssh_port ssh_user type|.include? k
@@ -29,5 +30,19 @@ on_machine do |machine, params|
     @op.list_vms("machine" => details["host_name"])
   end
   
+  
   @op.start_vm("machine" => details["host_name"], "name" => params["new_name"])
+  
+  sleep 10
+  
+  @op.wait_until("interval" => 5, "timeout" => 120) do
+    (@op.vm_status("machine" => new_full_name) == "running") and
+    @op.reachable_through_ssh("machine" => new_full_name)
+  end
+  
+  sleep 10
+  
+  new_full_name
 end
+
+

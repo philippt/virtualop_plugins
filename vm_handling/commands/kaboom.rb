@@ -34,7 +34,8 @@ execute do |params|
     p = params.clone
     p.delete("machine")
     p["vm_name"] = vm_name
-    host.setup_vm(p)
+    #host.setup_vm(p)
+    host.new_machine(p)
   end
 end   
 

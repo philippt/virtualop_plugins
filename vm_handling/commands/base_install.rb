@@ -3,9 +3,17 @@ description "performs the base installation for a new machine"
 param :machine
 param "http_proxy", "if specified, the http proxy is used for the installation and configured on the new machine"
 
+param "environment", "if specified, the environment is written into a config file so that it's available through $VOP_ENV", :lookup_method => lambda {
+  @op.list_environments
+}
+
 ignore_extra_params
 
 on_machine do |machine, params|
+  if params.has_key? 'environment'
+    machine.write_file('target_filename' => '/etc/profile.d/vop_env.sh', 'content' => "export VOP_ENV=#{params["environment"]}")
+  end
+  
   machine.write_own_centos_repo()
   process_local_template(:http_proxy, machine, "/etc/profile.d/http_proxy.sh", binding()) if params.has_key?('http_proxy')
   

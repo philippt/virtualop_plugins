@@ -1,10 +1,9 @@
 description 'setup a new vm, providing some defaults for new_vm_from_kickstart'
 
-#param! :current_user
-
 param :machine
 
 param "vm_name", "the name for the VM to be created", :mandatory => true
+
 param "memory_size", "the amount of memory (in MB) that should be allocated for the new VM", :default_value => 512
 param "disk_size", "disk size in GB for the new VM", :default_value => 25
 param "vcpu_count", "the number of virtual CPUs to allocate", :default_value => 1
@@ -103,10 +102,6 @@ on_machine do |machine, params|
   end
   
   @op.with_machine(full_name) do |vm|
-    if params.has_key? 'environment'
-      vm.write_file('target_filename' => '/etc/profile.d/vop_env.sh', 'content' => "export VOP_ENV=#{params["environment"]}")
-    end
-    
     vm.base_install(params)
     
     vm.os_update   
@@ -123,7 +118,6 @@ on_machine do |machine, params|
       end
     end
     
-    
     if params.has_key?('github_project')
       vm.install_service_from_github(params) 
     end  
@@ -136,6 +130,8 @@ on_machine do |machine, params|
     vm.rm("file_name" => "/etc/profile.d/http_proxy.sh")
     
     vm.change_runlevel("runlevel" => "running")
+    
+    vm.hash_to_file("file_name" => "/var/lib/virtualop/setup_params", "content" => params)
   end
   
   full_name
