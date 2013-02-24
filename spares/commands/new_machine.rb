@@ -29,7 +29,9 @@ on_machine do |machine, params|
     spares = machine.list_spares
     if spares.size > 0    
       spare = spares.first
-      full_name = @op.convert_spare("machine" => spare["full_name"], "new_name" => params["vm_name"])
+      p = { "machine" => spare["full_name"], "new_name" => params["vm_name"] }
+      p.merge_from params, :memory_size
+      full_name = @op.convert_spare(p)
     end    
   end
   

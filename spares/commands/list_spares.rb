@@ -3,6 +3,7 @@ param :machine
 result_as :list_vms
 
 on_machine do |machine, params|
+  # TODO locking?
   machine.list_vms.select do |vm|
     result = false
     begin

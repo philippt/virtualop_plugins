@@ -1,6 +1,10 @@
 param :machine
 param! "new_name", "the name for the new VM"
 
+param "memory_size", "the amount of memory (in MB) that should be allocated for the new VM", :default_value => 512
+param "disk_size", "disk size in GB for the new VM", :default_value => 25
+param "vcpu_count", "the number of virtual CPUs to allocate", :default_value => 1
+
 on_machine do |machine, params|
   details = @op.machine_detail("machine" => params["machine"])
   short_name = params["machine"].split(".").first
@@ -30,6 +34,10 @@ on_machine do |machine, params|
     @op.list_vms("machine" => details["host_name"])
   end
   
+  @op.set_maxmem("machine" => details["host_name"], "name" => params["new_name"],"value" => (params["memory_size"].to_i * 1024))
+  # TODO set_mem or adjust xml file
+  
+  # TODO adjust disk & cpu
   
   @op.start_vm("machine" => details["host_name"], "name" => params["new_name"])
   
@@ -39,6 +47,8 @@ on_machine do |machine, params|
     (@op.vm_status("machine" => new_full_name) == "running") and
     @op.reachable_through_ssh("machine" => new_full_name)
   end
+  
+  @op.set_mem("machine" => details["host_name"], "name" => params["new_name"],"value" => (params["memory_size"].to_i * 1024))
   
   sleep 10
   
