@@ -38,7 +38,9 @@ on_machine do |machine, params|
   if spare
     @op.with_machine(full_name) do |vm|
       # TODO karma is a bitch
-      vm.ssh_and_check_result("command" => "setenforce Permissive")
+      @op.without_cache do
+        vm.ssh_and_check_result("command" => "setenforce Permissive")
+      end
       
       # TODO deploy
       if params.has_key?('canned_service')
