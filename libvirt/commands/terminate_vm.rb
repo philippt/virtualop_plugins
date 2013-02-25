@@ -28,7 +28,10 @@ on_machine do |machine, params|
   
   machine.undefine_vm("name" => params["name"])
   
-  machine.ssh_and_check_result("command" => "virsh vol-delete #{params["name"]}.img --pool default")
+  volume_name = "#{params["name"]}.img"
+  if machine.list_volumes.map { |x| x["name"] }.include? volume_name
+    machine.delete_volume("name" => volume_name)
+  end 
     
   @op.cleanup_machine("machine" => params["name"] + '.' + params["machine"])
   
