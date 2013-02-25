@@ -14,11 +14,11 @@ on_machine do |machine, params|
   if exists_already
     @op.comment("message" => "gem #{params["name"]} is already installed.")
   else
-    # TODO hardcoded sudo
     command_string = "gem install "
     command_string += "--version #{params["version"]} " if params.has_key?("version")
     command_string += "#{params["name"]}"
     command_string += " --no-rdoc --no-ri"
+    command_string += " -f" # TODO
     machine.ssh_and_check_result("command" => command_string, "user" => "root")
     
     # @op.without_cache do 

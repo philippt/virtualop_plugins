@@ -21,9 +21,9 @@ on_machine do |machine, params|
   # TODO machine.append_to_file("file_name" => "/etc/hosts", "content" => "127.0.0.1 #{machine.name}")
   # TODO append "search #{domain_thing}" => "/etc/resolv.conf"
   
-  machine.install_rpm_package("name" => [ "git", "vim", "screen", "man", "rubygems" ])
-    
-  machine.ssh_and_check_result("command" => "gem update --system")
+  machine.install_rpm_package("name" => [ "git", "vim", "screen", "man" ])
+  
+  #machine.ssh_and_check_result("command" => "gem update --system")
     
   machine.mkdir('dir_name' => @op.plugin_by_name('service_descriptors').config_string('service_config_dir'))
   
