@@ -20,6 +20,7 @@ param "location", "installation source for guest virtual machine kernel+initrd p
 param "canned_service", "name of a canned service to install on the machine", :allows_multiple_values => true
 
 param "http_proxy", "if specified, the http proxy is used for the installation and configured on the new machine", :default_value => config_string('http_proxy')
+param "keep_proxy", "if set to true, the http proxy will not be deactivated at the end of the installation", :default_value => false
 
 param "environment", "if specified, the environment is written into a config file so that it's available through $VOP_ENV", :lookup_method => lambda {
   @op.list_environments
@@ -127,7 +128,7 @@ on_machine do |machine, params|
     end
     
     # kind of sad, but seems to make more sense for now to use the proxy for the installation only
-    vm.rm("file_name" => "/etc/profile.d/http_proxy.sh")
+    vm.rm("file_name" => "/etc/profile.d/http_proxy.sh") unless params["keep_proxy"]
     
     vm.change_runlevel("runlevel" => "running")
     

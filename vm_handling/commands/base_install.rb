@@ -15,6 +15,7 @@ on_machine do |machine, params|
   end
   
   machine.write_own_centos_repo()
+  
   process_local_template(:http_proxy, machine, "/etc/profile.d/http_proxy.sh", binding()) if params.has_key?('http_proxy')
   
   machine.set_hostname("hostname" => machine.name.split('.').first)

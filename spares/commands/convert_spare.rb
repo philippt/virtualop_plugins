@@ -44,8 +44,9 @@ on_machine do |machine, params|
   sleep 10
   
   @op.wait_until("interval" => 5, "timeout" => 120) do
-    (@op.vm_status("machine" => new_full_name) == "running") and
-    @op.reachable_through_ssh("machine" => new_full_name)
+    (@op.vm_status("machine" => new_full_name) == "running") &&
+    # TODO damn you, Mr. T.
+    (@op.reachable_through_ssh("machine" => new_full_name) == "true")
   end
   
   @op.set_mem("machine" => details["host_name"], "name" => params["new_name"],"value" => (params["memory_size"].to_i * 1024))

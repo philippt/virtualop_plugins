@@ -43,6 +43,7 @@ on_machine do |machine, params|
       end
       
       # TODO deploy
+      # TODO copied from setup_vm
       if params.has_key?('canned_service')
         params['canned_service'].each do |canned_service|
           p = {
@@ -64,6 +65,9 @@ on_machine do |machine, params|
       end
       
       vm.change_runlevel("runlevel" => "running")
+      
+      vm.rm("file_name" => "/etc/profile.d/http_proxy.sh")
+      
       # TODO ? vm.write_file("file_name" => "/var/lib/virtualop/new_machine_params", "content" => params.to_json())
     end
   else
