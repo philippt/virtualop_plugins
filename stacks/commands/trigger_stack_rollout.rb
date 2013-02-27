@@ -28,7 +28,7 @@ on_machine do |machine, params|
     
     idx = 0
     jenkins_jobs.each do |job|
-      @op.trigger_build("jenkins_job" => job["full_name"])
+      job["number"] = @op.trigger_build("jenkins_job" => job["full_name"])
       if idx == 0
         how_many = 180
         @op.comment "sleeping #{how_many} seconds after launching first jenkins job"
@@ -36,6 +36,8 @@ on_machine do |machine, params|
       end
       idx += 1
     end
+    
+    
   end
   
 end

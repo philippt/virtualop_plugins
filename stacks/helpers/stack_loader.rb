@@ -119,9 +119,9 @@ class StackLoader
     end
     
     def memory(*args)
-      arg = args.first.first
-      if arg.class == Array.class
-        @data["memory_size"] = arg.size == 3 ? arg[1] : arg.first
+      arg = args.first
+      if arg.class == Array
+        @data["memory_size"] = (arg.size == 3 ? arg[1] : arg.first)
       else
         @data["memory_size"] = arg
       end
