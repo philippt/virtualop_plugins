@@ -19,12 +19,24 @@ class StackLoader
     }
     @stacks << @stack
     stack_name = @stack["name"]
+    
     @install_command = RHCP::Command.new("stacks." + stack_name + "_stackinstall", "installs the stack #{stack_name}")
     @install_command.add_param(param_machine)
-    @install_command.add_param(RHCP::CommandParam.new("extra_params", "a hash of extra parameters for the service install command"))
+    @install_command.add_param(RHCP::CommandParam.new("extra_params", "a hash of extra parameters for the stack install command"))
     @install_command.accept_extra_params
     begin
       @op.local_broker.register_command(@install_command)
+    rescue => ex
+      raise ex unless /duplicate/.match(ex.message)
+    end
+    
+    @post_rollout_command = RHCP::Command.new("stacks." + stack_name + "_post_rollout", "is called after the stack #{stack_name} has been rolled out")
+    @post_rollout_command.add_param(param_machine)
+    @post_rollout_command.add_param(RHCP::CommandParam.new("result", "a hash holding the rollout jobs' result, grouped by status"))
+    @post_rollout_command.add_param(RHCP::CommandParam.new("extra_params", "a hash of extra parameters for the post rollout command"))
+    @post_rollout_command.accept_extra_params
+    begin
+      @op.local_broker.register_command(@post_rollout_command)
     rescue => ex
       raise ex unless /duplicate/.match(ex.message)
     end
@@ -131,6 +143,10 @@ class StackLoader
       @data["disk_size"] = d
     end
     
+    def param(key, value)
+      @data[key] = value
+    end
+    
     def method_missing(sym, *args)
       if %w|domain|.include? sym.to_s
         value = *args.first
@@ -189,6 +205,40 @@ class StackLoader
         block.call(stack, params)
       rescue => ex
         raise "could not execute installation block for stack #{@stack["name"]} : #{ex.message}\n#{ex.backtrace.join("\n")}"
+      end
+    end
+  end
+  
+  def post_rollout(&block)
+    # TODO let's not do that again
+    @post_rollout_command.block = lambda do |request, response|
+       
+      p = { "stack" => @stack["name"] }
+      p.merge! request.values
+      p.merge! request.values["extra_params"]
+      
+      p.each do |k,v|
+        next if k == "extra_params"
+        p["extra_params"][k] = v
+      end
+      stack = {}
+      @op.resolve_stack(p).each do |m|
+        stack[m["name"]] = [] unless stack.has_key? m["name"]
+        stack[m["name"]] << m
+      end
+      
+      params = {}
+    
+      @post_rollout_command.params.each do |current_param|
+        if request.has_param_value(current_param.name)
+          params[current_param.name] = request.get_param_value(current_param.name) || p[current_param.name]
+        end
+      end
+      
+      begin
+        block.call(stack, params)
+      rescue => ex
+        raise "could not execute post rollout block for stack #{@stack["name"]} : #{ex.message}\n#{ex.backtrace.join("\n")}"
       end
     end
   end

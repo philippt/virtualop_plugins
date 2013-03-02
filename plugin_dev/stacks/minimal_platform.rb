@@ -35,6 +35,7 @@ end
 stack :vop_website do |m, params|
   m.github 'philippt/virtualop_website'
   m.domain params["domain"].first
+  m.param('vop_url', "vop.#{params["domain"].first}")
 end
 
 stack :openfire do |m, params|
@@ -115,4 +116,9 @@ on_install do |stacked, params|
       localhost.restart_service("service" => service)
     end
   end
+end
+
+post_rollout do |stacked, params|
+  @op.comment "post rollout. successful: #{params["result"][:success].size}, failed: #{params["result"][:failure].size}"
+  pp params
 end
