@@ -122,6 +122,10 @@ end
 post_rollout do |stacked, params|
   @op.comment "post rollout. successful: #{params["result"][:success].size}, failed: #{params["result"][:failure].size}"
   pp params
+  
+  failure = params["result"][:failure]
+  raise "some stacks could not be rolled out: #{failure.map { |x| x["name"] }}" unless failure.size == 0
+  
   if params.has_key?("target_domain")
     new_vop_domain = "vop.#{params["target_domain"]}"
     @op.with_machine(@op.whoareyou.split('@').last) do |vop|
@@ -142,6 +146,8 @@ post_rollout do |stacked, params|
       })   
       vop_website.change_runlevel("runlevel" => "running")
     end
+    
+    # TODO a tiny bit of testing would be helpful at this point
     
     hetzner_host = @op.list_all_hetzner_hosts.select { |x| x["server_ip"] == @op.ipaddress("machine" => params["machine"]) }.first
     if hetzner_host
