@@ -1,6 +1,7 @@
 description "minimal set of infrastructure for running a web platform"
 
 param! "domain", :description => "the domain root for the web application"
+param "target_domain", "alternative domain that should be enabled during post_rollout"
 param "datarepo_init_url", "http URL to initialize the datarepo from"
 
 stack :nagios do |m, p|
@@ -121,4 +122,34 @@ end
 post_rollout do |stacked, params|
   @op.comment "post rollout. successful: #{params["result"][:success].size}, failed: #{params["result"][:failure].size}"
   pp params
+  if params.has_key?("target_domain")
+    new_vop_domain = "vop.#{params["target_domain"]}"
+    @op.with_machine(@op.whoareyou.split('@').last) do |vop|
+      vop.change_runlevel("runlevel" => "maintenance")
+      vop.install_service_from_working_copy("working_copy" => "virtualop_webapp", "service" => "virtualop_webapp", "extra_params" => {
+        "domain" => new_vop_domain
+        # TODO github
+        # TODO dropbox
+      })
+      vop.change_runlevel("runlevel" => "running")
+    end
+    
+    @op.with_machine(stacked["vop_website"].first["full_name"]) do |vop_website|
+      vop_website.change_runlevel("runlevel" => "maintenance")
+      vop_website.install_service_from_working_copy("working_copy" => "virtualop_website", "service" => "virtualop_website", "extra_params" => {
+        "domain" => params["target_domain"],
+        "vop_url" => "http://#{new_vop_domain}"        
+      })   
+      vop_website.change_runlevel("runlevel" => "running")
+    end
+    
+    hetzner_host = @op.list_all_hetzner_hosts.select { |x| x["server_ip"] == @op.ipaddress("machine" => params["machine"]) }.first
+    if hetzner_host
+      account = hetzner_host["account"]
+      failover_ip = @op.list_failover_ips("hetzner_account" => account).select { |x| x["ip_lookup"] == params["target_domain"] }.first
+      if failover_ip
+        @op.switch_failover_ip("hetzner_account" => account, "ip" => failover_ip["ip"], "target_ip" => hetzner_host["server_ip"])
+      end
+    end
+  end
 end
