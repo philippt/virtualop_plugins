@@ -26,7 +26,7 @@ end
 stack :datarepo do |m, params|
   m.canned_service :datarepo
   m.domain_prefix 'datarepo'
-  m.param('datarepo_init_url', params['datarepo_init_url'])
+  m.param('datarepo_init_url', params['datarepo_init_url']) if params.has_key?('datarepo_init_url')
   
   datarepo_alias = 
     (params.has_key?("extra_params") && params["extra_params"] != nil && params["extra_params"].has_key?("prefix")) ?
