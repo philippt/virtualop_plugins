@@ -26,6 +26,13 @@ end
 stack :datarepo do |m, params|
   m.canned_service :datarepo
   m.domain_prefix 'datarepo'
+  m.param('datarepo_init_url', params['datarepo_init_url'])
+  
+  datarepo_alias = 
+    (params.has_key?("extra_params") && params["extra_params"] != nil && params["extra_params"].has_key?("prefix")) ?
+    params["extra_params"]["prefix"][0..-1] : 
+    m.full_name
+  m.param('alias', datarepo_alias)
   m.disk 100
 end
  
@@ -90,21 +97,17 @@ on_install do |stacked, params|
     end
   end
   
-  #@op.start_service("machine" => "localhost", "service" => "message_processor")
+  #datarepo_alias = (
+  #  (params.has_key?("extra_params") and params["extra_params"] != nil and params["extra_params"].has_key?("prefix")) ?
+  #  params["extra_params"]["prefix"][0..-1] : 
+  #  stacked["datarepo"].first["full_name"]
+  #)
+
+  #@op.add_data_repo("alias" => datarepo_alias, 
+  #  "machine" => stacked["datarepo"].first["full_name"], 
+  #  "url" => "http://#{stacked["datarepo"].first["domain"]}"
+  #)
   
-  #@op.configure_data_repo
-  datarepo_alias = (
-    (params.has_key?("extra_params") and params["extra_params"] != nil and params["extra_params"].has_key?("prefix")) ?
-    params["extra_params"]["prefix"][0..-1] : 
-    stacked["datarepo"].first["full_name"]
-  )
-  @op.add_data_repo("alias" => datarepo_alias, 
-    "machine" => stacked["datarepo"].first["full_name"], 
-    "url" => "http://#{stacked["datarepo"].first["domain"]}"
-  )
-  
-  
-  # TODO this should happen after the datarepo has been rolled out
   #if params.has_key?("datarepo_init_url")
   #  @op.populate_repo_from_url("machine" => stacked["datarepo"].first["full_name"], "source_url" => params["datarepo_init_url"])
   #end
@@ -126,8 +129,9 @@ post_rollout do |stacked, params|
   failure = params["result"][:failure]
   raise "some stacks could not be rolled out: #{failure.map { |x| x["name"] }}" unless failure.size == 0
   
-  if params.has_key?("target_domain")
-    new_vop_domain = "vop.#{params["target_domain"]}"
+  if params.has_key?("extra_params") && params["extra_params"].has_key?("target_domain")
+    target_domain = params["extra_params"]["target_domain"]
+    new_vop_domain = "vop.#{target_domain}"
     @op.with_machine(@op.whoareyou.split('@').last) do |vop|
       vop.change_runlevel("runlevel" => "maintenance")
       vop.install_service_from_working_copy("working_copy" => "virtualop_webapp", "service" => "virtualop_webapp", "extra_params" => {
@@ -141,7 +145,7 @@ post_rollout do |stacked, params|
     @op.with_machine(stacked["vop_website"].first["full_name"]) do |vop_website|
       vop_website.change_runlevel("runlevel" => "maintenance")
       vop_website.install_service_from_working_copy("working_copy" => "virtualop_website", "service" => "virtualop_website", "extra_params" => {
-        "domain" => params["target_domain"],
+        "domain" => target_domain,
         "vop_url" => "http://#{new_vop_domain}"        
       })   
       vop_website.change_runlevel("runlevel" => "running")
@@ -152,7 +156,7 @@ post_rollout do |stacked, params|
     hetzner_host = @op.list_all_hetzner_hosts.select { |x| x["server_ip"] == @op.ipaddress("machine" => params["machine"]) }.first
     if hetzner_host
       account = hetzner_host["account"]
-      failover_ip = @op.list_failover_ips("hetzner_account" => account).select { |x| x["ip_lookup"] == params["target_domain"] }.first
+      failover_ip = @op.list_failover_ips("hetzner_account" => account).select { |x| x["ip_lookup"] == target_domain }.first
       if failover_ip
         @op.switch_failover_ip("hetzner_account" => account, "ip" => failover_ip["ip"], "target_ip" => hetzner_host["server_ip"])
       end

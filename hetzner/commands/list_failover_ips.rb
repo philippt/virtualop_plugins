@@ -16,7 +16,7 @@ execute do |params|
   
     data = YAML.load(yaml_data)
     data.each do |row|
-      if row.has_key? "failover"
+      if row.class == Hash && row.has_key?("failover")
         h = row["failover"]
         h.each do |k,v|
           if matched = /(.+_)?ip/.match(k)
