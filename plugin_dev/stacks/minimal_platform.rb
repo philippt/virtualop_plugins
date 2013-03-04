@@ -32,7 +32,7 @@ stack :datarepo do |m, params|
     (params.has_key?("extra_params") && params["extra_params"] != nil && params["extra_params"].has_key?("prefix")) ?
     params["extra_params"]["prefix"][0..-1] : 
     m.full_name
-  m.param('alias', datarepo_alias)
+  m.param('alias', datarepo_alias) unless datarepo_alias == ''
   m.disk 100
 end
  
