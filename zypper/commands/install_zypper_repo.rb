@@ -9,10 +9,15 @@ on_machine do |machine, params|
   existing_repos = machine.list_zypper_repos
   
   params["line"].each do |line|
-    url, a = line.split(" ")    
-    unless existing_repos.map { |x| x["alias"] }.include? a
-      machine.ssh_and_check_result("command" => "zypper ar #{line}")
-      result << a
+    if /\.key/.match(line)
+      machine.ssh_and_check_result("command" => "rpm --import #{line}")
+    else
+      url, a = line.split(" ")
+      unless existing_repos.map { |x| x["alias"] }.include? a
+        # TODO reactivate gpg check
+        machine.ssh_and_check_result("command" => "zypper ar --no-gpgcheck #{line}")
+        result << a
+      end
     end
   end
   
