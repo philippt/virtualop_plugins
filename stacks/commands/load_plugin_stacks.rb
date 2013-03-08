@@ -21,10 +21,9 @@ execute do |params|
         stack_name = /([^\/]+)\.rb$/.match(file_name).captures.first
         stack_source = machine.read_file("file_name" => "#{the_dir}/#{file_name}")
         
-        
-        #stack = ServiceDescriptorLoader.read(@op, plugin, service_name, service_source).services.first
         stack = StackLoader.read(@op, plugin, stack_name, stack_source).stacks.first
         $logger.info "loaded stack #{stack["name"]} from #{the_dir}@#{machine.name}"
+        
         result << stack
       })
     end
