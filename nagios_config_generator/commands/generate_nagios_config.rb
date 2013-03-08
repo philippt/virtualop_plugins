@@ -2,6 +2,7 @@ description "generates nagios configuration for a machine"
 
 param :machine
 #param "alternative_mysql_host_name", "if mysql checks are generated, the value of this parameter is used instead of the host address as mysql hostname to connect against"
+param "disable_notifications", "if set to 'true', notifications will be disabled", :lookup_method => lambda { %w|true false| }, :default_value => config_string('disable_generated_notifications', 'true')
 
 on_machine do |machine, params|
   # TODO make this configurable
@@ -25,6 +26,8 @@ on_machine do |machine, params|
     :ec2_instance :
     (machine.machine_detail.has_key?("os") and machine.machine_detail["os"] == "windows") ?
       :windows_machine : :machine
+
+  notifications_enabled = params['disable_generated_notifications'] == 'false'
 
   @op.with_machine(config_string('nagios_machine_name')) do |nagios|
     process_local_template(template_name, nagios, target_file, binding())    
