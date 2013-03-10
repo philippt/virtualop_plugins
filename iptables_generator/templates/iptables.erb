@@ -55,7 +55,7 @@ echo -pre-routing-
 # forward all http(s) traffic to proxy
 <% if has_proxy %>
 iptables -t nat -A PREROUTING  -p tcp  -d $IP_HOST --dport 80  -j DNAT --to-destination $IP_PRIVATE_PROXY:80
-iptables -t nat -A PREROUTING  -p tcp  -d $IP_HOST --dport 443 -j DNAT --to-destination $IP_PRIVATE_PROXY:443
+#iptables -t nat -A PREROUTING  -p tcp  -d $IP_HOST --dport 443 -j DNAT --to-destination $IP_PRIVATE_PROXY:443
 <% end %>
 
 <% machine.list_installed_vms.each do |vm| %>

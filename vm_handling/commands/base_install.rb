@@ -28,10 +28,6 @@ on_machine do |machine, params|
     
   machine.mkdir('dir_name' => @op.plugin_by_name('service_descriptors').config_string('service_config_dir'))
   
-  # TODO persist this
-  machine.ssh_and_check_result("command" => "setenforce Permissive")
-  machine.ssh_and_check_result("command" => "restorecon -R -v /root/.ssh")
-  
   machine.ssh_and_check_result("command" => "sed -i -e 's!#PermitUserEnvironment no!PermitUserEnvironment yes!' /etc/ssh/sshd_config")
   # TODO add public keys and deactivate password login
   machine.ssh_and_check_result("command" => "/etc/init.d/sshd restart")

@@ -135,5 +135,12 @@ on_machine do |machine, params|
     vm.hash_to_file("file_name" => "/var/lib/virtualop/setup_params", "content" => params)
   end
   
+  group_for_host = @op.list_machine_groups.select { |x| x["name"] == machine.name }.first
+  if group_for_host
+    @op.without_cache do
+      @op.list_machine_group_children("machine_group" => machine.name)
+    end
+  end 
+  
   full_name
 end

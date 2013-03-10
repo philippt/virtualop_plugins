@@ -24,7 +24,7 @@ execute do |params|
     end
       
     {
-      "name" => machine.name,
+      "name" => machine_name,
       "status" => "ok",
       "errors" => [],
       "data" => payload

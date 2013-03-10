@@ -1,6 +1,6 @@
 description "permanently removes a VM and the data on it"
 
-param :machine
+param :machine, :default_param => true
 
 on_machine do |machine, params|
   host_name = machine.machine_detail["host_name"]
