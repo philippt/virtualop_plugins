@@ -16,11 +16,11 @@ param :git_tag
 
 param "canned_service", "name of a canned service to install on the machine", :allows_multiple_values => true
 
-param "environment", "if specified, the environment is written into a config file so that it's available through $VOP_ENV", :lookup_method => lambda {
-  @op.list_environments
-}
+param :environment
 
 accept_extra_params
+
+notifications
 
 on_machine do |machine, params|
   full_name = spare = nil
@@ -37,13 +37,16 @@ on_machine do |machine, params|
   
   if spare
     @op.with_machine(full_name) do |vm|
-      # TODO karma is a bitch
+      
+      # TODO we should not need this anymore at some point (disabling selinux in kickstart now)
       @op.without_cache do
         vm.ssh_and_check_result("command" => "setenforce Permissive")
       end
       
-      # TODO deploy
-      # TODO copied from setup_vm
+      
+      vm.write_environment("environment" => params["environment"])
+            
+      # TODO copied from setup_vm, extract into deploy
       if params.has_key?('canned_service')
         params['canned_service'].each do |canned_service|
           p = {
@@ -68,7 +71,8 @@ on_machine do |machine, params|
       
       vm.rm("file_name" => "/etc/profile.d/http_proxy.sh")
       
-      # TODO ? vm.write_file("file_name" => "/var/lib/virtualop/new_machine_params", "content" => params.to_json())
+      vm.hash_to_file("file_name" => "/var/lib/virtualop/new_machine_params", "content" => params)
+      vm.hash_to_file("file_name" => "/var/lib/virtualop/installation_packages", "content" => vm.list_packages)
     end
   else
     @op.setup_vm(params)  

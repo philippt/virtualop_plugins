@@ -19,18 +19,7 @@ param "location", "installation source for guest virtual machine kernel+initrd p
 accept_extra_params
 
 execute do |params|
-  
-  # Machine.new(
-      # :name => params["vm_name"], 
-      # :state => "installing",
-      # :owner => Thread.current['request'].context.cookies['current_user_email']
-    # ).save()
-  
-  raise "no installation target configured" unless config_string('installation_target')
-  
-  # TODO we could use a slightly more complicated algorithm here
-  first_target = config_string('installation_target').first
   @op.setup_vm(params.merge({
-    "machine" => first_target
+    "machine" => @op.installation_target
   }))
 end

@@ -1,4 +1,4 @@
-contributes_to :notify_setup_vm_start
+contributes_to :notify_new_machine_start
 
 param :current_user
 

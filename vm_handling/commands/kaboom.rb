@@ -27,13 +27,27 @@ execute do |params|
   parts = params['machine'].split('.')
   vm_name = parts.shift
   host_name = parts.join('.')
+
+  p = params.clone
+  p.delete("machine")
+  p["vm_name"] = vm_name
+  
+  if @op.reachable_through_ssh("machine" => params["machine"])
+    begin
+      @op.with_machine(params["machine"]) do |machine|
+        e = machine.environment
+        p["environment"] = e if e
+      end      
+    rescue => detail
+      $logger.warn("could not retrieve params for kaboom from machine : #{detail.message}")
+    end
+  end
   
   @op.with_machine(host_name) do |host|    
     host.terminate_vm("name" => vm_name) if host.list_vms.map { |x| x["name"] }.include? vm_name
     
-    p = params.clone
-    p.delete("machine")
-    p["vm_name"] = vm_name
+    @op.flush_cache()
+    
     #host.setup_vm(p)
     host.new_machine(p)
   end

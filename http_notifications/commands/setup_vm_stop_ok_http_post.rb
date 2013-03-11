@@ -1,4 +1,4 @@
-contributes_to :notify_setup_vm_stop_ok
+contributes_to :notify_new_machine_stop_ok
 
 param :current_user
 
