@@ -42,8 +42,6 @@ execute do |params|
     
 end
 
-require 'net/ldap'
-
 # this is an ugly hack that we need because right now we're stuck with net/ldap 0.4
 # and at least in 0.4, we cannot get the additional error information returned
 # if the password does not match the password criteria defined in the ldap server
