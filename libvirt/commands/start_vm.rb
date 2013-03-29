@@ -4,7 +4,7 @@ param :machine
 param :vm
 
 on_machine do |machine, params|
-  machine.ssh_and_check_result("command" => "virsh start #{params["name"]}")
+  machine.ssh("command" => "virsh start #{params["name"]}")
   @op.comment("message" => "vm #{params["name"]} has been started.")
   
   @op.without_cache do 

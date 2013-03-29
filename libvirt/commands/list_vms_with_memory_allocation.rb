@@ -11,7 +11,7 @@ on_machine do |machine, params|
   total = machine.meminfo["MemTotal"]
   machine.list_vms.map do |vm|
     # TODO extract
-    dominfo = machine.ssh_and_check_result("command" => "virsh dominfo #{vm["name"]}")
+    dominfo = machine.ssh("command" => "virsh dominfo #{vm["name"]}")
     dominfo.split("\n").each do |line|
       if matched = /Used memory:\s+(\d+)\s+kB/.match(line)
         memory = matched.captures.first

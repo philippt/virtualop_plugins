@@ -6,5 +6,5 @@ param "value", "the new value for max_mem (in kilobytes)", :mandatory => true
 
 on_machine do |machine, params|
   value_in_kilobyte = params['value']
-  machine.ssh_and_check_result("command" => "virsh setmem #{params["name"]} #{value_in_kilobyte}")
+  machine.ssh("command" => "virsh setmem #{params["name"]} #{value_in_kilobyte}")
 end

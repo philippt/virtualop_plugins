@@ -17,21 +17,7 @@ on_machine do |machine, params|
     service_root = "/var/www/#{project_name}"
   end
   
-  #git_url = "git://github.com/#{params["github_project"]}.git"
-  git_url = "https://github.com/#{params["github_project"]}.git"
-  
-  begin  
-    project_row = @op.list_github_repos(params).select { |x| x["full_name"] == params["github_project"] }.first
-    git_url = "git@github.com:#{params["github_project"]}.git" if project_row["private"] == "true"
-  rescue => detail
-    raise detail unless /^need either/.match(detail.message)
-  end
-      
-  clone_params = {
-    "directory" => service_root,
-    "git_url" => git_url
-  }.merge_from params, :git_tag, :git_branch
-  machine.git_clone(clone_params) unless machine.file_exists("file_name" => service_root)  
+  @op.github_clone({"directory" => service_root}.merge_from(params, :machine, :github_project, :git_branch, :git_tag))
   
   machine.list_services_in_working_copies
   

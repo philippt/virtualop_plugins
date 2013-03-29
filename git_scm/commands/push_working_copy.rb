@@ -8,5 +8,5 @@ on_machine do |machine, params|
   path = details["path"]
   
   # TODO handle branches (+ origin <branch_name>)
-  machine.ssh_and_check_result("command" => "cd #{path} && git push origin #{details["active_branch"]}")
+  machine.ssh("command" => "cd #{path} && git push origin #{details["active_branch"]}")
 end  

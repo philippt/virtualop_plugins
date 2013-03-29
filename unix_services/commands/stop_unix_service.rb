@@ -9,5 +9,5 @@ on_machine do |machine, params|
   when "ubuntu"
     command_string = "sudo " + command_string
   end
-  machine.ssh_and_check_result("command" => command_string)
+  machine.ssh("command" => command_string)
 end

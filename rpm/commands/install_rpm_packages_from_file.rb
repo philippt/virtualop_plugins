@@ -21,7 +21,7 @@ on_machine do |machine, params|
         temp_dir = "#{machine.home}/tmp/"
         machine.mkdir("dir_name" => temp_dir) unless machine.file_exists("file_name" => temp_dir)
         machine.wget("url" => rpm_url, "target_dir" => temp_dir)
-        machine.ssh_and_check_result("command" => "rpm -ihv --nosignature #{temp_dir}/#{rpm_name}-#{rpm_version}*.rpm")
+        machine.ssh("command" => "rpm -ihv --nosignature #{temp_dir}/#{rpm_name}-#{rpm_version}*.rpm")
         
         result << rpm_name      
       end

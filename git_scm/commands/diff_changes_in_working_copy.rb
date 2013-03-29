@@ -12,5 +12,5 @@ on_machine do |machine, params|
   
   result = []
   
-  machine.ssh_and_check_result("command" => "cd #{path} && git diff")
+  machine.ssh("command" => "cd #{path} && git diff")
 end  

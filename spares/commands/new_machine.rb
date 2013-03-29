@@ -40,11 +40,10 @@ on_machine do |machine, params|
       
       # TODO we should not need this anymore at some point (disabling selinux in kickstart now)
       @op.without_cache do
-        vm.ssh_and_check_result("command" => "setenforce Permissive")
+        vm.ssh("command" => "setenforce Permissive")
       end
       
-      
-      vm.write_environment("environment" => params["environment"])
+      vm.write_environment("environment" => params["environment"]) if params.has_key?("environment")
             
       # TODO copied from setup_vm, extract into deploy
       if params.has_key?('canned_service')
@@ -72,7 +71,8 @@ on_machine do |machine, params|
       vm.rm("file_name" => "/etc/profile.d/http_proxy.sh")
       
       vm.hash_to_file("file_name" => "/var/lib/virtualop/new_machine_params", "content" => params)
-      vm.hash_to_file("file_name" => "/var/lib/virtualop/installation_packages", "content" => vm.list_packages)
+      vm.write_file("target_filename" => "/var/lib/virtualop/installation_packages", "content" => vm.list_packages.to_yaml)
+      vm.name
     end
   else
     @op.setup_vm(params)  

@@ -10,8 +10,8 @@ on_machine do |machine, params|
     machine.add_public_key("public_key" => key)
   end
   
-  machine.ssh_and_check_result("command" => "sed -i -e 's/#PermitUserEnvironment no/PermitUserEnvironment yes/' /etc/ssh/sshd_config")
-  machine.ssh_and_check_result("command" => "sed -i -e 's/PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config")
+  machine.ssh("command" => "sed -i -e 's/#PermitUserEnvironment no/PermitUserEnvironment yes/' /etc/ssh/sshd_config")
+  machine.ssh("command" => "sed -i -e 's/PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config")
   machine.restart_unix_service("name" => "sshd")
   
   machine.install_vm # to get the service descriptors

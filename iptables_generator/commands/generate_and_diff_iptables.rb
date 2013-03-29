@@ -7,7 +7,7 @@ on_machine do |machine, params|
   backup_file = generated_file + ".bak"
   
   unless machine.file_exists("file_name" => backup_file)
-    machine.ssh_and_check_result("command" => "cp #{generated_file} #{backup_file}")
+    machine.ssh("command" => "cp #{generated_file} #{backup_file}")
   end    
   
   machine.generate_iptables_script

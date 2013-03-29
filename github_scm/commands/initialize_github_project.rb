@@ -28,7 +28,7 @@ on_machine do |machine, params|
     "git remote add origin #{repo["ssh_url"]}",
     "git push -u origin master"
   ].each do |x|
-    machine.ssh_and_check_result("command" => "cd #{project_name} && #{x}")
+    machine.ssh("command" => "cd #{project_name} && #{x}")
   end
 end  
 

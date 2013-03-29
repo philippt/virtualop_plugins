@@ -4,7 +4,7 @@ param :machine
 param :vm
 
 on_machine do |machine, params|
-  machine.ssh_and_check_result("command" => "virsh shutdown #{params["name"]}")
+  machine.ssh("command" => "virsh shutdown #{params["name"]}")
   
   @op.without_cache do 
     machine.list_vms

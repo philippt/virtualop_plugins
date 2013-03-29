@@ -25,7 +25,7 @@ on_machine do |machine, params|
     begin
       Timeout::timeout(YUM_UPDATE_TIMEOUT_MIN * 60) {
         begin
-          machine.ssh_and_check_result("command" => "yum -y update 2>&1 > /var/log/yum_update_#{attempts}.log")
+          machine.ssh("command" => "yum -y update 2>&1 > /var/log/yum_update_#{attempts}.log")
         rescue => error
           # TODO [note to sober self] this sounds horribly self-inflicted
           if /Thread died in Berkeley DB library/.match(error.message)
@@ -37,7 +37,7 @@ on_machine do |machine, params|
               "yum check-update",
               "yum update"
             ].each do |command|
-              machine.ssh_and_check_result("command" => command)
+              machine.ssh("command" => command)
             end
           else
             raise error

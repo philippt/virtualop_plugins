@@ -13,7 +13,7 @@ on_machine do |machine, params|
     next unless machine.file_exists("file_name" => dir_name)
     
     begin
-      #TODO machine.ssh_and_check_result("command" => "find #{dir_name} -maxdepth 2 -type d -name .git -or -name .vop").each do |row|
+      #TODO machine.ssh("command" => "find #{dir_name} -maxdepth 2 -type d -name .git -or -name .vop").each do |row|
       machine.find("path" => dir_name, "maxdepth" => "2", "type" => "d", "name" => ".git").each do |row|
         parts = row.strip.split("/")
         parts.pop

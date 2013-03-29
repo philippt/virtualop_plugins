@@ -99,7 +99,7 @@ on_install do |stacked, params|
       @op.configure_machines("identity" => identity)
       
       vop_webapp_path = localhost.service_details("service" => "virtualop_webapp")["service_root"]
-      localhost.ssh_and_check_result("command" => "cd #{vop_webapp_path} && rake db:migrate")
+      localhost.ssh("command" => "cd #{vop_webapp_path} && rake db:migrate")
     end
   end
   

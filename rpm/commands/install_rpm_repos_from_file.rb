@@ -7,7 +7,7 @@ display_type :list
 
 on_machine do |machine, params|
   result = []
-  input = machine.ssh_and_check_result("command" => "cat #{params["file_name"]}")
+  input = machine.ssh("command" => "cat #{params["file_name"]}")
   input.split("\n").each do |line|
     machine.install_rpm_repo("repo_url" => line)
     result << line

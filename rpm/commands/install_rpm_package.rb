@@ -21,11 +21,11 @@ on_machine do |machine, params|
       "zypper"
     end      
     begin
-      machine.ssh_and_check_result("command" => "#{command} install -y #{to_install.join(" ")}")
+      machine.ssh("command" => "#{command} install -y #{to_install.join(" ")}")
     rescue => detail
       if matched = /consider running yum-complete-transaction/.match(detail.message)
         machine.install_rpm_package("name" => "yum-utils")
-        machine.ssh_and_check_result("command" => "yum-complete-transaction -y")
+        machine.ssh("command" => "yum-complete-transaction -y")
       end
     end
     

@@ -12,6 +12,6 @@ on_machine do |machine, params|
     w["name"] == params["working_copy"]
   end.first["path"]
   
-  output = machine.ssh_and_check_result("command" => "cd #{path} && git tag")
+  output = machine.ssh("command" => "cd #{path} && git tag")
   output.split("\n").map { |line| line.chomp }
 end

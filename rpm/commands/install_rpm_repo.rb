@@ -12,7 +12,7 @@ on_machine do |machine, params|
         machine.wget("url" => repo_url, "target_dir" => "/etc/yum.repos.d")
       when "rpm"
         unless (machine.ssh("command" => "rpm -qa | grep -c #{matched.captures.first}").to_i > 0)
-          machine.ssh_and_check_result("command" => "rpm -Uvh #{repo_url}")
+          machine.ssh("command" => "rpm -Uvh #{repo_url}")
         end
       when "key"
         begin

@@ -8,7 +8,7 @@ on_machine do |machine, params|
   params["repo_url"].each do |repo_url|
     matched = /^deb/.match(repo_url)
     if matched       
-      machine.ssh_and_check_result("command" => "echo \"#{repo_url}\" >> /etc/apt/sources.list", "user" => "root")
+      machine.ssh("command" => "echo \"#{repo_url}\" >> /etc/apt/sources.list", "user" => "root")
     else
       # lines ending on .<something>  
       matched =  /([^\/]+)\.(\w+)$/.match(repo_url)
@@ -16,7 +16,7 @@ on_machine do |machine, params|
         case matched.captures[1]    
         when "key"
           begin
-            machine.ssh_and_check_result("user" => "root", "command" => "wget -q -O - #{repo_url} | apt-key add -")
+            machine.ssh("user" => "root", "command" => "wget -q -O - #{repo_url} | apt-key add -")
             #machine.import_apt_repo_key("url" => repo_url)
           rescue
             $logger.warn("could not import key from #{repo_url} - already installed?")
@@ -28,5 +28,5 @@ on_machine do |machine, params|
     end
   end
   
-  machine.ssh_and_check_result("user" => "root", "command" => "apt-get update")
+  machine.ssh("user" => "root", "command" => "apt-get update")
 end

@@ -10,7 +10,7 @@ on_machine do |machine, params|
   short_name = params["machine"].split(".").first
   
   machine.set_hostname("hostname" => params["new_name"])
-  machine.ssh_and_check_result("command" => "shutdown -h now")
+  machine.ssh("command" => "shutdown -h now")
   
   @op.wait_until("interval" => 5, "timeout" => 120) do
     @op.vm_status("machine" => params["machine"]) == "shut off"

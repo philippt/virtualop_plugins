@@ -21,7 +21,7 @@ on_machine do |machine, params|
     command += " @" + params['name_server']
   end
 
-  output = machine.ssh_and_check_result("command" => command)
+  output = machine.ssh("command" => command)
 
   found_the_answer = false
 

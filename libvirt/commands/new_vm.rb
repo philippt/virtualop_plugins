@@ -71,7 +71,7 @@ on_machine do |machine, params|
     command += " --nographics --noautoconsole"
   end
   
-  machine.ssh_and_check_result("command" => command)
+  machine.ssh("command" => command)
   
   # ugly little side-effect: record this installation (e.g. for the iptables generator)
   dir_name = "/var/lib/virtualop/machines"

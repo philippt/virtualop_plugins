@@ -4,7 +4,7 @@ param :machine
 
 on_machine do |machine, params|
   result = nil
-  s = machine.ssh_and_check_result("command" => "runlevel")
+  s = machine.ssh("command" => "runlevel")
   if matched = /(\w+)\s+(\d+)/.match(s) then
     result = matched.captures.last
   end

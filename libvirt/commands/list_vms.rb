@@ -16,7 +16,7 @@ on_machine do |machine, params|
 
   begin
     count = 0
-    machine.ssh_and_check_result("command" => "virsh list --all").split("\n").each do |line|
+    machine.ssh("command" => "virsh list --all").split("\n").each do |line|
       count += 1
       next unless count > 2
       matched = /\s*([\d-]+)\s+(\w+)\s+(.+)/.match(line)

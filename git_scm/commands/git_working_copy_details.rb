@@ -19,7 +19,7 @@ on_machine do |machine, params|
     remote_origin = ""
     project = ""
     begin
-      machine.ssh_and_check_result("command" => "cd #{path} && git remote -v").split("\n").each do |line|
+      machine.ssh("command" => "cd #{path} && git remote -v").split("\n").each do |line|
         matched = /origin\s+(.+)/.match(line)
         if matched
           remote_origin = matched.captures.first

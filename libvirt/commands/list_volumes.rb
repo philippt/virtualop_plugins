@@ -6,7 +6,7 @@ on_machine do |machine, params|
   idx = 0
   result = []
   
-  machine.ssh_and_check_result("command" => "virsh vol-list --pool default").split("\n").each do |line|
+  machine.ssh("command" => "virsh vol-list --pool default").split("\n").each do |line|
     idx += 1
     next unless idx > 1
     
