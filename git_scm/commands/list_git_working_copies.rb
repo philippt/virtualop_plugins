@@ -9,12 +9,15 @@ result_as :list_working_copies
 
 on_machine do |machine, params|
   result = []
-  [ '$HOME', '/var/www', '$HOME/workspace', '$HOME/Dropbox', '$HOME/Dropbox/projects' ].each do |dir_name|
+  home = machine.home
+  [ home, '/var/www', "#{home}/workspace", "#{home}/Dropbox", "#{home}/Dropbox/projects" ].each do |dir_name|
     next unless machine.file_exists("file_name" => dir_name)
     
     begin
       #TODO machine.ssh("command" => "find #{dir_name} -maxdepth 2 -type d -name .git -or -name .vop").each do |row|
-      machine.find("path" => dir_name, "maxdepth" => "2", "type" => "d", "name" => ".git").each do |row|
+      working_copies = machine.find("path" => dir_name, "maxdepth" => "2", "type" => "d", "name" => ".git")
+      
+      working_copies.each do |row|
         parts = row.strip.split("/")
         parts.pop
         corrected_path = parts.join("/")
@@ -26,8 +29,11 @@ on_machine do |machine, params|
         } unless result.select { |x| x["path"] == corrected_path }.size > 0
       end
     rescue => detail
-      $logger.warn("could not access #{dir_name} due to a permissions issue")
-      raise detail unless /Permission denied/.match(detail.message)
+      if /Permission denied/.match(detail.message)
+        $logger.warn("could not access #{dir_name} due to a permissions issue")
+      else
+        raise
+      end 
     end
     
   end
