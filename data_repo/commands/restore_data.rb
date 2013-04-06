@@ -7,7 +7,7 @@ add_columns [ "name", "type", "date", "host", "service" ]
 
 on_machine do |machine, params|
   result = []
-  machine.list_services.each do |service|
+  machine.list_services_for_backup.each do |service|
     p = params.clone()
     p["service"] = service["name"]
     result += @op.restore_service_data(p)

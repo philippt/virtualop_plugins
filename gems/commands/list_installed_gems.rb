@@ -11,6 +11,6 @@ mark_as_read_only
 on_machine do |machine, params|
   the_list = ""
   # TODO hardcoded sudo
-  the_list = machine.ssh("command" => "gem list")
-  @op.read_gem_list("lines" => the_list.split("\n"))
+  the_list = machine.ssh("command" => "gem list").split("\n")
+  @op.read_gem_list("lines" => the_list)
 end
