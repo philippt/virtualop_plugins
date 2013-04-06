@@ -22,9 +22,13 @@ class RabbitmqBroker < RHCP::LoggingBroker
   end
   
   def to_rabbit(payload)
-    @@buffer << payload
-    if @@buffer.size >= MAX_BUFFER_SIZE
-      self.class.flush_buffer(@op)
+    if @use_buffer
+      @@buffer << payload
+      if @@buffer.size >= MAX_BUFFER_SIZE
+        self.class.flush_buffer(@op)
+      end
+    else
+      @op.hello_rabbit("queue" => "raw_logging", "message" => JSON.generate([payload]))
     end
   end
   
@@ -32,6 +36,8 @@ class RabbitmqBroker < RHCP::LoggingBroker
     super(broker)
     @op = plugin.op
     @plugin = plugin
+    
+    @use_buffer = plugin.config_string('buffer_enabled', false)
   end
   
   def get_blacklisted_commands

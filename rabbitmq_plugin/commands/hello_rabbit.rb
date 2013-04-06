@@ -10,7 +10,8 @@ execute do |params|
     end
     
     unless plugin.state[:carrot].has_key?(host_name)
-      plugin.state[:carrot][host_name] = Carrot.new(:host => host_name)             
+      plugin.state[:carrot][host_name] = Carrot.new(:host => host_name)
+      $logger.info "opening new rabbitmq connection to #{host_name}"             
     end
     c = plugin.state[:carrot][host_name]
     
