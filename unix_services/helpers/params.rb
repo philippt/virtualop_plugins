@@ -1,4 +1,4 @@
-def param_unix_service(options = {})
+def param_unix_service(description, options = {})
   merge_options_with_defaults(options, {
     :mandatory => true,
     :lookup_method => lambda { |request|
