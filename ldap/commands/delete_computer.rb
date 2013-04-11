@@ -12,7 +12,7 @@ execute do |params|
   raise "did not find computer with name #{params["computername"]}" if found.size == 0
   raise "sanity check failed - found more than one computer with name #{params["computername"]}" if found.size > 1
   
-  moriturus = found.first["dn"]
+  moriturus = found.first["dn"].first
   $logger.info "deleting LDAP entry on #{params["ldap_server"]} using DN #{moriturus}"
   
   unless params["just_kidding"]
