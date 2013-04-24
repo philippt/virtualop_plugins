@@ -11,7 +11,7 @@ on_machine do |machine, params|
     if service.has_key?("service_root")
       stop_command = "cd #{service["service_root"]} && #{stop_command}"
     end
-    machine.ssh_and_check_result("command" => stop_command)
+    machine.ssh("command" => stop_command)
   elsif service.has_key? "windows_service"
     machine.stop_windows_service("service" => service["windows_service"])
   else

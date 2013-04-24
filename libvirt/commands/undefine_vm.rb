@@ -9,11 +9,11 @@ on_machine do |machine, params|
   # TODO check if the VM is shut down
   
   begin  
-    machine.ssh_and_check_result("command" => "virsh undefine #{params["name"]}")
+    machine.ssh("command" => "virsh undefine #{params["name"]}")
   rescue => detail
     if /Refusing to undefine/.match(detail.message)
-      machine.ssh_and_check_result("command" => "virsh managedsave-remove #{params["name"]}")
-      machine.ssh_and_check_result("command" => "virsh undefine #{params["name"]}")
+      machine.ssh("command" => "virsh managedsave-remove #{params["name"]}")
+      machine.ssh("command" => "virsh undefine #{params["name"]}")
     end
   end
   

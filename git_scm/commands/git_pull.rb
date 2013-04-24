@@ -6,5 +6,5 @@ param "branch", "the branch to pull from"
 
 on_machine do |machine, params|
   options = params.has_key?("branch") ? "origin #{params["branch"]}" : ''
-  machine.ssh_and_check_result("command" => "cd #{params["working_copy_path"]} && git pull #{options}")
+  machine.ssh("command" => "cd #{params["working_copy_path"]} && git pull #{options}")
 end

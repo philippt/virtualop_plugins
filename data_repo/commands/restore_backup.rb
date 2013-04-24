@@ -27,7 +27,7 @@ on_machine do |machine, params|
       new_owner = @plugin.config['default_owner']
     end
     if new_owner != nil
-      machine.ssh_and_check_result("user" => "root", "command" => "chown -R #{new_owner} #{local_directory}")
+      machine.ssh("user" => "root", "command" => "chown -R #{new_owner} #{local_directory}")
     end
      
     new_permissions = nil
@@ -37,7 +37,7 @@ on_machine do |machine, params|
       new_permissions = @plugin.config['default_permissions']
     end
     if new_permissions != nil
-      machine.ssh_and_check_result("user" => "root", "command" => "chmod -R #{new_permissions} #{local_directory}")
+      machine.ssh("user" => "root", "command" => "chmod -R #{new_permissions} #{local_directory}")
     end  
     
   elsif the_backup["type"] == "db" then

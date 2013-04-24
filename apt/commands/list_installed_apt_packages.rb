@@ -19,7 +19,7 @@ end
 on_machine do |machine, params|
   result = []
   # TODO hardcoded sudo
-  output = machine.ssh_and_check_result("command" => "sudo dpkg -l")
+  output = machine.ssh("command" => "sudo dpkg -l")
   
   output.split("\n").each do |line|
     matched = /^(\w{2})\s+(\S+)\s+(\S+)\s+(.+)$/.match(line)

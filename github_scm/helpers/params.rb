@@ -8,6 +8,7 @@ end
 
 def param_github_project(options = {})
   merge_options_with_defaults(options, {
+    
   })
   RHCP::CommandParam.new("github_project", "the github project to install (e.g. philippt/virtualop)", options)
 end

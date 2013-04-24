@@ -4,5 +4,5 @@ param :machine
 param "url", "http url where the key should be downloaded from", :mandatory => true
 
 on_machine do |machine, params|
-  machine.ssh_and_check_result("command" => "rpm --import #{params["url"]}")
+  machine.ssh("command" => "rpm --import #{params["url"]}")
 end

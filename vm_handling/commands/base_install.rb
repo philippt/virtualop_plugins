@@ -8,7 +8,7 @@ param :environment
 ignore_extra_params
 
 on_machine do |machine, params|
-  machine.write_environment("environment" => params["environment"])
+  machine.write_environment("environment" => params["environment"]) if params.has_key?("environment")
   
   machine.write_own_centos_repo()
   
@@ -20,13 +20,13 @@ on_machine do |machine, params|
   
   machine.install_rpm_package("name" => [ "git", "vim", "screen", "man" ])
   
-  #machine.ssh_and_check_result("command" => "gem update --system")
+  #machine.ssh("command" => "gem update --system")
     
   machine.mkdir('dir_name' => @op.plugin_by_name('service_descriptors').config_string('service_config_dir'))
   
-  machine.ssh_and_check_result("command" => "sed -i -e 's!#PermitUserEnvironment no!PermitUserEnvironment yes!' /etc/ssh/sshd_config")
+  machine.ssh("command" => "sed -i -e 's!#PermitUserEnvironment no!PermitUserEnvironment yes!' /etc/ssh/sshd_config")
   # TODO add public keys and deactivate password login
-  machine.ssh_and_check_result("command" => "/etc/init.d/sshd restart")
+  machine.ssh("command" => "/etc/init.d/sshd restart")
   
 
   # TODO seems this is not invalidated through the flush_cache() call above - not quite sure why, though    

@@ -8,5 +8,5 @@ param! "url", "url to the remote repository"
 on_machine do |machine, params|
   details = machine.working_copy_details("working_copy" => params["working_copy"])
   
-  machine.ssh_and_check_result("command" => "cd #{details["path"]} && git remote add #{params["remote"]} #{params["url"]}")
+  machine.ssh("command" => "cd #{details["path"]} && git remote add #{params["remote"]} #{params["url"]}")
 end  

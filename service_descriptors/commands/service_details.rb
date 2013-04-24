@@ -17,9 +17,11 @@ on_machine do |machine, params|
   result["domain"] = result["extra_params"]["domain"] if result.has_key?("extra_params") and result["extra_params"].has_key?("domain")
   
   if result.has_key?("service_root")
-    found = machine.list_services_in_directory("directory" => result["service_root"]).select { |row| row["name"] == params["service"] }
-    raise "did not find service descriptor for service '#{params["service"]}' - looked at #{result["service_root"]}. weird." if found.size == 0
-    result.merge! found.first
+    if result.has_key?("descriptor_machine") && result["descriptor_machine"] == machine.name
+      found = machine.list_services_in_directory("directory" => result["service_root"]).select { |row| row["name"] == params["service"] }
+      raise "did not find service descriptor for service '#{params["service"]}' - looked at #{result["service_root"]}. weird." if found.size == 0
+      result.merge! found.first
+    end
   else
     # TODO that's a bit approximate - should use x["full_name"] here to observe the "name spacing"
     found_canned_service = @op.list_available_services("machine" => "localhost").select { |x| x["name"] == params["service"] }.first

@@ -6,7 +6,7 @@ param :activation_key
 
 on_machine do |machine, params|
   spacewalk_hostname = @op.spacewalk_connection_info["hostname"]
-  machine.ssh_and_check_result("command" => "rhnreg_ks --serverUrl=http://#{spacewalk_hostname}/XMLRPC --activationkey=#{params["activation_key"]} --force")
+  machine.ssh("command" => "rhnreg_ks --serverUrl=http://#{spacewalk_hostname}/XMLRPC --activationkey=#{params["activation_key"]} --force")
   machine.yum_update
   
   @op.without_cache do

@@ -9,7 +9,7 @@ on_machine do |machine, params|
     w["name"] == params["working_copy"]
   end.first["path"]
   
-  machine.ssh_and_check_result("command" => "cd #{path} && git commit -a -m \"#{params["comment"]}\"")
+  machine.ssh("command" => "cd #{path} && git commit -a -m \"#{params["comment"]}\"")
   
   @op.without_cache do
     machine.list_changes_in_working_copy("working_copy" => params["working_copy"])

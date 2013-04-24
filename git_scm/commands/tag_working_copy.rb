@@ -14,8 +14,8 @@ on_machine do |machine, params|
     
     tag_options = ''
     tag_options += ' -f' if params["force"] == "true"
-    machine.ssh_and_check_result("command" => "cd #{path} && git tag #{tag_options} -a #{params["tag"]} -m '#{params["comment"]}'")
-    machine.ssh_and_check_result("command" => "cd #{path} && git push --tags")
+    machine.ssh("command" => "cd #{path} && git tag #{tag_options} -a #{params["tag"]} -m '#{params["comment"]}'")
+    machine.ssh("command" => "cd #{path} && git push --tags")
   end
   
   # TODO invalidate list_tags

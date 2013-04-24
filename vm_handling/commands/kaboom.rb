@@ -36,7 +36,7 @@ execute do |params|
     begin
       @op.with_machine(params["machine"]) do |machine|
         e = machine.environment
-        p["environment"] = e if e
+        p["environment"] = e if e && e != ''
       end      
     rescue => detail
       $logger.warn("could not retrieve params for kaboom from machine : #{detail.message}")

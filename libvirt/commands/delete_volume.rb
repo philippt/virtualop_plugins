@@ -6,5 +6,5 @@ param! "name", "the volume that should be deleted",
   }
 
 on_machine do |machine, params|
-  machine.ssh_and_check_result("command" => "virsh vol-delete #{params["name"]} --pool default")
+  machine.ssh("command" => "virsh vol-delete #{params["name"]} --pool default")
 end

@@ -7,7 +7,7 @@ mark_as_read_only
 on_machine do |machine, params|
   idx = 0
   result = []
-  machine.ssh_and_check_result("command" => "zypper lr").split("\n").map do |x|
+  machine.ssh("command" => "zypper lr").split("\n").map do |x|
     idx += 1    
     next unless idx > 2    
     cols = x.split("|")    

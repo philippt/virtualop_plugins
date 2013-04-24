@@ -20,7 +20,7 @@ on_machine do |machine, params|
   # nothing to commit (working directory clean)
   # sbk-vop-test:~/service_descriptors # echo $?
   # 1
-  #output = machine.ssh_and_check_result("command" => "cd #{path} && git status")
+  #output = machine.ssh("command" => "cd #{path} && git status")
   output = machine.ssh("command" => "cd #{path} && git status")
   output.split("\n").each do |line|
     line.chomp!

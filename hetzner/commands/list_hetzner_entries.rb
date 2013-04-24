@@ -15,7 +15,7 @@ execute do |params|
   end.first
   
   @op.with_machine("localhost") do |machine|
-    yaml_data = machine.ssh_and_check_result("command" => "curl -s -u '#{hetzner_config['user']}:#{hetzner_config['password']}' https://robot-ws.your-server.de/server.yaml")
+    yaml_data = machine.ssh("command" => "curl -s -u '#{hetzner_config['user']}:#{hetzner_config['password']}' https://robot-ws.your-server.de/server.yaml")
   
     data = YAML.load(yaml_data)
     data.each do |data_row|

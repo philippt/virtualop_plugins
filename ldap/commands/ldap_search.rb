@@ -11,7 +11,14 @@ execute do |params|
   result = []
   @op.on_ldap("ldap_server" => params["ldap_server"], "what" => lambda { |ldap|
     ldap.search( :base => treebase, :filter => filter ) do |entry|
-      result << entry
+      puts "found ldap entry"
+      pp entry
+
+      h = {}
+      entry.each do |attribute, values|
+        h[attribute.to_s] = values
+      end
+      result << h
     end
     
     ldap_result = ldap.get_operation_result

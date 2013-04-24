@@ -49,9 +49,12 @@ class ServiceDescriptorLoader
   def database(name, options = { :mode => 'read-write' })
     options[:name] = name
     # TODO cleanup
+    # hack: make all options available as string as symbol
+    s = {}
     options.each do |k,v|
-      options[k.to_s] = v
+      s[k.to_s] = v
     end
+    options.merge! s
     @service["databases"] << options
   end
   
@@ -146,14 +149,10 @@ class ServiceDescriptorLoader
     targets = [ :redirect_log, :start_command, :stop_command, :on_install ]
     targets += [ :port, :process_regex ]
     targets += [ :cron, :every ]
-    #targets += [ :http_endpoint ]
     targets += [ :static_html ]
-    #targets += [ :database ]
-    #targets += [ :runlevel ]
     
     if targets.include? m
-      @service[m.to_s] = *args.first
-      #@service[m] = *args.first
+      @service[m.to_s] = args.first
     else
       #if [ :param, :param!, :params_as ].include? m
         #@service.install_command

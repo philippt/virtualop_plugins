@@ -22,13 +22,26 @@ class RabbitmqBroker < RHCP::LoggingBroker
   end
   
   def to_rabbit(payload)
+    clean_payload = payload
+    if (false)
+      clean_payload = {}
+      payload.each do |k,v|
+        cleaned = v.class == String ? v.unpack('U*').pack('U*') : v
+        clean_payload[k] = cleaned
+      end
+    end
+
     if @use_buffer
-      @@buffer << payload
+      @@buffer << clean_payload
       if @@buffer.size >= MAX_BUFFER_SIZE
         self.class.flush_buffer(@op)
       end
     else
-      @op.hello_rabbit("queue" => "raw_logging", "message" => JSON.generate([payload]))
+      begin
+        @op.hello_rabbit("queue" => "raw_logging", "message" => JSON.generate([clean_payload]))
+      rescue => detail
+        $logger.error("could not send rabbitmq message (#{detail.class.to_s}) : #{detail.message} - payload #{clean_payload.pretty_inspect}")
+      end
     end
   end
   
@@ -37,7 +50,7 @@ class RabbitmqBroker < RHCP::LoggingBroker
     @op = plugin.op
     @plugin = plugin
     
-    @use_buffer = plugin.config_string('buffer_enabled', false)
+    @use_buffer = (plugin.config_string('buffer_enabled', false).to_s == 'true')
   end
   
   def get_blacklisted_commands

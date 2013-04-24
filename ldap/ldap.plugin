@@ -17,7 +17,7 @@ on_activation do |plugin, config|
   
   plugin.state[:connection_pool] = {}
   
-  require 'net/ldap'
+  require 'util/net_ldap_adjustments'
 end
 
 on_preflight do |request, response|

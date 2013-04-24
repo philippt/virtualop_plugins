@@ -13,6 +13,8 @@ execute do |params|
     "treebase" => ldap_config["tree_base"],
     "search_filter" => "(&(objectclass=computer)(cn=#{params["computername"]}))"
   )
+  puts "found something"
+  pp found
   #raise "did not find computer with name #{params["computername"]}" if found.size == 0
   #raise "sanity check failed - found more than one computer with name #{params["computername"]}" if found.size > 1
   

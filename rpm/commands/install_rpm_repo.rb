@@ -11,8 +11,9 @@ on_machine do |machine, params|
       when "repo"
         machine.wget("url" => repo_url, "target_dir" => "/etc/yum.repos.d")
       when "rpm"
-        unless (machine.ssh("command" => "rpm -qa | grep -c #{matched.captures.first}").to_i > 0)
-          machine.ssh_and_check_result("command" => "rpm -Uvh #{repo_url}")
+        r = machine.ssh_extended("command" => "rpm -qa | grep -c #{matched.captures.first}")
+        unless r["result_code"] == 0 && r["output"].to_i > 0
+          machine.ssh("command" => "rpm -Uvh #{repo_url}")
         end
       when "key"
         begin

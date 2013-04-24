@@ -19,7 +19,7 @@ on_machine do |machine, params|
     command_string += "#{params["name"]}"
     command_string += " --no-rdoc --no-ri"
     command_string += " -f" # TODO
-    machine.ssh_and_check_result("command" => command_string, "user" => "root")
+    machine.ssh("command" => command_string, "user" => "root")
     
     # @op.without_cache do 
       # machine.list_installed_gems

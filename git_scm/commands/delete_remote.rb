@@ -9,5 +9,5 @@ param! "remote", "the name of the remote (repository configuration)", :lookup_me
 on_machine do |machine, params|
   details = machine.working_copy_details("working_copy" => params["working_copy"])
   
-  machine.ssh_and_check_result("command" => "cd #{details["path"]} && git remote rm #{params["remote"]}")
+  machine.ssh("command" => "cd #{details["path"]} && git remote rm #{params["remote"]}")
 end
