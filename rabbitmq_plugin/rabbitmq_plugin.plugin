@@ -7,6 +7,7 @@ dependencies [ :core, :machines ]
 config_param! "rabbitmq_hostname", "the hostname or IP address to the machine where rabbitmq can be found", :default_value => 'localhost'
 # TODO wishful thinking?
 config_param "broker_enabled", "if set to true, all rhcp commands will be logged to a rabbitmq queue", :default_value => false
+config_param "buffer_enabled", "if set to true, messages are buffered before sent out to rabbitmq", :default_value => false
 
 @plugin.register_broker RabbitmqBroker
 
