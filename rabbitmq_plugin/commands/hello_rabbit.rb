@@ -2,9 +2,9 @@ param! "queue", "the destination queue"
 param "message", "the message that should be sent", :default_value => 'hello world'
 
 execute do |params|
+  host_name = config_string('rabbitmq_hostname', 'localhost')
   begin
     # TODO [health] add disconnect in shutdown hook
-    host_name = config_string('rabbitmq_hostname', 'localhost')
     unless plugin.state.has_key?(:carrot)
       plugin.state[:carrot] = {}
     end
@@ -18,5 +18,7 @@ execute do |params|
     q.publish(params["message"])
   rescue => detail
     $logger.error("could not send rabbitmq message '#{params["message"]}' : #{detail.message}")
+    # remove the connection from the pool just in case
+    plugin.state[:carrot].delete(host_name)
   end    
 end

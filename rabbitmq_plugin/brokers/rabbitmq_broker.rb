@@ -1,3 +1,4 @@
+
 class RabbitmqBroker < RHCP::LoggingBroker
   
   MAX_BUFFER_SIZE = 25
@@ -21,26 +22,69 @@ class RabbitmqBroker < RHCP::LoggingBroker
     }
   end
   
-  def to_rabbit(payload)
-    clean_payload = payload
-    if (false)
-      clean_payload = {}
-      payload.each do |k,v|
-        cleaned = v.class == String ? v.unpack('U*').pack('U*') : v
-        clean_payload[k] = cleaned
+  def change_all_strings(thing, &block)
+    result = nil
+    #puts "#{thing.class}"
+    case thing.class.to_s
+    when "Array" then
+      result = []
+      thing.each do |x|
+        result << change_all_strings(x, &block)
       end
+    when "Hash" then
+      result = {}
+      thing.each do |k,v|
+        result[k] = change_all_strings(v, &block)
+      end
+    when "String" then
+      result = block.call(thing)  
     end
-
-    if @use_buffer
-      @@buffer << clean_payload
-      if @@buffer.size >= MAX_BUFFER_SIZE
-        self.class.flush_buffer(@op)
-      end
-    else
-      begin
-        @op.hello_rabbit("queue" => "raw_logging", "message" => JSON.generate([clean_payload]))
-      rescue => detail
-        $logger.error("could not send rabbitmq message (#{detail.class.to_s}) : #{detail.message} - payload #{clean_payload.pretty_inspect}")
+    result
+  end
+  
+  def change_encoding(thing)
+    change_all_strings(thing) do |x|
+      x.force_encoding('ISO-8859-1').encode('UTF-8')
+    end
+  end
+  
+  def remove_invalid(thing)
+    change_all_strings(thing) do |x|
+      x.encode('UTF-8', :invalid => :replace)
+    end
+  end
+  
+  def to_rabbit(payload)
+    #change_all_strings(payload) do |x|
+    #  x.length > 20 ? x[0..20] : x
+    #end
+    
+    json_payload = nil
+    begin
+      json_payload = JSON.generate([payload])
+    rescue Encoding::UndefinedConversionError 
+      json_payload = JSON.generate(change_encoding([payload]))
+    rescue ArgumentError => arrrgh
+      json_payload = JSON.generate(remove_invalid([payload]))
+    rescue => detail
+      $logger.error("could not generate JSON representation : #{detail.class.to_s} : #{detail.message}, payload : #{payload.pretty_inspect}")
+    end
+    
+    #z = Zlib::Deflate.new()
+    #just_payload = JSON.parse(json_payload)
+    #zipped_payload = change_all_strings(just_payload) do |x|
+    #  z.deflate x
+    #end
+    #json_payload = JSON.generate(zipped_payload)
+    
+    if json_payload
+      if @use_buffer
+        @@buffer << payload
+        if @@buffer.size >= MAX_BUFFER_SIZE
+          self.class.flush_buffer(@op)
+        end
+      else           
+        @op.hello_rabbit("queue" => "raw_logging", "message" => json_payload)
       end
     end
   end
@@ -81,7 +125,7 @@ class RabbitmqBroker < RHCP::LoggingBroker
     
     commands += %w|enrich_machine_list machine_by_name list_machines on_machine|
     
-    commands += %w|ssh_and_check_result ssh_extended ssh get_ssh_connection|
+    commands += %w|ssh_and_check_result ssh_extended get_ssh_connection|
     
     commands
   end

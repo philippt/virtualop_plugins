@@ -32,7 +32,12 @@ execute do |params|
   while msg = q.pop(:ack => true)
     #puts msg
     data = msg
-    entries = JSON.parse(data)
+    entries = []
+    begin
+      entries = JSON.parse(data)
+    rescue => detail
+      $logger.error("could not parse JSON data : #{detail.message} - >>#{data}<<")
+    end
     puts "***** #{entries.size}"
     entries.each do |entry|
       #p entry
