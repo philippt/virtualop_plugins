@@ -17,7 +17,8 @@ execute do |params|
     q = c.queue(params["queue"])  
     q.publish(params["message"])
   rescue => detail
-    $logger.error("could not send rabbitmq message '#{params["message"]}' : #{detail.message}")
+    msg_size = params["message"].size()
+    $logger.error("could not send rabbitmq message '#{params["message"]}' (size: #{msg_size} bytes) : #{detail.message}")
     # remove the connection from the pool just in case
     plugin.state[:carrot].delete(host_name)
   end    
