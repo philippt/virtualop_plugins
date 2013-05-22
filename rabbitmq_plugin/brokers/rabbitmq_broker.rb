@@ -243,10 +243,11 @@ class RabbitmqBroker < RHCP::LoggingBroker
       :mode => mode,
       :current_stack => current_stack,
       :request => request.as_json(),
-      :response => response.as_json(),
       :duration => duration
     }
-    j[:response] = RHCP::EncodingHelper.to_base64(j[:response])
+    if response
+      j[:response] = RHCP::EncodingHelper.to_base64(response.as_json())
+    end
     #pp j
     
     #puts "\n$$$#{current_stack}$$$\n\n"

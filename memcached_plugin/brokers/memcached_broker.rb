@@ -75,9 +75,10 @@ class MemcachedBroker < RHCP::Broker
       
       cached_response_json = @cache.get(cache_key)
       if cached_response_json
-        #cached_response = JSON.parse(cached_response_json)
-        #cached_response = RHCP::Response.reconstruct_from_json(cached_response_json)
-        cached_response = JSON.parse(cached_response_json)
+        
+        base64_response = JSON.parse(cached_response_json)
+        cached_response = RHCP::EncodingHelper.from_base64(base64_response)
+        
         $logger.debug("got data from cache for #{cache_key}")
         cached_data = cached_response["data"]
         
@@ -129,7 +130,8 @@ class MemcachedBroker < RHCP::Broker
       # we might want to store the result in memcached nevertheless
       if should_write_into_cache # && (response.status == RHCP::Response::Status::OK)
         unless request.command.result_hints[:display_type] == "blob"
-          json_data = JSON.generate(response.as_json())        
+          base64_response = RHCP::EncodingHelper.to_base64(response.as_json())
+          json_data = JSON.generate(base64_response)        
           $logger.debug("storing data in cache for : #{cache_key} : #{json_data}")
           # TODO maybe we should use a lower expiration value for failed responses?
           @cache.set(cache_key, json_data, @expiry_seconds)

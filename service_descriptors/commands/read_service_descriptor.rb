@@ -23,6 +23,7 @@ on_machine do |machine, params|
   if service.has_key?("dir_name")
     command_dir = service["dir_name"] + '/' + 'nagios_commands'
     if machine.file_exists("file_name" => command_dir)
+      $logger.info "reading nagios commands for service #{name} from #{command_dir}"
       h = {}
       machine.list_files("directory" => command_dir).each do |file|
         file_name = command_dir + '/' + file
