@@ -170,6 +170,9 @@ on_machine do |machine, params|
       end
     end
 
+    # TODO this should not be necessary
+    @op.flush_cache
+    
     if machine.machine_detail["os"] == "windows"
       config_dir = '.vop/services'
       if machine.win_file_exists("file_name" => config_dir)
@@ -187,9 +190,12 @@ on_machine do |machine, params|
   
   @op.comment "installation complete for #{service_name}, gonna invalidate and post-process"
   
+  
   @op.without_cache do
     #machine.list_working_copies
-    machine.list_installed_services
+    installed = machine.list_installed_services
+    puts "installed services now : "
+    pp installed
     # TODO we want to invalidate list_services, but list_services is too expensive
     #machine.list_services
     
@@ -251,7 +257,7 @@ on_machine do |machine, params|
         raise "http_endpoint configuration found for service #{service["name"]}, but no domain parameter is present. not handling http_endpoint #{service["http_endpoint"]}"
       end
       
-      domain = params["extra_params"]["domain"]
+      domain = params["extra_params"]["domain"].first      
       machine.install_canned_service("service" => "apache/apache")
   
       target_urls = service["http_endpoint"].map do |endpoint|
