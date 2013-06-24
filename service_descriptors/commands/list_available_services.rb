@@ -17,25 +17,32 @@ on_machine do |machine, params|
       "pattern" => "*/services/*",
       "what" => lambda do |file|
         full_name = "#{dir}/#{file}"
-        service = machine.read_service_descriptor("file_name" => full_name)
-        parts = full_name.split("/")
-        2.times do 
-          parts.pop 
-        end
-        service["dir_name"] = parts.join("/") 
         
-        parts = service["file_name"].split("/")
-        idx = parts.index("services")
-        offset = 1
-        possible_name = parts[idx - offset]
-        if possible_name == '.vop'
-          offset += 1
+        $logger.info "reading service from #{full_name}..."
+        
+        begin
+          service = machine.read_service_descriptor("file_name" => full_name)
+          parts = full_name.split("/")
+          2.times do 
+            parts.pop 
+          end
+          service["dir_name"] = parts.join("/") 
+          
+          parts = service["file_name"].split("/")
+          idx = parts.index("services")
+          offset = 1
           possible_name = parts[idx - offset]
+          if possible_name == '.vop'
+            offset += 1
+            possible_name = parts[idx - offset]
+          end
+          
+          service["full_name"] = possible_name + '/' + service["name"]
+          
+          result << service
+        rescue => detail
+          $logger.error("could not load service from #{full_name} : #{detail.message}\n#{detail.backtrace}")          
         end
-        
-        service["full_name"] = possible_name + '/' + service["name"]
-        
-        result << service
       end
     )   
   end

@@ -3,3 +3,4 @@ dependency :machines
 
 config_param "root_action", "target for the root action in rails route config", :default_value => 'home#index'
 config_param "default_theme", "the theme to use", :default_value => 'virtualop'
+config_param "new_machine_command", "base name for the new_machine command that should be used. will be suffixed with +_somewhere+", :default_value => 'new_machine'

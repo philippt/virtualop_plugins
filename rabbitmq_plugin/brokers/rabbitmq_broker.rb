@@ -1,3 +1,6 @@
+require 'base64'
+require 'rhcp/encoding_helper'
+
 class RabbitmqBroker < RHCP::LoggingBroker
   
   MAX_BUFFER_SIZE = 25
@@ -21,14 +24,57 @@ class RabbitmqBroker < RHCP::LoggingBroker
     }
   end
   
-  def to_rabbit(payload)
+  def change_all_strings(thing, &block)
+    result = nil
+    #puts "#{thing.class}"
+    case thing.class.to_s
+    when "Array" then
+      result = []
+      thing.each do |x|
+        result << change_all_strings(x, &block)
+      end
+    when "Hash" then
+      result = {}
+      thing.each do |k,v|
+        result[k] = change_all_strings(v, &block)
+      end
+    when "String" then
+      result = block.call(thing)  
+    end
+    result
+  end
+  
+  def change_encoding(thing)
+    change_all_strings(thing) do |x|
+      x = x.dup if x.frozen?      
+      s = x.force_encoding('ISO-8859-1').encode('UTF-8')
+      puts "new string : #{s.length}"
+      s
+    end
+  end
+
+  def force_binary(thing)
+    change_all_strings(thing) do |x|
+      x = x.dup if x.frozen?
+      #x.force_encoding(Encoding::BINARY)
+      Base64.encode64(x.force_encoding('ISO-8859-1'))
+    end
+  end
+  
+  def remove_invalid(thing)
+    change_all_strings(thing) do |x|
+      x.encode('UTF-8', :invalid => :replace)
+    end
+  end
+  
+  def send_payload(payload)
     if @use_buffer
       @@buffer << payload
       if @@buffer.size >= MAX_BUFFER_SIZE
         self.class.flush_buffer(@op)
       end
-    else
-      @op.hello_rabbit("queue" => "raw_logging", "message" => JSON.generate([payload]))
+    else           
+      @op.hello_rabbit("queue" => "raw_logging", "message" => payload)
     end
   end
   
@@ -37,7 +83,7 @@ class RabbitmqBroker < RHCP::LoggingBroker
     @op = plugin.op
     @plugin = plugin
     
-    @use_buffer = plugin.config_string('buffer_enabled', false)
+    @use_buffer = (plugin.config_string('buffer_enabled', false).to_s == 'true')
   end
   
   def get_blacklisted_commands
@@ -68,7 +114,7 @@ class RabbitmqBroker < RHCP::LoggingBroker
     
     commands += %w|enrich_machine_list machine_by_name list_machines on_machine|
     
-    commands += %w|ssh_and_check_result ssh_extended ssh get_ssh_connection|
+    commands += %w|ssh_and_check_result ssh_extended get_ssh_connection|
     
     commands
   end
@@ -84,6 +130,45 @@ class RabbitmqBroker < RHCP::LoggingBroker
     (Thread.current['logging_enabled'] == 'true' ||
      request.context.cookies['logging_enabled'] == 'true'
     )
+  end
+
+  def to_rabbit(payload)
+    json_payload = nil
+    
+    begin
+      json_payload = JSON.generate([payload])
+    rescue Exception => detail
+      $logger.error("could not JSON-encode payload for message: #{detail.message} - payload:\n#{payload}")
+    end
+    
+    # begin
+      # json_payload = JSON.generate([payload])
+    # rescue Encoding::UndefinedConversionError 
+      # puts "UndefinedConversionError for #{payload}"
+      # begin
+        # json_payload = JSON.generate(change_encoding([payload]))
+        # #json_payload = JSON.generate(force_binary([payload]))
+        # puts "JSON payload now : #{json_payload}"
+      # rescue => nested
+        # $logger.error("could not force binary encoding : #{nested.message}")
+      # end
+    # rescue ArgumentError => arrrgh
+      # puts "ArgumentError"
+      # json_payload = JSON.generate(remove_invalid([payload]))
+    # rescue => detail
+      # $logger.error("could not generate JSON representation : #{detail.class.to_s} : #{detail.message}, payload : #{payload.pretty_inspect}")
+    # end
+    
+    #z = Zlib::Deflate.new()
+    #just_payload = JSON.parse(json_payload)
+    #zipped_payload = change_all_strings(just_payload) do |x|
+    #  z.deflate x
+    #end
+    #json_payload = JSON.generate(zipped_payload)
+    
+    if json_payload
+      send_payload json_payload
+    end
   end
   
   def log_request_start(request_id, level, mode, current_stack, request, start_ts)
@@ -116,13 +201,39 @@ class RabbitmqBroker < RHCP::LoggingBroker
       :start_ts => start_ts.utc.iso8601()
     }
     
+    #puts "\n*** #{current_stack} ***\n\n"
+    
+    # begin
+      # #jj j
+#     
+      # jason = JSON.generate [j]
+      # send_payload jason
+    # rescue Encoding::UndefinedConversionError 
+      # puts "UndefinedConversionError for #{j}"
+      # begin
+        # if j.has_key?(:request) and j[:request].has_key?(:param_values) and j[:request][:param_values].has_key?("output")
+          # force_binary(j[:request][:param_values]["output"])
+          # #j[:request][:param_values]["output"] = Base64.encode64(j[:request][:param_values]["output"]) 
+        # end
+        # puts "corrected output"
+#         
+        # jason = JSON.generate [j]
+        # send_payload jason
+        # #json_payload = JSON.generate(change_encoding([payload]))
+        # #json_payload = JSON.generate(force_binary([payload]))
+        # #puts "JSON payload now : #{json_payload}"
+      # rescue => nested
+        # $logger.error("could not force binary encoding : #{nested.message}")
+      # end      
+    # end
+    
     to_rabbit(j)
   end
   
   def log_request_stop(request_id, level, mode, current_stack, request, response, duration)
     return unless broker_enabled? request
     
-    request_id = Thread.current[var_name("request_id")]
+    #request_id = Thread.current[var_name("request_id")]
     #@op.hello_rabbit("queue" => "text_logging", "message" => "#{request_id} #{level} < #{current_stack} #{response != nil ? response.status : '-'} #{duration}s")
     
     j = {
@@ -132,9 +243,40 @@ class RabbitmqBroker < RHCP::LoggingBroker
       :mode => mode,
       :current_stack => current_stack,
       :request => request.as_json(),
-      :response => response.as_json(),
       :duration => duration
     }
+    if response
+      j[:response] = RHCP::EncodingHelper.to_base64(response.as_json())
+    end
+    #pp j
+    
+    #puts "\n$$$#{current_stack}$$$\n\n"
+    
+    # begin
+      # #jj j
+#     
+      # jason = JSON.generate [j]
+      # send_payload jason
+    # rescue Encoding::UndefinedConversionError 
+      # puts "UndefinedConversionError for #{j}"
+      # begin
+        # if j.has_key?(:request) and j[:request].has_key?(:param_values) and j[:request][:param_values].has_key?("output")
+          # force_binary(j[:request][:param_values]["output"])
+          # #j[:request][:param_values]["output"] = Base64.encode64(j[:request][:param_values]["output"]) 
+        # end
+        # puts "corrected output"
+#         
+        # jason = JSON.generate [j]
+        # send_payload jason
+        # #json_payload = JSON.generate(change_encoding([payload]))
+        # #json_payload = JSON.generate(force_binary([payload]))
+        # #puts "JSON payload now : #{json_payload}"
+      # rescue => nested
+        # $logger.error("could not force binary encoding : #{nested.message}")
+      # end      
+    # end
+    
+    # => send_payload(j)
     to_rabbit(j)
   end
   

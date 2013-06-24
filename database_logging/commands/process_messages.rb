@@ -8,12 +8,7 @@ end
 
 execute do |params|
   known_existing_partitions = {}
-  
-  # the_log = @op.raw_log()
-  # $logger.info "read #{the_log.size} entries"
-  # 
-  # the_log.each do |data|
-  
+     
   unless plugin.state.has_key?(:carrot)
     host_name = @op.plugin_by_name("rabbitmq_plugin").config_string('rabbitmq_hostname')
     plugin.state[:carrot] = Carrot.new(:host => host_name)
@@ -32,11 +27,17 @@ execute do |params|
   while msg = q.pop(:ack => true)
     #puts msg
     data = msg
-    entries = JSON.parse(data)
-    puts "***** #{entries.size}"
+    #pp data
+    
+    entries = []
+    begin
+      entries = JSON.parse(data)
+    rescue => detail
+      $logger.error("could not parse JSON data : #{detail.message} - >>#{data}<<")
+    end
+    
+    puts "\n***** #{entries.size}"
     entries.each do |entry|
-      #p entry
-      #puts "#{entry["phase"]} #{entry["request_id"]} #{entry["level"]} > #{current_stack} [#{mode}] #{request.command.name}"
       phase = entry["phase"]
       request_id = entry["request_id"]
       
@@ -48,9 +49,20 @@ execute do |params|
       partition = Time.at(timestamp.to_i).strftime("%Y%m%d")
       $logger.debug "partition : #{partition}"
       
-      
       @op.create_partition("partition_name" => partition) unless known_existing_partitions.has_key? partition
       known_existing_partitions[partition] = true
+    
+      original_request = entry["request"].dup if entry["request"]  
+      if entry.has_key?("request")
+        entry["request"]["param_values"] = RHCP::EncodingHelper.from_base64(entry["request"]["param_values"])
+        #puts "re-encoded request"
+      end
+      
+      original_response = entry["response"].dup if entry["response"]
+      if entry.has_key?("response")
+        entry["response"] = RHCP::EncodingHelper.from_base64(original_response)
+        #puts "re-encoded response"
+      end
       
       
           
@@ -103,7 +115,7 @@ execute do |params|
           do_sql(dbh, "INSERT INTO requests_#{partition} (request_id, command_name, param_string, uid, mode, start_ts)
                     VALUES ('#{request_id}', '#{request["command_name"]}', '#{dbh.escape_string(param_string)}', #{uid != nil ? "'#{uid}'" : 'NULL'}, '#{entry["mode"]}', '#{entry["start_ts"]}')")
         when "stop"
-          escaped_response = dbh.escape_string(JSON.generate(entry["response"]))
+          escaped_response = dbh.escape_string(JSON.generate(original_response))
           do_sql(dbh, "UPDATE requests_#{partition} SET response_code = '#{entry["response"]["status"]}', stop_ts = FROM_UNIXTIME(UNIX_TIMESTAMP(start_ts) + #{entry["duration"]}) " +
                        "WHERE request_id = '#{entry["request_id"]}'")        
         end
@@ -126,7 +138,7 @@ execute do |params|
         end
         param_string = dbh.escape_string('(' + string_values.join(' ') + ')')
         
-        escaped_request = dbh.escape_string(JSON.generate(request))
+        escaped_request = dbh.escape_string(JSON.generate(original_request))
         do_sql(dbh, "INSERT INTO command_executions_#{partition} (request_id, command_name, param_string, mode, level, start_ts, json_request)
                     VALUES('#{request_id}', '#{request["command_name"]}', '#{param_string}', '#{entry["mode"]}', '#{entry["level"]}', '#{entry["start_ts"]}', '#{escaped_request}')
                   ")
@@ -167,7 +179,7 @@ execute do |params|
         end
       when "stop"
         response = entry["response"]
-        escaped_response = dbh.escape_string(JSON.generate(response))
+        escaped_response = dbh.escape_string(JSON.generate(original_response))
         statement = "UPDATE command_executions_#{partition} " +
                     # TODO stop_ts shouldn't be really now() here, should it?
                     "SET response_code = '#{response["status"]}', stop_ts = now(), " +
