@@ -18,8 +18,8 @@ on_machine do |machine, params|
     command_string += "--version #{params["version"]} " if params.has_key?("version")
     command_string += "#{params["name"]}"
     command_string += " --no-rdoc --no-ri"
-    command_string += " -f" # TODO
-    machine.ssh("command" => command_string, "user" => "root")
+    command_string += " -f" # TODO needed for TLS?
+    machine.ssh("command" => command_string)
     
     # @op.without_cache do 
       # machine.list_installed_gems

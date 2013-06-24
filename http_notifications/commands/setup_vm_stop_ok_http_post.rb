@@ -5,7 +5,9 @@ param :current_user
 accept_extra_params
 
 execute do |params|
-  machine_name = "#{params["extra_params"]["vm_name"]}.#{params["extra_params"]["machine"]}"
+  pp params
+  #machine_name = "#{params["extra_params"]["vm_name"]}.#{params["extra_params"]["machine"]}"
+  machine_name = params["extra_params"]["result"]
   
   data = @op.with_machine(machine_name) do |machine|  
     ssh_options = {}

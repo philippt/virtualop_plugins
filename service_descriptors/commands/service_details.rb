@@ -33,6 +33,7 @@ on_machine do |machine, params|
     end  
   end 
   
+  # TODO move into start/stop/status
   %w|start stop status|.each do |operation|
     if result.has_key?("unix_service") and not result.has_key?("#{operation}_command")
       unix_service = result["unix_service"]
@@ -48,7 +49,7 @@ on_machine do |machine, params|
         end
       end
       # TODO merge in ubuntu-specific sudo handling from status_unix_service
-      result["#{operation}_command"] = "/etc/init.d/#{unix_service_name} #{operation}"
+      result["#{operation}_command"] = "sudo /etc/init.d/#{unix_service_name} #{operation}"
     end
   end
   

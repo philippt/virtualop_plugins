@@ -33,6 +33,7 @@ on_machine do |machine, params|
     raise "found more than one plugin file in #{dotvop_dir}" if plugin_names.size > 1
     raise "could not find plugin file in #{dotvop_dir}" if plugin_names.size == 0
     plugin_name = plugin_names.first
+    @op.comment("plugin name : #{plugin_name}")
   
     if plugin_name == service_name
         

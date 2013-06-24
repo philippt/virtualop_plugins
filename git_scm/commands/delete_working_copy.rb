@@ -11,4 +11,7 @@ on_machine do |machine, params|
   machine.rm("recursively" => "true", "file_name" => path)
   
   # TODO cache flush
+  @op.without_cache do
+    machine.list_working_copies
+  end
 end

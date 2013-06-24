@@ -6,6 +6,11 @@ def github_params
   }
 end  
 
+def has_github_params(params)
+  ( params.has_key?('github_user') && params.has_key?('github_password') ) || 
+  params.has_key?('github_token')  
+end
+
 def param_github_project(options = {})
   merge_options_with_defaults(options, {
     

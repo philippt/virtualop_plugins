@@ -7,6 +7,7 @@ on_machine do |machine, params|
   gems = @op.read_gem_list("lines" => params["lines"])
   installed_gems = machine.list_installed_gems
   gems.each do |row|
+    next if /^#/.match row["name"]
     $logger.info "checking for #{row["name"]}"
     existing = installed_gems.select do |candidate|
       # TODO should include version check

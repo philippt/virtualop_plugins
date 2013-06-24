@@ -1,7 +1,8 @@
 description "performs the base installation for a new machine"
 
 param :machine
-param "http_proxy", "if specified, the http proxy is used for the installation and configured on the new machine"
+param "http_proxy", "if specified, the http proxy is used for the installation and configured on the new machine", 
+  :default_value => config_string('http_proxy', '')
 
 param :environment
 
@@ -12,7 +13,9 @@ on_machine do |machine, params|
   
   machine.write_own_centos_repo()
   
-  process_local_template(:http_proxy, machine, "/etc/profile.d/http_proxy.sh", binding()) if params.has_key?('http_proxy')
+  if params.has_key?('http_proxy') and params['http_proxy'] != ''
+    process_local_template(:http_proxy, machine, "/etc/profile.d/http_proxy.sh", binding())
+  end 
   
   machine.set_hostname("hostname" => machine.name.split('.').first)
   # TODO machine.append_to_file("file_name" => "/etc/hosts", "content" => "127.0.0.1 #{machine.name}")

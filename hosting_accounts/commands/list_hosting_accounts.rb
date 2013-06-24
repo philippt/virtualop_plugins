@@ -1,6 +1,5 @@
 description 'returns a list of accounts at hosting providers'
 
-display_type :table
 add_columns [ :type, :alias ]
 
 mark_as_read_only

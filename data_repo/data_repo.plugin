@@ -15,7 +15,7 @@ has_accounts({
 
 on_init do |plugin, config|
   require 'helpers/init_dropdir'
-  init_dropdir plugin, config["account_dropdir"]
+  init_dropdir plugin, plugin.config_string("account_dropdir")
 end
 
 on_preflight do |request, response|

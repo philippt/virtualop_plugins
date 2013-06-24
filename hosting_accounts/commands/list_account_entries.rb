@@ -4,12 +4,11 @@ param :hosting_account
 
 mark_as_read_only
 
-display_type :table
 add_columns [ :name ]
 
 execute do |params|
-  account = @op.list_hosting_accounts.select do |account|
-    account["alias"] == params["hosting_account"]
+  account = @op.list_hosting_accounts.select do |acct|
+    acct["alias"] == params["hosting_account"]
   end.first
   
   # TODO could be nicer

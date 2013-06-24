@@ -25,7 +25,7 @@ execute do |params|
     h["name"] = "#{instance_name}.#{params["aws_account"]}"
     
     h["ssh_name"] = h["dns_name"]
-    h["ssh_user"] = "ubuntu" # TODO config
+    h["ssh_user"] = config_string('ssh_user') # TODO config
     h["ssh_key_name"] = "#{@op.config_base_dir}/accounts/aws_ec2/#{h["ssh_key_name"]}.pem" 
     
     h["type"] = "vm" 

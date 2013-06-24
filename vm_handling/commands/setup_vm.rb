@@ -19,7 +19,7 @@ param "location", "installation source for guest virtual machine kernel+initrd p
 
 param "canned_service", "name of a canned service to install on the machine", :allows_multiple_values => true
 
-param "http_proxy", "if specified, the http proxy is used for the installation and configured on the new machine", :default_value => config_string('http_proxy')
+param "http_proxy", "if specified, the http proxy is used for the installation and configured on the new machine"
 param "keep_proxy", "if set to true, the http proxy will not be deactivated at the end of the installation", :default_value => false
 
 param "environment", "if specified, the environment is written into a config file so that it's available through $VOP_ENV", :lookup_method => lambda {
@@ -73,8 +73,9 @@ on_machine do |machine, params|
   end
   
   # wait until shutdown after installation
-  @op.wait_until("interval" => 5, "timeout" => config_string('installation_timeout_secs'), 
+  @op.wait("interval" => 5, "timeout" => config_string('installation_timeout_secs'), 
     "error_text" => "could not find a machine with name '#{params["vm_name"]}' that is shut off") do
+    @op.cache_bomb
     candidates = machine.list_vms.select do |row|
       row["name"] == params["vm_name"] and
       row["state"] == "shut off"
@@ -88,18 +89,10 @@ on_machine do |machine, params|
   
   sleep 15
   
-  @op.wait_until("interval" => 5, "timeout" => config_string('vm_start_timeout_secs'), 
+  @op.wait("interval" => 5, "timeout" => config_string('vm_start_timeout_secs'), 
     "error_text" => "could not find a running machine with name '#{params["vm_name"]}'") do
-    result = false
-    begin
-      @op.with_machine(full_name) do |m|
-        m.hostname
-      end      
-      result = true
-    rescue Exception => e
-      $logger.info("got an exception while trying to connect to machine : #{e.message}")
-    end
-    result
+    @op.cache_bomb
+    @op.reachable_through_ssh("machine" => full_name)
   end
   
   @op.with_machine(full_name) do |vm|
@@ -128,7 +121,9 @@ on_machine do |machine, params|
     end
     
     # kind of sad, but seems to make more sense for now to use the proxy for the installation only
-    vm.rm("file_name" => "/etc/profile.d/http_proxy.sh") unless params["keep_proxy"]
+    if vm.file_exists("file_name" => "/etc/profile.d/http_proxy.sh") && ! params["keep_proxy"] 
+      vm.rm("file_name" => "/etc/profile.d/http_proxy.sh")
+    end
     
     vm.change_runlevel("runlevel" => "running")
     

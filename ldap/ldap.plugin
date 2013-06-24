@@ -5,7 +5,7 @@ config_param "ldap_dropdir", "the directory with ldap server details", :default_
 on_activation do |plugin, config|
   require 'helpers/drop_dir_provider'
   
-  dir_name = config["ldap_dropdir"]
+  dir_name = plugin.config_string("ldap_dropdir")
   
   provider = DropDirProvider.new(@op,
 	  :host => "localhost",
