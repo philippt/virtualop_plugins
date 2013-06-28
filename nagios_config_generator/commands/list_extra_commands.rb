@@ -5,7 +5,7 @@ param :machine, "a nagios machine to work with", :default_value => config_string
 display_type :list
 
 on_machine do |nagios, params|
-  dir_name = config_string("config_root") + '/../extra_commands'
+  dir_name = config_string("config_root") + '/extra_commands'
   nagios.file_exists("file_name" => dir_name) ? nagios.list_files("directory" => dir_name) : []
 end    
 

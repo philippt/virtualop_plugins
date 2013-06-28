@@ -4,29 +4,38 @@ param :machine
 param "disable_notifications", "if set to 'true', notifications will be disabled", :lookup_method => lambda { %w|true false| }, :default_value => config_string('disable_generated_notifications', 'true')
 
 on_machine do |machine, params|
-  # TODO make this configurable
   monitoring_services = config_string('default_monitoring_services', '').split(',')
   monitoring_services.each do |service_name|
     machine.install_canned_service("service" => "#{service_name}/#{service_name}")
   end
-  #%w|check_mem check_load|.each do |service_name|
-  #end
   @op.without_cache do
     machine.list_services
   end
   
+  notifications_enabled = params['disable_notifications'] == 'false'
+  
   target_file = machine.nagios_file_name
-
-  local_partitions = machine.disk_space.select do |row|
-    /^\/dev/.match(row["filesystem"])
-  end
 
   template_name = machine.machine_detail.has_key?('dns_name') ?
     :ec2_instance :
     (machine.machine_detail.has_key?("os") and machine.machine_detail["os"] == "windows") ?
       :windows_machine : :machine
 
-  notifications_enabled = params['disable_notifications'] == 'false'
+  ipaddress = nil
+  case machine.machine_detail["os"]
+  when "linux"
+    ipaddress = machine.ipaddress
+  when "windows"
+    reported_hostname = @op.vm_detail("machine_name" => machine.name)["hostname"]
+    if matched = /.+\(([\d\.]+)\)/.match(reported_hostname)
+      ipaddress = matched.captures.first
+    else
+      raise "could not parse IP address from VMware output - input is #{reported_hostname}"
+    end
+  else
+    raise "don't know how to get IP address for machine #{machine.name} - unsupported OS #{machine.machine_detail["os"]}"
+  end
+
 
   @op.with_machine(config_string('nagios_machine_name')) do |nagios|
     process_local_template(template_name, nagios, target_file, binding())    
@@ -58,7 +67,7 @@ on_machine do |machine, params|
   #  #nagios.list_authorized_keys.first
   #  puts "nagios home : #{nagios.home}"
     key_file = '/home/nagios/.ssh/id_rsa.pub'
-    if nagios.file_exists("file_name" => key_file)
+    if nagios.file_exists("file_name" => key_file) # && machine.machine_detail["os"] == "linux"
       nagios_public_key = nagios.read_file("file_name" => key_file)
       machine.add_authorized_key("public_key" => nagios_public_key) unless machine.list_authorized_keys.include? nagios_public_key
     end
