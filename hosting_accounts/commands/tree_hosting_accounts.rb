@@ -30,6 +30,7 @@ execute do |params|
             vm_entry["path"] = group["path"] + '/' + vm_entry["name"]
             vm_entry["short_name"] = vm_entry["name"]
             vm_entry["name"] = vm_entry["full_name"] 
+            vm_entry["type"] = "vm"
             vm_entry
           end
         }

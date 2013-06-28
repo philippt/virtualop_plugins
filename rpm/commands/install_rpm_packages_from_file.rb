@@ -11,6 +11,8 @@ on_machine do |machine, params|
   params["lines"].each do |line|
     next if /^#/.match(line)
     
+    line.chomp!
+    
     rpm_url = nil
     if matched = /^http.+\/(.+?)-(\d+.+)\.rpm$/.match(line)
       rpm_url = line
@@ -21,7 +23,9 @@ on_machine do |machine, params|
         temp_dir = "#{machine.home}/tmp/"
         machine.mkdir("dir_name" => temp_dir) unless machine.file_exists("file_name" => temp_dir)
         machine.wget("url" => rpm_url, "target_dir" => temp_dir)
-        machine.ssh("command" => "rpm -ihv --nosignature #{temp_dir}/#{rpm_name}-#{rpm_version}*.rpm")
+        machine.as_user("user_name" => "root") do |root|
+          root.ssh("command" => "sudo rpm -ihv --nosignature #{temp_dir}/#{rpm_name}-#{rpm_version}*.rpm")
+        end
         
         result << rpm_name      
       end

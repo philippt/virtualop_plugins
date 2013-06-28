@@ -63,11 +63,13 @@ class MemcachedBroker < RHCP::Broker
       ((request.context == nil) or (not request.context.cookies.has_key?('__caching.disable.write')))
       
     if should_read_from_cache
-      if request_cookies.has_key?('__caching.bomb') and request_cookies['__caching.bomb'].to_i > 0
-        puts "cache bomb prevents cache read for #{command.name}"
-        #pp request_cookies
-        request_cookies['__caching.bomb'] = request_cookies['__caching.bomb'].to_i - 1
-        should_read_from_cache = false
+      if request_cookies.has_key?('__caching.bomb')
+        depth = request_cookies['__caching.bomb'].to_i
+        if depth > 0
+          puts "cache bomb prevents cache read for #{command.name}"
+          Thread.current['broker'].context.cookies['__caching.bomb'] = depth - 1
+          should_read_from_cache = false
+        end
       end
     end
 

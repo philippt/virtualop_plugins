@@ -1,6 +1,6 @@
 description "adds all known hetzner hosts to the list of known machines."
 
-contributes_to :find_hosts
+#contributes_to :find_hosts
 
 execute do |params|
   @op.list_all_hetzner_hosts.each do |row|

@@ -7,5 +7,5 @@ config_param "attempt_interval_secs", "sleep duration between attempts to get a 
 
 on_init do |plugin, config|
   require 'helpers/init_dropdir'
-  init_dropdir plugin, config["dropdir"]
+  init_dropdir plugin, plugin.config_string("dropdir")
 end

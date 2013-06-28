@@ -1,6 +1,7 @@
 dependencies [ :core, :machines, :drop_dir ]
 
 config_param "account_dropdir", "the directory with ec2 account details", :default_value => "#{@op.config_base_dir}/accounts/aws_ec2"
+config_param "ssh_user", "username for SSH connections to EC2 instances", :default_value => "ec2-user" 
 
 tags :hosting, :installation
 
@@ -9,7 +10,7 @@ on_activation do |plugin, config|
   
   require 'helpers/drop_dir_provider'
   
-  dir_name = config["account_dropdir"]
+  dir_name = plugin.config_string("account_dropdir")
   
   provider = DropDirProvider.new(@op,
 	  :host => "localhost",

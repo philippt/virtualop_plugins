@@ -19,7 +19,7 @@ def param_instance(options = {})
     :mandatory => true,
     :lookup_method => lambda do
       @op.list_all_instances.map do |instance|
-        instance["name"]
+        instance["tags"]["Name"]
       end
     end
   )

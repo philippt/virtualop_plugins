@@ -6,6 +6,6 @@ mark_as_read_only
 display_type :hash
 
 execute do |params|
-  return [] unless config_string('urls')
-  config_string('urls')
+  #return [] unless config_string('urls', [])
+  config_string('urls', {})
 end

@@ -2,11 +2,8 @@
 
 contributes_to :notify_setup_vm_stop_ok
 
-on_machine do |machine, params|
+execute do |params|
   puts "+++ setup_vm stop_ok +++"
-  request = Thread.current['request']
-  pp request
-  
   context = Thread.current['broker'].context
   pp context
   params['to'] = context.cookies['current_user_email']
@@ -16,5 +13,22 @@ on_machine do |machine, params|
     
   @op.send_mail("message" => message, "to" => params['to'])
     
-  []
+  []  
 end
+
+# on_machine do |machine, params|
+  # puts "+++ setup_vm stop_ok +++"
+  # request = Thread.current['request']
+  # pp request
+#   
+  # context = Thread.current['broker'].context
+  # pp context
+  # params['to'] = context.cookies['current_user_email']
+#   
+  # message = read_local_template(:vm_setup_complete, binding())
+  # p message
+#     
+  # @op.send_mail("message" => message, "to" => params['to'])
+#     
+  # []
+# end

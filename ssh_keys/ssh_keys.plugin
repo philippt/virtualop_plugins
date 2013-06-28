@@ -8,5 +8,5 @@ config_param "dropdir", "path to a directory where ssh keypairs should be stored
 
 on_init do |plugin, config|
   require 'helpers/init_dropdir'
-  init_dropdir plugin, config["dropdir"]
+  init_dropdir plugin, plugin.config_string("dropdir")
 end

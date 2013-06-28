@@ -18,11 +18,15 @@ execute do |params|
     data.each do |row|
       if row.class == Hash && row.has_key?("failover")
         h = row["failover"]
+        
+        more = {}              
         h.each do |k,v|
           if matched = /(.+_)?ip/.match(k)
-            h["#{k}_lookup"] = @op.dig("query" => v).first["hostname"]
+            more["#{k}_lookup"] = @op.dig("query" => v).first["hostname"]
           end
         end
+        h.merge! more
+        
         result << h
       end
     end
