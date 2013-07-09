@@ -12,7 +12,7 @@ on_machine do |machine, params|
   machine.ssh("command" => "cd #{path} && git branch -a").split("\n").map do |line|
     raise "unexpected output from git branch : >>#{line}<<" unless matched = /(\*)?\s+(.+)/.match(line)
     {
-      "name" => matched.captures.last,
+      "name" => matched.captures.last.chomp,
       "active" => (matched.captures.first == "*").to_s
     }
   end

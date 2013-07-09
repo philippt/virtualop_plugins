@@ -46,7 +46,7 @@ class MemcachedBroker < RHCP::Broker
 
     # construct the cache key out of the command name and all parameter values
     sorted_param_values = []
-    request.param_values.keys.sort.each do |key|
+    request.param_values.keys.sort { |a,b| a.to_s <=> b.to_s }.each do |key|
       sorted_param_values << request.param_values[key]
     end
     cache_key = request.command.name + '_' + Digest::SHA1.hexdigest(sorted_param_values.join('|'))

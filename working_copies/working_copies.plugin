@@ -1,3 +1,5 @@
 dependencies [ :core, :machines, :erb_processor ]
 
+config_param 'known_metadata_dirs', 'pattern that is used in find-style call to search for working copies. see working_copies.list_working_copies', :allows_multiple_values => true, :default_value => [ '.git', '.vop' ]
+
 tags :deployment, :installation

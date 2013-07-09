@@ -20,7 +20,12 @@ execute do |params|
     while msg = q.pop(:ack => true)
       begin
         entry = JSON.parse(msg)
-        r = entry["request"]     
+        r = entry["request"]
+        puts "incoming #{r.pretty_inspect}"
+        
+        encoded_values = r["param_values"].dup
+        r["param_values"] = RHCP::EncodingHelper.from_base64(encoded_values)
+             
         command = broker.get_command(r["command_name"].split(".").last)
         
         #request = RHCP::Request.new(command, r["param_values"], broker.context.clone())

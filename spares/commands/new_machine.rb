@@ -68,7 +68,7 @@ on_machine do |machine, params|
       
       vm.change_runlevel("runlevel" => "running")
       
-      vm.rm("file_name" => "/etc/profile.d/http_proxy.sh")
+      vm.rm_if_exists("file_name" => "/etc/profile.d/http_proxy.sh")
       
       vm.hash_to_file("file_name" => "/var/lib/virtualop/new_machine_params", "content" => params)
       vm.write_file("target_filename" => "/var/lib/virtualop/installation_packages", "content" => vm.list_packages.to_yaml)

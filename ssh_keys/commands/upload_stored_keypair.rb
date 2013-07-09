@@ -11,7 +11,8 @@ on_machine do |machine, params|
     private_key = localhost.read_file("file_name" => details["private_key_file"])
     public_key = localhost.read_file("file_name" => details["public_key_file"])
     
-    filename = "/root/.ssh/id_rsa#{params['name_suffix']}"
+    #filename = "/root/.ssh/id_rsa#{params['name_suffix']}"
+    filename = "#{machine.home}/.ssh/id_rsa#{params['name_suffix']}"
     machine.write_file("target_filename" => filename, "content" => private_key)
     machine.write_file("target_filename" => "#{filename}.pub", "content" => public_key)
     

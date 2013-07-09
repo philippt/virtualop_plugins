@@ -4,10 +4,11 @@ param :machine
 
 mark_as_read_only
 
-contributes_to :list_working_copies
+#contributes_to :list_working_copies
 result_as :list_working_copies
 
 on_machine do |machine, params|
+  raise "this code has been moved into list_working_copies"
   result = []
   home = machine.home
   [ home, '/var/www', "#{home}/workspace", "#{home}/Dropbox", "#{home}/Dropbox/projects" ].each do |dir_name|
