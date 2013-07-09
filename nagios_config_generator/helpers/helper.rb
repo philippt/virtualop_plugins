@@ -1,4 +1,5 @@
 def nagios_file_name(machine)
+  raise "boom"
   "#{config_string('config_root')}/#{machine.name}.cfg"
 end
 

@@ -6,12 +6,12 @@ param! "content", "the actual content that should be written into a nagios confi
 
 execute do |params|
   @op.with_machine(params["nagios_machine"]) do |nagios|
-    # TODO nagios.mkdir("directory" => config_string("config_root") + '/../extra_commands')
+    # TODO nagios.mkdir("directory" => config_string("config_root") + '/extra_commands')
     existing = nagios.list_extra_commands()
     next if existing.include? params["file_name"]
   
     nagios.write_file(
-      "target_filename" => config_string("config_root") + '/../extra_commands/' + params["file_name"], 
+      "target_filename" => config_string("config_root") + '/extra_commands/' + params["file_name"], 
       "content" => params["content"],
       "ownership" => "nagios:"
     )
