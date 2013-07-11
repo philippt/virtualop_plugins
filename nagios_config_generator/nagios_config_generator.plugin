@@ -2,7 +2,6 @@ dependencies [ :core, :machines, :erb_processor, :bash, :service_descriptors ]
 
 is_aware_of [ :nagios_status ]
 
-<<<<<<< HEAD
 config_param! "nagios_machine_name", "the alias of the machine on which nagios is running", :default_value => "nagios"
 config_param "config_root", "path on the nagios machine where the config files should be written", :default_value => "/usr/local/nagios/etc/objects"
 config_param "host_template", "name of an existing nagios template to use for generated host entries", :default_value => 'linux-server'

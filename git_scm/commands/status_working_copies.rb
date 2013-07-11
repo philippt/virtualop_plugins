@@ -8,7 +8,7 @@ add_columns [ :name, :change_count ]
 
 on_machine do |machine, params|
   result = []
-  machine.list_working_copies.each do |working_copy|
+  machine.list_working_copies("type" => ".git").each do |working_copy|
     changes = machine.list_changes_in_working_copy("working_copy" => working_copy["name"])
     result << {
       "name" => working_copy["name"],

@@ -8,7 +8,7 @@ on_machine do |machine, params|
   
   # TODO circular dependency kind of thing
   case wc["type"]
-  when "git"
+  when ".git"
     machine.update_git_working_copy(params)
   when "dropbox"
     machine.sync_dropbox_folder("directory" => wc["path"], "path" => wc["project_path"], "force" => "true")

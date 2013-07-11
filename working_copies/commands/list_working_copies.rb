@@ -1,6 +1,7 @@
 description "working copies are projects living on machines"
 
 param :machine
+param "type", "filter by type"
 
 mark_as_read_only
 
@@ -9,13 +10,16 @@ add_columns [ :path, :name, :type ]
 with_contributions do |result, params|
   result = []
 
+  locations = config_string('location')
+
   @op.with_machine(params["machine"]) do |machine|  
-    [ machine.home, '/var/www' ].each do |dir_name|
+    locations << machine.home
+    locations.each do |dir_name|
       next unless machine.file_exists("file_name" => dir_name)
       
       begin
-        puts "known metadata dirs : "
-        pp config_string('known_metadata_dirs')
+        #puts "known metadata dirs : "
+        #pp config_string('known_metadata_dirs')
         config_string('known_metadata_dirs').each do |known_metadata_dir|      
           working_copies = machine.find("path" => dir_name, "maxdepth" => "2", "type" => "d", "name" => [ known_metadata_dir ])
           
@@ -40,6 +44,10 @@ with_contributions do |result, params|
       end
       
     end
+  end
+  
+  if params.has_key?("type")
+    result.delete_if { |x| x["type"] != params["type"] }
   end
   
   # TODO make result unique by path, merging types?
