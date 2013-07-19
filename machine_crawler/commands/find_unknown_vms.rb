@@ -15,7 +15,7 @@ on_machine do |machine, params|
       "ssh_host" => machine.ipaddress,
       "ssh_port" => vm["ssh_port"],
       "ssh_password" => "the_password",
-      "ssh_user" => "root",
+      "ssh_user" => "root", # TODO root
       "name" => full_name,
       "type" => "vm",
       "host_name" => machine.name

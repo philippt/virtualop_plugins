@@ -3,7 +3,7 @@ description "calls the system's package manager to search for a package by name"
 param :machine
 param! "name", "the part of the package name to search for", :default_param => true
 
-on_machine do |machine, params|
+as_root do |machine, params|
   distro = machine.linux_distribution.split("_").first
   case distro
   when "centos"

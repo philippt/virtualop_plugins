@@ -150,6 +150,7 @@ class ServiceDescriptorLoader
     targets += [ :port, :process_regex ]
     targets += [ :cron, :every ]
     targets += [ :static_html ]
+    targets += [ :user ]
     
     if targets.include? m
       @service[m.to_s] = args.first

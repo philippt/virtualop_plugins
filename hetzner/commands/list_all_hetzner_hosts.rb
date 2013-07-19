@@ -5,7 +5,8 @@ mark_as_read_only
 display_type :table
 add_columns [ :name, :type, :env, :account, :server_name, :server_ip, :dc, :product, :status, :traffic, :flatrate, :throttled, :cancelled, :paid_until ]
 
-contributes_to :list_machines
+#contributes_to :list_machines
+contributes_to :find_hosts
 
 execute do |params|
   result = []

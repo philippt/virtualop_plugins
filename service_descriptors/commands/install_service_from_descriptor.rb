@@ -297,6 +297,11 @@ on_machine do |machine, params|
     @op.without_cache do
       details = machine.service_details("service" => service["name"])
       begin
+        if details.has_key?("user")
+          #machine
+          @op.comment("invoking post-installation block as #{details["user"]}")
+          machine = UserContext.new(@op, machine, details["user"])
+        end
         details["post_installation"].call(machine, params)
       rescue => detail
         raise "problem in post_installation block for service #{service["name"]} on #{params["machine"]} : #{detail.message}"

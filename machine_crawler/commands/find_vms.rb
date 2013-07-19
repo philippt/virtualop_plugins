@@ -21,20 +21,21 @@ execute do |params|
   
   puts "STEP1: Hosts"
   #@op.flush_cache()
-  #hosts = @op.find_hosts
-  hosts = @op.list_machines.select { |x| x["type"] == 'host' }
+  hosts = @op.find_hosts
+  #hosts = @op.list_machines.select { |x| x["type"] == 'host' }
   
   
   puts "STEP2: VMs on Hosts"
   @op.flush_cache()
   new_machines = []
   hosts.each do |row|
+    host_name = row["name"]
     begin
-    @op.with_machine(row["name"]) do |host|
-      new_machines += host.find_unknown_vms
-    end
+      @op.with_machine(host_name) do |host|
+        new_machines += host.find_unknown_vms
+      end
     rescue => detail
-      $logger.error("could not find for unknown VMs on #{host.name} : #{detail.message}")
+      $logger.error("could not find for unknown VMs on #{host_name} : #{detail.message}")
     end
   end
   if new_machines.size > 0

@@ -14,7 +14,7 @@ on_machine do |machine, params|
   
   result = YAML.load(content)
   
-  result["domain"] = result["extra_params"]["domain"] if result.has_key?("extra_params") and result["extra_params"].has_key?("domain")
+  result["domain"] = result["extra_params"]["domain"] if result.has_key?("extra_params") && result["extra_params"].has_key?("domain")
   
   if result.has_key?("service_root")
     if result.has_key?("descriptor_machine") && result["descriptor_machine"] == machine.name
@@ -32,10 +32,12 @@ on_machine do |machine, params|
       $logger.warn("did not find canned service #{params["service"]} - a bit odd.")
     end  
   end 
+
+  pp result  
   
   # TODO move into start/stop/status
   %w|start stop status|.each do |operation|
-    if result.has_key?("unix_service") and not result.has_key?("#{operation}_command")
+    if result.has_key?("unix_service") && ! result.has_key?("#{operation}_command")
       unix_service = result["unix_service"]
       #pp unix_service
       unix_service_name = unix_service
