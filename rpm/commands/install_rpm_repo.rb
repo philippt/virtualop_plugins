@@ -14,7 +14,12 @@ on_machine do |m, params|
         when "rpm"
           r = machine.ssh_extended("command" => "rpm -qa | grep -c #{matched.captures.first}")
           unless r["result_code"] == 0 && r["output"].to_i > 0
-            machine.ssh("command" => "rpm -Uvh #{repo_url}")
+            begin
+              machine.ssh("command" => "rpm -Uvh #{repo_url}")
+            rescue => detail
+              pp detail
+              raise unless /is already installed/ =~ detail.message
+            end
           end
         when "key"
           begin

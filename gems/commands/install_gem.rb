@@ -1,7 +1,7 @@
 description 'installs the specified ruby gem'
 
 param :machine
-param "name", "the name of the gem to install", :mandatory => true
+param! "name", "the name of the gem to install"
 param "version", "the version that should be installed"
 
 on_machine do |machine, params|

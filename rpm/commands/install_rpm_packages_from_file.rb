@@ -24,7 +24,7 @@ on_machine do |machine, params|
         machine.mkdir("dir_name" => temp_dir) unless machine.file_exists("file_name" => temp_dir)
         machine.wget("url" => rpm_url, "target_dir" => temp_dir)
         machine.as_user("user_name" => "root") do |root|
-          root.ssh("command" => "sudo rpm -ihv --nosignature #{temp_dir}/#{rpm_name}-#{rpm_version}*.rpm")
+          root.ssh("command" => "rpm -ihv --nosignature #{temp_dir}/#{rpm_name}-#{rpm_version}*.rpm")
         end
         
         result << rpm_name      

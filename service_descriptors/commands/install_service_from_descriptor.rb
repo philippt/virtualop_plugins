@@ -26,6 +26,31 @@ on_machine do |machine, params|
       descriptor_dir = dotvop_dir 
     end
     
+    # install dependencies that have been specified in the service descriptor
+    descriptor_file_name = params["descriptor"]
+    if machine.file_exists descriptor_file_name
+      descriptor = descriptor_machine.read_service_descriptor("file_name" => descriptor_file_name)
+      descriptor["dependencies"].each do |dependency|
+        case dependency["type"]
+        when "vop"
+          # TODO support subservices properly
+          unless machine.list_installed_services.include? dependency["name"].split('/').first
+            p = {
+              "service" => dependency["name"],
+              "extra_params" => {}
+            }            
+            dependency.each do |k,v|
+              p[k] = v unless %w|name type|.include? k
+              p["extra_params"][k] = v
+            end
+            machine.install_canned_service(p)
+          end
+        else
+          raise "unhandled dependency type #{dependency["type"]}"
+        end  
+      end
+    end
+    
     dotvop_content = descriptor_machine.list_files("directory" => descriptor_dir)
     plugin_names = dotvop_content.select do |file|
       /\.plugin$/.match(file)
@@ -45,12 +70,15 @@ on_machine do |machine, params|
       if package_files.include? "vop"
         lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/vop")
         lines.each do |service_spec|
+          service_spec.strip!
           next if /^#/.match(service_spec)
           unless /\//.match(service_spec)
+            puts "service_spec : '#{service_spec}'"
             service_spec += '/' + service_spec
           end
           vop_service_name = service_spec.split("/").first
           # TODO version
+          puts "installing vop dependency : '#{vop_service_name}'"
           machine.install_canned_service("service" => service_spec) unless machine.list_installed_services.include?(vop_service_name)
         end    
       end
@@ -115,6 +143,12 @@ on_machine do |machine, params|
       if package_files.include? "gem"
         lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/gem")    
         machine.install_gems_from_file("lines" => lines) unless lines.size == 0
+      end
+
+      gemfile_location = "#{params["service_root"]}/Gemfile"
+      if machine.file_exists(gemfile_location)
+        machine.rvm_ssh("gem install bundler")
+        machine.rvm_ssh("cd #{params["service_root"]} && bundle install")
       end
 
       # TODO uranos
@@ -297,6 +331,7 @@ on_machine do |machine, params|
     @op.without_cache do
       details = machine.service_details("service" => service["name"])
       begin
+        # TODO kind of pointless now (see install_service_from_github)
         if details.has_key?("user")
           #machine
           @op.comment("invoking post-installation block as #{details["user"]}")

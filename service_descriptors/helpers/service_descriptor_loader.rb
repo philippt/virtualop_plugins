@@ -38,6 +38,7 @@ class ServiceDescriptorLoader
     @service["tcp_endpoint"] = []
     @service["udp_endpoint"] = []
     @service["log_files"] = []
+    @service["dependencies"] = []
     
     @service
   end
@@ -143,6 +144,17 @@ class ServiceDescriptorLoader
       h[k.to_s] = v
     end        
     @service["log_files"] << h 
+  end
+  
+  def canned_service(s, options = {})
+    h = {
+      "type" => "vop",
+      "name" => s 
+    }
+    options.each do |k,v|
+      h[k.to_s] = v
+    end
+    @service["dependencies"] << h
   end
   
   def method_missing(m, *args)

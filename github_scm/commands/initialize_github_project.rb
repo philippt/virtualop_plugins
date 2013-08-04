@@ -12,7 +12,7 @@ param! "github_repo", "the repository that should be initialized", :lookup_metho
 #param "project_name", ""
   
 on_machine do |machine, params|
-  repo = @op.list_github_repos.map { |x| 
+  repo = @op.list_github_repos.select { |x| 
       x["full_name"] == params["github_repo"]
   }.first
   
@@ -28,7 +28,7 @@ on_machine do |machine, params|
     "git remote add origin #{repo["ssh_url"]}",
     "git push -u origin master"
   ].each do |x|
-    machine.ssh("command" => "cd #{project_name} && #{x}")
+    machine.ssh("command" => "cd #{dir_name} && #{x}")
   end
 end  
 

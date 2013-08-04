@@ -15,7 +15,7 @@ on_machine do |machine, params|
   if has_github_params(params)    
     begin
       project_row = @op.list_github_repos(params).select { |x| x["full_name"] == params["github_project"] }.first
-      if project_row != nil && project_row["private"] == "true"
+      if project_row != nil && project_row["private"] == true
         git_url = "git@github.com:#{params["github_project"]}.git"
       end
     rescue Exception => detail

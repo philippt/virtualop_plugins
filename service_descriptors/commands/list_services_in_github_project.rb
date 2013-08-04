@@ -5,7 +5,7 @@ param! :github_project
 param :git_branch
 
 # TODO careful with that - looks like we're missing a clone() here (or something else, actually)
-#mark_as_read_only
+mark_as_read_only
 
 #add_columns [ :path, :type, :sha ]
 add_columns [ :name, :unix_service, :port, :process_regex, :http_endpoint, :tcp_endpoint ]
@@ -34,7 +34,7 @@ execute do |params|
       row
     end
   else
-    # TODO handle the other directory layout (e.g. philippt/service_descriptors) here ? 
+    # TODO handle the other directory layout (e.g. virtualop/service_descriptors) here ? 
     files.each do |file|
       if matched = /^(.+)\/(.+).plugin$/.match(file["path"])
         service_name, plugin_name = matched.captures
