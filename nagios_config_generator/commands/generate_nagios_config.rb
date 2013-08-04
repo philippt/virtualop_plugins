@@ -73,10 +73,36 @@ on_machine do |machine, params|
     end
   end
   #nagios_public_key = machine.read_file("file_name" => "/home/nagios/.ssh/id_rsa.pub")
+
+  if machine.machine_detail["os"] == "linux"
+    # TODO these checks are specific for environments with SNMP and VMWare - extract
+    local_partitions = machine.disk_space.select do |row|
+      /^\/dev/.match(row["filesystem"])
+    end.each do |partition|
+      machine.add_service_config(
+        "service_description" => "Disk - #{partition["mount_point"]}",
+        "service_template" => "disk-template",
+        "check_command" => "check_snmp_storage_used!#{partition["mount_point"]}!80!95"
+      )
+    end
+    
+    machine.add_service_config(
+      "service_template" => 'generic-service',
+      "service_description" => 'load',
+      "check_command" => "check_snmp_load_linux!6!10"
+    )
+    
+    machine.add_service_config(
+      "service_template" => 'service-template-nop',
+      "service_description" => 'Prozess VMWare Tools',
+      "check_command" => "check_snmp_process!vmtoolsd"
+    )
+  end
   
   machine.list_services.each do |service|
     if service.has_key?("domain")
-      machine.add_service_config("check_command" => "check_http_domain!#{service["domain"]}", "service_description" => "#{service["domain"]}")
+      domain = service["domain"].first
+      machine.add_service_config("check_command" => "check_http_domain!#{domain}", "service_description" => "http #{domain}")
     end
     
     if service.has_key?("nagios_commands")

@@ -10,12 +10,12 @@ on_machine do |machine, params|
   
   params["line"].each do |line|
     if /\.key/.match(line)
-      machine.ssh("command" => "rpm --import #{line}")
+      machine.ssh("command" => "sudo rpm --import #{line}")
     else
       url, a = line.split(" ")
       unless existing_repos.map { |x| x["alias"] }.include? a
         # TODO reactivate gpg check
-        machine.ssh("command" => "zypper ar --no-gpgcheck #{line}")
+        machine.ssh("command" => "sudo zypper ar --no-gpgcheck #{line}")
         result << a
       end
     end
