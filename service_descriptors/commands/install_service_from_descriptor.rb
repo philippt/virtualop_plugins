@@ -292,7 +292,8 @@ on_machine do |machine, params|
         raise "http_endpoint configuration found for service #{service["name"]}, but no domain parameter is present. not handling http_endpoint #{service["http_endpoint"]}"
       end
       
-      domain = params["extra_params"]["domain"].first      
+      #domain = params["extra_params"]["domain"].first
+      domain = params["extra_params"]["domain"]      
       machine.install_canned_service("service" => "apache/apache")
   
       target_urls = service["http_endpoint"].map do |endpoint|

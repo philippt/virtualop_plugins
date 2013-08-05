@@ -96,9 +96,13 @@ execute do |params|
   end
   
   services_to_load.each do |service_name, source|
-    service = ServiceDescriptorLoader.read(@op, the_plugin, service_name, source).services.first
-    service["full_name"] = [ plugin_name, service_name ].join("/")
-    result << service.clone()   
+    begin
+      service = ServiceDescriptorLoader.read(@op, the_plugin, service_name, source).services.first
+      service["full_name"] = [ plugin_name, service_name ].join("/")
+      result << service.clone()   
+    rescue => detail
+      $logger.error("could not load service descriptor #{service_name} : #{detail.message}")
+    end
   end
   
   pp result

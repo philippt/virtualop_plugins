@@ -106,6 +106,12 @@ class ServiceDescriptorLoader
     end
   end
   
+  def start_block(&block)
+    @service["start_block"] = lambda do |machine, service, params|
+      block.call(machine, service, params)
+    end
+  end
+  
   def post_installation(&block)
     @service["post_installation"] = lambda do |machine, params|
       block.call(machine, params)

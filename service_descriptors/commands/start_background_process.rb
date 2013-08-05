@@ -6,6 +6,6 @@ param :service
 on_machine do |machine, params|
   script_path = machine.write_background_start_script(params)
     
-  output = machine.ssh("command" => script_path)
+  output = machine.ssh("command" => "#{script_path} && sleep 3")
   [ script_path, output ]
 end  
