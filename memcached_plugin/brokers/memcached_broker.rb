@@ -136,7 +136,15 @@ class MemcachedBroker < RHCP::Broker
           json_data = JSON.generate(base64_response)        
           $logger.debug("storing data in cache for : #{cache_key} : #{json_data}")
           # TODO maybe we should use a lower expiration value for failed responses?
-          @cache.set(cache_key, json_data, @expiry_seconds)
+          begin
+            @cache.set(cache_key, json_data, @expiry_seconds)
+          rescue => detail
+            if /Value too large/ =~ detail.message
+              $logger.warn("not caching result from #{request.command.name} cause it's too large for memcached")
+            else
+              raise
+            end
+          end
         else
           $logger.info "writing blob into file cache"  
         end

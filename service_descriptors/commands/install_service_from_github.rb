@@ -56,6 +56,8 @@ execute do |params, request|
       service_root = nil  
       if params.has_key?("service_root") 
         service_root = params["service_root"]
+      elsif params.has_key?('extra_params') and params['extra_params'].has_key?('service_root')
+        service_root = params['extra_params']['service_root']
       else 
         service_root = "#{machine.home}/#{project_name}"
       
