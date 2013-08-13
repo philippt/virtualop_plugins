@@ -37,12 +37,6 @@ on_machine do |machine, params|
   
   if spare
     @op.with_machine(full_name) do |vm|
-      
-      # TODO we should not need this anymore at some point (disabling selinux in kickstart now)
-      @op.without_cache do
-        vm.ssh("command" => "setenforce Permissive")
-      end
-      
       vm.write_environment("environment" => params["environment"]) if params.has_key?("environment")
             
       # TODO copied from setup_vm, extract into deploy

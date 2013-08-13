@@ -61,7 +61,9 @@ execute do |params, request|
       else 
         service_root = "#{machine.home}/#{project_name}"
       
-        if params.has_key?('extra_params') and params["extra_params"].has_key?("domain")
+        if params.has_key?('extra_params') and params["extra_params"].has_key?("service_root")
+          service_root = params['extra_params']['service_root']
+        elsif params.has_key?('extra_params') and params["extra_params"].has_key?("domain")
           service_root = "/var/www/#{project_name}"
         end
       end

@@ -100,6 +100,11 @@ on_machine do |machine, params|
     
     vm.os_update   
     
+    # TODO we should not need this anymore at some point (disabling selinux in kickstart now), but we need it
+    @op.without_cache do
+      vm.ssh("command" => "setenforce Permissive")
+    end
+    
     if params.has_key?('canned_service')
       params['canned_service'].each do |canned_service|
         p = {

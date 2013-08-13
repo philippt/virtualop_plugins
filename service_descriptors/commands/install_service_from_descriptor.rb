@@ -93,12 +93,10 @@ on_machine do |machine, params|
           if found.size > 0
             working_copy = found.first
             $logger.info("working copy for github dependency #{line} already exists locally")
-            if not machine.list_installed_services.include?(working_copy["name"])
+            if not machine.list_services.map { |x| x["full_name"] }.include? line
               machine.install_service_from_working_copy("working_copy" => working_copy["name"], "service" => working_copy["name"])
             end
           else
-            # TODO checkout working copy
-            # TODO version
             machine.install_service_from_github({"github_project" => line}.merge_from(params, :git_branch, :git_tag))
           end
         end

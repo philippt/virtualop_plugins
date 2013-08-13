@@ -31,7 +31,7 @@ with_contributions do |result, params|
             result << {
               "path" => corrected_path,
               "name" => parts.last,
-              "type" => known_metadata_dir      
+              "type" => (/^\.(.+)/ =~ known_metadata_dir ? $1 : known_metadata_dir)       
             } unless result.select { |x| x["path"] == corrected_path }.size > 0
           end
         end
