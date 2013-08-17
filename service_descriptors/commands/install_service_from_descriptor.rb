@@ -28,7 +28,8 @@ on_machine do |machine, params|
     
     # install dependencies that have been specified in the service descriptor
     descriptor_file_name = params["descriptor"]
-    if machine.file_exists descriptor_file_name
+    #if machine.file_exists descriptor_file_name
+    if descriptor_machine.file_exists descriptor_file_name
       descriptor = descriptor_machine.read_service_descriptor("file_name" => descriptor_file_name)
       descriptor["dependencies"].each do |dependency|
         case dependency["type"]
@@ -136,17 +137,18 @@ on_machine do |machine, params|
             machine.install_rpm_packages_from_file("lines" => lines) unless lines.size == 0
           end
         end
+        
+        # -> non-distribution specific linux
+        gemfile_location = "#{params["service_root"]}/Gemfile"
+        if machine.file_exists(gemfile_location)
+          machine.rvm_ssh("gem install bundler")
+          machine.rvm_ssh("cd #{params["service_root"]} && bundle install")
+        end
       end 
       
       if package_files.include? "gem"
         lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/gem")    
         machine.install_gems_from_file("lines" => lines) unless lines.size == 0
-      end
-
-      gemfile_location = "#{params["service_root"]}/Gemfile"
-      if machine.file_exists(gemfile_location)
-        machine.rvm_ssh("gem install bundler")
-        machine.rvm_ssh("cd #{params["service_root"]} && bundle install")
       end
 
       # TODO uranos

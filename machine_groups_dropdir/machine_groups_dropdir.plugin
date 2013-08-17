@@ -1,4 +1,4 @@
-dependencies [ :core, :machines, :erb_processor, :drop_dir ]
+dependencies [ :core, :machines, :erb_processor, :drop_dir, :machine_groups ]
 
 config_param "dropdir", "the directory holding machine groups", :default_value => "#{@op.config_base_dir}/machine_groups"
 

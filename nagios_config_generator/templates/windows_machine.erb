@@ -39,13 +39,6 @@ define service{
         check_command                   check_snmp_storage_windows_used!C:!85!95
         }
 
-#define service{
-#        use                             disk-template
-#        host_name                       sbk-hms-qs-app2
-#        service_description             Disk - F:
-#        check_command                   check_snmp_storage_windows_used!F:!80!95
-#        }
-
 define service{
         use                             generic-service
         host_name                       <%= machine.name.downcase %>
