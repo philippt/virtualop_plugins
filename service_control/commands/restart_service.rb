@@ -1,7 +1,7 @@
 description "stops a service and starts it again"
 
 param :machine
-param :service
+param :service, "", :default_param => true
 param "delay", "seconds to wait between stop and start", :default_value => 2
 
 on_machine do |machine, params|

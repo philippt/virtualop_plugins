@@ -313,7 +313,8 @@ on_machine do |machine, params|
   
       machine.add_static_vhost("server_name" => domain, "document_root" => params["service_root"])
       machine.allow_access_for_apache("file_name" => params["service_root"])
-      machine.restart_unix_service("name" => "httpd")
+      #machine.restart_unix_service("name" => "httpd")
+      machine.restart_service 'apache'
       
       machine.configure_reverse_proxy("domain" => domain)
     end

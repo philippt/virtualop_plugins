@@ -44,6 +44,7 @@ on_machine do |machine, params|
     "bridge" => "br10",
     "location" => location_default,
     "kickstart_url" => config_string('kickstart_url_vm'),
+    # TODO we should support multiple nameservers
     "nameserver" => machine.first_configured_nameserver,
     "gateway" => gateway
   }

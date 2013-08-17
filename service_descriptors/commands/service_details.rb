@@ -55,7 +55,8 @@ on_machine do |machine, params|
     end
   end
   
-  result["is_startable"] = result.has_key?("start_command") || result.has_key?("run_command") || result.has_key?("windows_service")
+  result["is_startable"] = result.has_key?("start_command") || result.has_key?("start_block") || 
+    result.has_key?("run_command") || result.has_key?("windows_service")   
   
   result["runlevel"] ||= "application"
   
