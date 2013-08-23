@@ -8,6 +8,8 @@ param :environment
 
 ignore_extra_params
 
+notifications
+
 on_machine do |machine, params|
   machine.write_environment("environment" => params["environment"]) if params.has_key?("environment")
   
