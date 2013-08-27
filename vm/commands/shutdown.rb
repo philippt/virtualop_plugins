@@ -6,6 +6,4 @@ execute do |params|
   vm_name = params['machine'].split('.').first
   details = @op.machine_detail(params)
   @op.shutdown_vm("machine" => details["host_name"], "name" => vm_name)
-  sleep 15
-  @op.destroy_vm("machine" => details["host_name"], "name" => vm_name)
 end
