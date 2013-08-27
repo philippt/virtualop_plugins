@@ -94,6 +94,10 @@ on_machine do |machine, params|
   if @op.list_plugins.include?('vmware_rvc') and @op.machine_by_name("machine" => params["machine"])["type"] == "host"
     tabs << [ "list_vms", "Virtual Guests" ]
   end
+  
+  if @op.list_plugins.include?('gkv_release_repo')
+    tabs << [ "list_deployed_releases", "Releases" ]
+  end
  
   tabs << [ "machine_history", "History" ]
   tabs << [ "machine_permissions", "Permissions" ]

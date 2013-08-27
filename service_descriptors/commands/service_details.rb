@@ -14,7 +14,13 @@ on_machine do |machine, params|
   
   result = YAML.load(content)
   
-  result["domain"] = result["extra_params"]["domain"] if result.has_key?("extra_params") && result["extra_params"].has_key?("domain")
+  #result["domain"] = result["extra_params"]["domain"] if result.has_key?("extra_params") && result["extra_params"].has_key?("domain")
+  known_extra_params = %w|domain release_repo release|
+  known_extra_params.each do |key|
+    if result.has_key?("extra_params") && result["extra_params"].has_key?(key)
+      result[key] = result["extra_params"][key]
+    end 
+  end
   
   if result.has_key?("service_root")
     if result.has_key?("descriptor_machine") && result["descriptor_machine"] == machine.name
