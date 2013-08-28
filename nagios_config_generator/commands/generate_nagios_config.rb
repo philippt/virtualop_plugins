@@ -101,7 +101,7 @@ on_machine do |machine, params|
   
   machine.list_services.each do |service|
     if service.has_key?("domain")
-      domain = service["domain"].first
+      domain = service["domain"].is_a?(Array) ? service["domain"].first : service["domain"]
       machine.add_service_config("check_command" => "check_http_domain!#{domain}", "service_description" => "http #{domain}")
     end
     
