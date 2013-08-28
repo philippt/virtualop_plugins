@@ -4,10 +4,9 @@ execute do |params|
   result = "unknown"
   machine_detail = @op.machine_detail(params)
   if "vm" == machine_detail["type"] 
+    machine_name = params["machine"]
+    host_name = machine_detail["host_name"]
     begin
-      machine_name = params["machine"]
-      host_name = machine_detail["host_name"]
-      
       vm_status = @op.list_vms("machine" => host_name).select do |x| 
         x.has_key?("full_name") && x["full_name"] == machine_name 
       end.first

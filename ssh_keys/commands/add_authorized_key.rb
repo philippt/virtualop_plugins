@@ -9,5 +9,5 @@ on_machine do |machine, params|
     machine.ssh("command" => "touch .ssh/authorized_keys")
     machine.chmod("file_name" => ".ssh/authorized_keys", "permissions" => "600")
   end
-  machine.ssh("command" => "echo \'#{params["public_key"]}\' >> .ssh/authorized_keys")
+  machine.ssh("command" => "echo \"#{params["public_key"]}\" >> .ssh/authorized_keys")
 end

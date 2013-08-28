@@ -16,7 +16,13 @@ on_machine do |machine, params|
     if service.has_key? "domain"
       #$logger.info "looking for >>#{service["domain"]}<<"
       # TODO there appears to be something rotten here
-      vhosts = all_vhosts.select { |vhost| vhost["domain"].strip.chomp == service["domain"].first.first.strip.chomp }
+      domain = service["domain"]
+      if domain.class.to_s == "Array"
+        domain = domain.first
+      end
+      domain.strip! and domain.chomp!
+      vhosts = all_vhosts.select { |vhost| vhost["domain"].strip.chomp == domain }
+      #vhosts = all_vhosts.select { |vhost| vhost["domain"].strip.chomp == service["domain"].first.first.strip.chomp }
       if vhosts.size > 0
         vhosts.each do |vhost|
           all_vhosts.delete(vhost)

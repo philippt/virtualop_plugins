@@ -5,6 +5,8 @@ param :vm
 
 on_machine do |machine, params|
   machine.ssh("command" => "virsh shutdown #{params["name"]}")
+  sleep 15
+  machine.ssh("command" => "virsh destroy #{params["name"]}")
   
   @op.without_cache do 
     machine.list_vms
