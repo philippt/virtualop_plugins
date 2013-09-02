@@ -8,7 +8,7 @@ param "version", "version information about the service to be installed"
 
 accept_extra_params
 
-on_machine do |machine, params|
+on_machine do |machine, params, request|
   
   parts = params["descriptor"].split("/")
   descriptor_dir = parts[0..parts.size-3].join("/")
@@ -18,6 +18,14 @@ on_machine do |machine, params|
   $logger.info("installing service '#{service_name}' from #{descriptor_dir}")
   $logger.info("service root : #{params["service_root"]}") if params.has_key? "service_root"
   
+  old_user = nil
+  key = "machine_user.#{params["machine"]}"
+  if request.context.cookies.has_key?(key)
+    old_user = request.context.cookies[key]
+  end
+  user_set = false
+  
+  begin
   @op.with_machine(params["descriptor_machine"]) do |descriptor_machine|
     
     dotvop_dir = "#{descriptor_dir}/.vop"
@@ -28,28 +36,37 @@ on_machine do |machine, params|
     
     # install dependencies that have been specified in the service descriptor
     descriptor_file_name = params["descriptor"]
-    #if machine.file_exists descriptor_file_name
     if descriptor_machine.file_exists descriptor_file_name
       descriptor = descriptor_machine.read_service_descriptor("file_name" => descriptor_file_name)
-      descriptor["dependencies"].each do |dependency|
-        case dependency["type"]
-        when "vop"
-          # TODO support subservices properly
-          unless machine.list_installed_services.include? dependency["name"].split('/').first
-            p = {
-              "service" => dependency["name"],
-              "extra_params" => {}
-            }            
-            dependency.each do |k,v|
-              p[k] = v unless %w|name type|.include? k
-              p["extra_params"][k] = v
-            end
-            machine.install_canned_service(p)
+    end
+    
+    if descriptor.has_key?('user')
+      user_name = descriptor['user']
+      machine.init_system_user('user' => user_name)
+      
+      machine.set_machine_user(user_name)
+      user_set = true
+      @op.flush_cache
+    end
+    
+    descriptor["dependencies"].each do |dependency|
+      case dependency["type"]
+      when "vop"
+        # TODO support subservices properly
+        unless machine.list_installed_services.include? dependency["name"].split('/').first
+          p = {
+            "service" => dependency["name"],
+            "extra_params" => {}
+          }            
+          dependency.each do |k,v|
+            p[k] = v unless %w|name type|.include? k
+            p["extra_params"][k] = v
           end
-        else
-          raise "unhandled dependency type #{dependency["type"]}"
-        end  
-      end
+          machine.install_canned_service(p)
+        end
+      else
+        raise "unhandled dependency type #{dependency["type"]}"
+      end  
     end
     
     dotvop_content = descriptor_machine.list_files("directory" => descriptor_dir)
@@ -374,6 +391,16 @@ on_machine do |machine, params|
       rescue => detail
         raise "problem in post_installation block for service #{service["name"]} on #{params["machine"]} : #{detail.message}"
       end
+    end
+  end
+  
+  ensure
+    if user_set
+      # TODO remove sudo permissions?
+      machine.unset_machine_user
+    end
+    if old_user
+      machine.set_machine_user(old_user)
     end
   end
   

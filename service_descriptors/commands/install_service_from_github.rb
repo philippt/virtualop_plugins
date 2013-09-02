@@ -29,7 +29,7 @@ execute do |params, request|
     end
     user_set = false
     if descriptor
-      pp descriptor
+      #pp descriptor
       
       if descriptor.has_key?('user')
         user_name = descriptor['user']

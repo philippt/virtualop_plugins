@@ -24,8 +24,6 @@ on_machine do |machine, params|
     params.delete("service")
     
     if params.has_key?('extra_params') && params['extra_params']
-      puts "got extra params:"
-      pp params['extra_params']
       params["extra_params"].each do |k,v|
         params[k] = v
       end
