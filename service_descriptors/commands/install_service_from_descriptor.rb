@@ -101,24 +101,6 @@ on_machine do |machine, params, request|
         end    
       end
       
-      if package_files.include? "github"
-        working_copies = machine.list_working_copies_with_projects
-
-        descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/github").each do |line|
-          next if /^#/.match(line)
-          found = working_copies.select { |row| row["project"] == line }
-          if found.size > 0
-            working_copy = found.first
-            $logger.info("working copy for github dependency #{line} already exists locally")
-            if not machine.list_services.map { |x| x["full_name"] }.include? line
-              machine.install_service_from_working_copy("working_copy" => working_copy["name"], "service" => working_copy["name"])
-            end
-          else
-            machine.install_service_from_github({"github_project" => line}.merge_from(params, :git_branch, :git_tag))
-          end
-        end
-      end  
-    
       if machine.machine_detail["os"] == "windows"
       
       else
@@ -162,6 +144,24 @@ on_machine do |machine, params, request|
           machine.rvm_ssh("cd #{params["service_root"]} && bundle install")
         end
       end 
+      
+      if package_files.include? "github"
+        working_copies = machine.list_working_copies_with_projects
+
+        descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/github").each do |line|
+          next if /^#/.match(line)
+          found = working_copies.select { |row| row["project"] == line }
+          if found.size > 0
+            working_copy = found.first
+            $logger.info("working copy for github dependency #{line} already exists locally")
+            if not machine.list_services.map { |x| x["full_name"] }.include? line
+              machine.install_service_from_working_copy("working_copy" => working_copy["name"], "service" => working_copy["name"])
+            end
+          else
+            machine.install_service_from_github({"github_project" => line}.merge_from(params, :git_branch, :git_tag))
+          end
+        end
+      end
       
       if package_files.include? "gem"
         lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/gem")    

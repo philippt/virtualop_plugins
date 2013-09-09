@@ -11,8 +11,11 @@ on_machine do |machine, params|
     private_key = localhost.read_file("file_name" => details["private_key_file"])
     public_key = localhost.read_file("file_name" => details["public_key_file"])
     
-    #filename = "/root/.ssh/id_rsa#{params['name_suffix']}"
-    filename = "#{machine.home}/.ssh/id_rsa#{params['name_suffix']}"
+    ssh_dir = "#{machine.home}/.ssh"
+    machine.mkdir ssh_dir
+    machine.chmod("file_name" => ssh_dir, "permissions" => "700")
+    
+    filename = "#{ssh_dir}/id_rsa#{params['name_suffix']}"
     machine.write_file("target_filename" => filename, "content" => private_key)
     machine.write_file("target_filename" => "#{filename}.pub", "content" => public_key)
     
