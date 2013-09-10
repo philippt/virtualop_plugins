@@ -17,29 +17,31 @@ execute do |params, request|
   @op.with_machine(params["machine"]) do |machine|
     project_name = params["github_project"].split("/").last
     
-    # read the service descriptor through github first
-    p = params.clone
-    p.delete("machine")
-    descriptor = @op.list_services_in_github_project(p).select do |x|
-      x["name"] == project_name
-    end.first
-    
     old_user = nil
-    key = "machine_user.#{params["machine"]}"
-    if request.context.cookies.has_key?(key)
-      old_user = request.context.cookies[key]
-    end
     user_set = false
-    if descriptor
-      #pp descriptor
+    if has_github_params(params)
+      # read the service descriptor through github first
+      p = params.clone
+      p.delete("machine")
+      descriptor = @op.list_services_in_github_project(p).select do |x|
+        x["name"] == project_name
+      end.first
       
-      if descriptor.has_key?('user')
-        user_name = descriptor['user']
-        machine.init_system_user('user' => user_name)
+      key = "machine_user.#{params["machine"]}"
+      if request.context.cookies.has_key?(key)
+        old_user = request.context.cookies[key]
+      end
+      if descriptor
+        #pp descriptor
         
-        machine.set_machine_user(user_name)
-        user_set = true
-        @op.flush_cache
+        if descriptor.has_key?('user')
+          user_name = descriptor['user']
+          machine.init_system_user('user' => user_name)
+          
+          machine.set_machine_user(user_name)
+          user_set = true
+          @op.flush_cache
+        end
       end
     end
     

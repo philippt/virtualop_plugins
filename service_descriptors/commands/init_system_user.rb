@@ -2,6 +2,8 @@ param :machine
 
 param! 'user', 'name for the user account that should be initialized'
 
+notifications
+
 on_machine do |machine, params|
   user_name = params['user']
   
