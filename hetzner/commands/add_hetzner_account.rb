@@ -10,4 +10,7 @@ param "server_name_suffix", "suffix to complete the hetzner alias name to a full
 execute do |params|
   dropdir = @plugin.state[:hetzner_drop_dir]
   dropdir.write_params_to_file(Thread.current['command'], params)
+  
+  @op.cache_bomb
+  @op.list_hetzner_accounts
 end
