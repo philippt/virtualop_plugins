@@ -6,6 +6,9 @@ with_contributions do |result, params|
   machines = @op.list_machines
   unknown = result.select { |host|
     not machines.map { |x| x["name"] }.include? host["name"]   
+  }.map { |x|
+    x["ssh_host"] = x["ssh_name"]
+    x
   }
   
   old_list = @op.list_known_machines
