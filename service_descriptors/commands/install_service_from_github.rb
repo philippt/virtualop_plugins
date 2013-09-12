@@ -9,6 +9,8 @@ param :git_tag
 
 param "service_root"
 
+param "force", "set (to any value) if you want to override existing target directories"
+
 accept_extra_params
 
 execute do |params, request|
@@ -60,7 +62,8 @@ execute do |params, request|
       end
       
       @op.github_clone({"directory" => service_root}.merge_from(
-        params, :machine, :github_project, :git_branch, :git_tag, :github_user, :github_password, :github_token
+        params, :machine, :github_project, :git_branch, :git_tag, :force, 
+          :github_user, :github_password, :github_token
       ))
       
       # TODO remove

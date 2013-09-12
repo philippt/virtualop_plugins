@@ -8,6 +8,7 @@ param! "github_project"
 param :git_branch
 param :git_tag
 param "directory", "the target directory to checkout into (defaults to $HOME/project_name)"
+param "force", "set (to any value) if you want to override existing target directories"
 
 on_machine do |machine, params|
   git_url = "https://github.com/#{params["github_project"]}.git"
@@ -25,6 +26,6 @@ on_machine do |machine, params|
       
   clone_params = {
     "git_url" => git_url
-  }.merge_from params, :git_tag, :git_branch, :directory
+  }.merge_from params, :git_tag, :git_branch, :directory, :force
   machine.git_clone(clone_params)  
 end
