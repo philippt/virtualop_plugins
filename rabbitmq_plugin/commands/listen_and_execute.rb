@@ -39,6 +39,7 @@ execute do |params|
         
         # TODO might want to test this with two users ;-) or multiple times even?
         
+        @op.flush_cache()
         broker.context.cookies = {}
         @op.pre_flight_init()
         broker.context.cookies.merge! request.context.cookies

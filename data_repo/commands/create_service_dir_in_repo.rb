@@ -9,10 +9,12 @@ execute do |params|
   else
     repo = @op.list_data_repos.select { |x| x["alias"] == params["data_repo"] }.first
     @op.with_machine(repo["machine"]) do |machine|
+      # TODO that will only work if the datarepo runs standalone
       docroot = machine.list_configured_vhosts().first["document_root"].strip
       service_dir = "#{docroot}/#{params["service"]}"
       
-      machine.mkdir("dir_name" => service_dir)      
+      machine.mkdir("dir_name" => service_dir)
+      machine.allow_access_for_apache("file_name" => service_dir)      
     end
   end
 end
