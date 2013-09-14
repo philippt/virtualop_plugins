@@ -19,9 +19,10 @@ execute do |params|
     if machine.file_exists("file_name" => the_dir)
       machine.with_files("directory" => the_dir, "pattern" => "*.rb", "what" => lambda { |file_name|
         stack_name = /([^\/]+)\.rb$/.match(file_name).captures.first
-        stack_source = machine.read_file("file_name" => "#{the_dir}/#{file_name}")
+        source_path = "#{the_dir}/#{file_name}"
+        stack_source = machine.read_file("file_name" => source_path)
         
-        stack = StackLoader.read(@op, plugin, stack_name, stack_source).stacks.first
+        stack = StackLoader.read(@op, plugin, stack_name, stack_source, source_path).stacks.first
         $logger.info "loaded stack #{stack["name"]} from #{the_dir}@#{machine.name}"
         
         result << stack

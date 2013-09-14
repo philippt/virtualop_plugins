@@ -4,8 +4,7 @@ param! "stack", "the stack name"
 accept_extra_params
 
 execute do |params|
-  @op.configure_stacks unless @op.list_plugins.include? "stacks"
-  @op.load_plugin("machine" => "localhost", "plugin_file_name" => "/root/virtualop_plugins/plugin_dev/plugin_dev.plugin")
+  @op.load_dev_plugin
   
   params["machine"] = params["host"]
   params.delete("host")

@@ -42,11 +42,15 @@ class StackLoader
     end
   end
     
-  def self.read(op, plugin, name, source)
+  def self.read(op, plugin, name, source, file_name = nil)
     loader = new(op, plugin)
 
     loader.new_stack(name)
-    loader.instance_eval source
+    begin
+      loader.instance_eval source, file_name
+    rescue => detail
+      puts "#{detail.message}\n#{detail.backtrace.join("\n")}"
+    end
 
     loader
   end

@@ -1,8 +1,8 @@
 description "minimal set of infrastructure for running a web platform"
 
-param! "domain", :description => "the domain root for the web application"
-param "target_domain", "alternative domain that should be enabled during post_rollout"
-param "datarepo_init_url", "http URL to initialize the datarepo from"
+param! "domain"
+param "target_domain", :description => "alternative domain that should be enabled during post_rollout"
+param "datarepo_init_url", :description => "http URL to initialize the datarepo from"
 
 stack :nagios do |m, p|
   m.canned_service :nagios

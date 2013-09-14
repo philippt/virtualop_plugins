@@ -14,6 +14,8 @@ on_machine do |machine, params|
     result = machine.processes_like("string" => service["process_regex"]).size > 0
   elsif service.has_key? "run_command"
     result = machine.processes_like("string" => service["run_command"]).size > 0
+  elsif service.has_key? "unix_service"
+    result = machine.status_unix_service("name" => machine.unix_service_name("unix_service" => service["unix_service"]))
   elsif service.has_key? "windows_service"
     result = machine.status_windows_service("service" => service["windows_service"])
   end

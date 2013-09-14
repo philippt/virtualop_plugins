@@ -1,7 +1,7 @@
 description "setup a virtualop and a proxy so that a web interface is reachable"
 
 param! "domain", :description => "the domain for the virtualop instance"
-param "centos_mirror", "http URL to the centos mirror to use for new installations"
+param "centos_mirror", :description => "http URL to the centos mirror to use for new installations"
 
 stack :proxy do |m, params|
   m.canned_service :apache
@@ -14,9 +14,9 @@ stack :vop do |m, p|
   m.disk 50
 end
 
-# stack :install do |m, p|
-  # m.canned_service :varnish
-  # m.canned_service :squid
-#   
-#   
-# end
+stack :install do |m, p|
+  m.canned_service :varnish
+  m.canned_service :squid
+  
+  
+end
