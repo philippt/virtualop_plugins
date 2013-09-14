@@ -42,22 +42,22 @@ end
 
 stack :vop_website do |m, params|
   m.github 'philippt/virtualop_website'
-  m.domain params["domain"].first
-  m.param('vop_url', "vop.#{params["domain"].first}")
+  m.domain params["domain"]
+  m.param('vop_url', "vop.#{params["domain"]}")
 end
 
 
 stack :ldap do |m, params|
   m.canned_service :centos_ldap
-  m.domain params["domain"].first
+  m.domain params["domain"]
 end
 
 stack :owncloud do |m, params|
   m.canned_service :owncloud_server
   m.domain_prefix 'owncloud'
   
-  m.param('ldap_host', "ldap.#{params["domain"].first}")
-  m.param('ldap_domain', params["domain"].first)
+  m.param('ldap_host', "ldap.#{params["domain"]}")
+  m.param('ldap_domain', params["domain"])
   m.param('bind_user', 'cn=manager')
   m.param('bind_password', 'the_password')
 end

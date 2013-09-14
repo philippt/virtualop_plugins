@@ -151,16 +151,10 @@ class StackLoader
       @data[key] = value
     end
     
-    def method_missing(sym, *args)
-      if %w|domain|.include? sym.to_s
-        value = *args.first
-        value = value.to_s if value.class == Symbol.class
-        @data[sym.to_s] = value        
-      else
-        super(sym, args)
-      end
+    def domain(d)
+      @data["domain"] = d
     end
-    
+
   end
   
   def stack(name_sym, &block)

@@ -28,9 +28,7 @@ execute do |params|
     
     begin
       (params["extra_params"] || {}).each do |k,v|
-        if v.class == Array.class
-          v = v.first
-        end 
+        v = v.first if v.is_a? Array
         params[k] = v
       end
       machine_def.params = params
@@ -42,7 +40,7 @@ execute do |params|
       $logger.info "resolving machine definition #{machine_def.name}:\n#{param_string}"
       machine_def.block.call(machine_def, params)
       
-      prefix = params.has_key?("prefix") ? params["prefix"].first : ''
+      prefix = params.has_key?("prefix") ? params["prefix"] : ''
       vm_name = prefix + machine_def.name
       
       h = {
