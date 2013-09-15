@@ -45,8 +45,24 @@ on_machine do |machine, params|
     if service.has_key? "log_files"
       service["log_files"].each do |log|
         log_file = log["path"]
-        log_file = service["service_root"] + '/' + log_file unless /^\//.match(log_file)      
-        if machine.file_exists("file_name" => log_file) 
+        log_file = service["service_root"] + '/' + log_file unless /^\//.match(log_file)
+        
+        prefixes = %w|/var/log|
+        needs_root = false
+        prefixes.each do |prefix|
+          if /#{prefix}/ =~ log_file
+            needs_root = true
+            break
+          end
+        end
+        
+        file_exists = needs_root ?
+          machine.as_user('root') { |root|
+            root.file_exists("file_name" => log_file)
+          } :
+          machine.file_exists("file_name" => log_file)
+              
+        if file_exists 
           h = {
             "service" => service["name"],
             "path" => log_file,

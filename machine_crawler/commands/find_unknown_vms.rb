@@ -12,6 +12,7 @@ on_machine do |machine, params|
     full_name = vm["vm_name"] + "." + machine.name
 
     result << {    
+      "os" => "linux",
       "ssh_host" => machine.ipaddress,
       "ssh_port" => vm["ssh_port"],
       "ssh_password" => "the_password",
