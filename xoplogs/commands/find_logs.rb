@@ -4,7 +4,7 @@ param :machine
 
 add_columns [ :service, :path, :source, :format, :parser ]
 
-on_machine do |machine, params|
+as_root do |machine, params|
   result = []
   
   all_vhosts = []
