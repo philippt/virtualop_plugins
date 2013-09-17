@@ -43,7 +43,7 @@ end
 stack :vop_website do |m, params|
   m.github 'philippt/virtualop_website'
   m.domain params["domain"]
-  m.param('vop_url', "vop.#{params["domain"]}")
+  m.param('vop_url', "http://vop.#{params["domain"]}")
 end
 
 
