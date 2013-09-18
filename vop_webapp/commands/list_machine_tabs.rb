@@ -36,6 +36,7 @@ on_machine do |machine, params|
   
   begin
     service_names = machine.list_unix_services #.map { |row| row["name"] }
+    services = machine.list_services.map { |x| x["name"] }
     
     #tabs << ["ssh_logs", "SSH Logins"]
   
@@ -52,7 +53,7 @@ on_machine do |machine, params|
       tabs << ["failed_outbound_calls", "Failed Outbound Calls"]
     end
     
-    if service_names.include?("httpd")
+    if services.include? "apache" #service_names.include?("httpd")
       tabs << [ "virtual_hosts", "Virtual Hosts" ]
     end
     
