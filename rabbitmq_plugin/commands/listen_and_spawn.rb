@@ -37,6 +37,10 @@ execute do |params|
           command_line += " -u #{request.context.cookies['current_user']}"
         end
         
+        if request.context.request_context_id
+          command_line += " -r #{request.context.request_context_id}"
+        end
+        
         request.context.cookies.each do |k,v|
           values = v.is_a?(Array) ? v : [ v ]
           values.each do |value|
