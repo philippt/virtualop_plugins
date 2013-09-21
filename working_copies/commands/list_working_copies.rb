@@ -7,6 +7,8 @@ mark_as_read_only
 
 add_columns [ :path, :name, :type ]
 
+#include_for_crawling
+
 with_contributions do |result, params|
   result = []
 
@@ -32,7 +34,7 @@ with_contributions do |result, params|
               "path" => corrected_path,
               "name" => parts.last,
               "type" => (/^\.(.+)/ =~ known_metadata_dir ? $1 : known_metadata_dir)       
-            } unless result.select { |x| x["path"] == corrected_path }.size > 0
+            }
           end
         end
       rescue => detail
@@ -50,7 +52,16 @@ with_contributions do |result, params|
     result.delete_if { |x| x["type"] != params["type"] }
   end
   
-  # TODO make result unique by path, merging types?
+  # make result unique by path, merging types?
+  result.each do |row|
+    same_path = result.select { |x| x["path"] == row["path"] }.delete_if { |x| x == row }
+    same_path.each do |moriturus|
+      if row.has_key?("type") and moriturus.has_key?("type")
+        row["type"] += ',' + moriturus["type"]        
+      end
+      result.delete moriturus      
+    end
+  end
   
   result    
 end  
