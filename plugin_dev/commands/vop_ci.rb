@@ -6,7 +6,9 @@ execute do |params|
   @op.find_vms
   
   @op.configure_stacks unless @op.list_plugins.include? "stacks"
-  @op.load_plugin("machine" => "localhost", "plugin_file_name" => "/root/virtualop_plugins/plugin_dev/plugin_dev.plugin")
+  @op.with_machine("localhost") do |localhost|
+    localhost.load_plugin("plugin_file_name" => "#{localhost.home}/virtualop_plugins/plugin_dev/plugin_dev.plugin")
+  end
   
   @op.trigger_stack_rollout("machine" => params["host"], "stack" => "minimal_platform", "extra_params" => {
     "prefix" => "ci_", "domain" => "ci.virtualop.org" 

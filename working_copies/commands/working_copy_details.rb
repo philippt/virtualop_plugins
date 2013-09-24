@@ -7,6 +7,10 @@ param :working_copy
 
 display_type :hash
 
-with_contributions do |result, params|  
+with_contributions do |result, params|
+  if result.has_key?("type")
+    result["types"] = result["type"].split(',')
+  end
+    
   result
 end

@@ -4,13 +4,12 @@ param :machine
 param :working_copy
   
 on_machine do |machine, params|
-  wc = machine.working_copy_details(params)
+  types = machine.working_copy_details(params)["types"]
   
   # TODO circular dependency kind of thing
-  case wc["type"]
-  when "git"
+  if types.include? "git"
     machine.update_git_working_copy(params)
-  when "dropbox"
+  elsif types.include? "dropbox"
     machine.sync_dropbox_folder("directory" => wc["path"], "path" => wc["project_path"], "force" => "true")
   end
 end
