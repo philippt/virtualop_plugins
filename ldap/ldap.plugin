@@ -23,6 +23,7 @@ end
 on_preflight do |request, response|
   ldaps = @op.list_ldap_servers
   if ldaps.size > 0
+    #@op.comment("auto-selecting ldap server '#{ldaps.first["alias"]}'")
     @op.select_ldap_server("ldap_server" => ldaps.first["alias"])
   end
 end

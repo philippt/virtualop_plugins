@@ -58,7 +58,9 @@ execute do |params|
         end
         
         if r["param_values"].has_key?("extra_params")
-          r["param_values"]["extra_params"].each do |k,v|
+          extra_params = r["param_values"]["extra_params"]
+          extra_params = extra_params.first if extra_params.is_a?(Array)
+          extra_params.each do |k,v|
             values = v.is_a?(Array) ? v : [ v ]
             values.each do |value|
               command_string += " #{k}=#{value}"
