@@ -120,10 +120,10 @@ on_install do |stacked, params|
   
   # TODO delete old_data_repo after populating the new one
   
-  @op.with_machine('localhost') do |localhost|
-    localhost.install_service_from_working_copy("working_copy" => "virtualop", "service" => "import_logs")
+  @op.with_machine(@op.whoareyou("name_only" => "true")) do |i|
+    i.install_service_from_working_copy("working_copy" => "virtualop", "service" => "import_logs")    
     %w|thin launcher message_processor|.each do |service|
-      localhost.restart_service("service" => service)
+      i.restart_service("service" => service)
     end
   end
 end
