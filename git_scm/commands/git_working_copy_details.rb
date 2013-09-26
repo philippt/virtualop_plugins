@@ -15,7 +15,7 @@ on_machine do |machine, params|
   end.first
   path = wc["path"]
   
-  if wc["type"] == "git"  
+  if wc["type"].split(',').include? "git"  
     remote_origin = ""
     project = ""
     begin
