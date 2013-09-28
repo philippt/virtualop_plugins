@@ -36,36 +36,35 @@ stack :datarepo do |m, params|
   m.disk 100
 end
  
-stack :powerdns do |m, params|
-  m.canned_service :powerdns
-end
-
 stack :vop_website do |m, params|
   m.github 'philippt/virtualop_website'
   m.domain params["domain"]
   m.param('vop_url', "http://vop.#{params["domain"]}")
 end
 
+# stack :powerdns do |m, params|
+  # m.canned_service :powerdns
+# end
+# 
+# stack :ldap do |m, params|
+  # m.canned_service :centos_ldap
+  # m.domain params["domain"]
+# end
+# 
+# stack :owncloud do |m, params|
+  # m.canned_service :owncloud_server
+  # m.domain_prefix 'owncloud'
+#   
+  # m.param('ldap_host', "ldap.#{params["domain"]}")
+  # m.param('ldap_domain', params["domain"])
+  # m.param('bind_user', 'cn=manager')
+  # m.param('bind_password', 'the_password')
+# end
 
-stack :ldap do |m, params|
-  m.canned_service :centos_ldap
-  m.domain params["domain"]
-end
-
-stack :owncloud do |m, params|
-  m.canned_service :owncloud_server
-  m.domain_prefix 'owncloud'
-  
-  m.param('ldap_host', "ldap.#{params["domain"]}")
-  m.param('ldap_domain', params["domain"])
-  m.param('bind_user', 'cn=manager')
-  m.param('bind_password', 'the_password')
-end
-
-stack :openfire do |m, params|
-  m.canned_service :openfire
-  m.domain_prefix 'openfire'
-end
+# stack :openfire do |m, params|
+  # m.canned_service :openfire
+  # m.domain_prefix 'openfire'
+# end
  
 on_install do |stacked, params|
   @op.comment("foo minimal_platform $29.00 foo")
