@@ -70,8 +70,6 @@ end
 on_install do |stacked, params|
   @op.comment("foo minimal_platform $29.00 foo")
   
-  #@op.stop_service("machine" => "localhost", "service" => "message_processor")
-    
   s = ""
   stacked.keys.each do |stack_name|
     s += "\t#{stack_name} : #{stacked[stack_name].first["full_name"]}\t#{stacked[stack_name].first["domain"]}\n"
@@ -81,6 +79,7 @@ on_install do |stacked, params|
   host_name = params["machine"]
   @op.comment "host : #{host_name}"
   
+  # TODO hardcoded credentials
   @op.configure_my_sql("mysql_user" => "root", "mysql_password" => "the_password")
   
   @op.configure_nagios_config_generator("nagios_machine_name" => stacked["nagios"].first["full_name"], "default_services" => ["ssh"])

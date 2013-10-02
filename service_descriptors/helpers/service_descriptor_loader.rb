@@ -59,17 +59,23 @@ class ServiceDescriptorLoader
     @service["databases"] << options
   end
   
-  def backup(hash, mode = 'read-write')
+  def backup(hash, options = { :mode => 'read-write' })
     hash.each do |k,v|
       case v.class.to_s
       when "String"
         @service["local_files"] << {
           "alias" => k.to_s,
           "path" => v,
-          "mode" => mode
+          "mode" => options[:mode]
         }
       when "Hash"
         v["alias"] = k.to_s
+        # v.each do |k2,v2|
+          # if k2.is_a? Symbol
+            # v[k2.to_s] = v2
+            # v.delete(k2)
+          # end
+        # end
         @service["local_files"] << v
       end
     end
