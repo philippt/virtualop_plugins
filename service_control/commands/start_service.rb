@@ -22,9 +22,16 @@ on_machine do |machine, params|
     end
     begin
       start_block = fresh_details["start_block"]
+      unless start_block
+        puts "cached:"
+        pp service
+        puts "fresh:"
+        pp fresh_details
+        raise "the service #{params["service"]} seems to have lost it's start block"
+      end
       start_block.call(machine, service, params)
     rescue => detail
-      raise "problem in start block block for service #{params["service"]} on #{params["machine"]} : #{detail.message}"
+      raise "problem in start block for service #{params["service"]} on #{params["machine"]} : #{detail.message}"
     end
   elsif service.has_key? "unix_service"
     machine.start_unix_service("name" => machine.unix_service_name("unix_service" => service["unix_service"]))
