@@ -4,6 +4,10 @@ def github_params
   param "github_token", "the OAuth token to be used ", {
     :autofill_context_key => 'github_token'
   }
+end
+
+def github_param_names
+  github_params.map { |x| x.name }
 end  
 
 def has_github_params(params)
