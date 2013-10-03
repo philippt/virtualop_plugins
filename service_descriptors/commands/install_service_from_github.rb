@@ -64,7 +64,7 @@ execute do |params, request|
       @op.github_clone({"directory" => service_root}.merge_from(
         params, :machine, :github_project, :git_branch, :git_tag, :force, 
           :github_user, :github_password, :github_token
-      ))
+      )) unless machine.file_exists service_root
       
       # TODO remove
       machine.list_services_in_working_copies

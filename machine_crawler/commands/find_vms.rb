@@ -12,7 +12,7 @@ execute do |params|
         result += host.find_unknown_vms
       end
     rescue => detail
-      $logger.error("could not find for unknown VMs on #{host_name} : #{detail.message}")
+      $logger.error("could not find unknown VMs on #{host_name} : #{detail.message}")
     end
   end
   

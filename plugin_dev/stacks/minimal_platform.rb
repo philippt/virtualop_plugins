@@ -69,8 +69,6 @@ end
 on_install do |stacked, params|
   @op.comment("foo minimal_platform $29.00 foo")
   
-  #@op.stop_service("machine" => "localhost", "service" => "message_processor")
-    
   s = ""
   stacked.keys.each do |stack_name|
     s += "\t#{stack_name} : #{stacked[stack_name].first["full_name"]}\t#{stacked[stack_name].first["domain"]}\n"
@@ -80,6 +78,7 @@ on_install do |stacked, params|
   host_name = params["machine"]
   @op.comment "host : #{host_name}"
   
+  # TODO hardcoded credentials
   @op.configure_my_sql("mysql_user" => "root", "mysql_password" => "the_password")
   
   @op.configure_nagios_config_generator("nagios_machine_name" => stacked["nagios"].first["full_name"], "default_services" => ["ssh"])
@@ -100,24 +99,10 @@ on_install do |stacked, params|
       vop_webapp_path = localhost.service_details("service" => "virtualop_webapp")["service_root"]
       localhost.ssh("command" => "cd #{vop_webapp_path} && rake db:migrate")
     end
+    
+    # TODO delete old_data_repo after populating the new one
   end
-  
-  #datarepo_alias = (
-  #  (params.has_key?("extra_params") and params["extra_params"] != nil and params["extra_params"].has_key?("prefix")) ?
-  #  params["extra_params"]["prefix"][0..-1] : 
-  #  stacked["datarepo"].first["full_name"]
-  #)
 
-  #@op.add_data_repo("alias" => datarepo_alias, 
-  #  "machine" => stacked["datarepo"].first["full_name"], 
-  #  "url" => "http://#{stacked["datarepo"].first["domain"]}"
-  #)
-  
-  #if params.has_key?("datarepo_init_url")
-  #  @op.populate_repo_from_url("machine" => stacked["datarepo"].first["full_name"], "source_url" => params["datarepo_init_url"])
-  #end
-  
-  # TODO delete old_data_repo after populating the new one
   
   @op.with_machine(@op.whoareyou("name_only" => "true")) do |i|
     i.install_service_from_working_copy("working_copy" => "virtualop", "service" => "import_logs")    
