@@ -7,7 +7,7 @@ param "block", "a block that is used in conjunction with delete_if to filter out
 execute do |params|
   groups = @op.list_machine_groups.sort_by { |x| x["path"] }.reverse
 
-  if params.has_key?("block")
+  if params.has_key?("block") && params["block"]
     groups.delete_if do |x|
       params["block"].call(x)
     end
@@ -35,7 +35,7 @@ execute do |params|
     
     if parent
       parent["children"] << child 
-      puts "#{child["node"]["path"]} -> #{parent["node"]["path"]}"
+      #puts "#{child["node"]["path"]} -> #{parent["node"]["path"]}"
     end
   end
   

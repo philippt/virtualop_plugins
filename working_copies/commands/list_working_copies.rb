@@ -12,7 +12,7 @@ add_columns [ :path, :name, :type ]
 with_contributions do |result, params|
   result = []
 
-  locations = config_string('location')
+  locations = config_string('location').dup
 
   @op.with_machine(params["machine"]) do |machine|  
     locations << machine.home
@@ -22,6 +22,7 @@ with_contributions do |result, params|
       begin
         #puts "known metadata dirs : "
         #pp config_string('known_metadata_dirs')
+        
         config_string('known_metadata_dirs').each do |known_metadata_dir|      
           working_copies = machine.find("path" => dir_name, "maxdepth" => "2", "type" => "d", "name" => [ known_metadata_dir ])
           

@@ -43,6 +43,7 @@ execute do |params|
         
         request.context.cookies.each do |k,v|
           values = v.is_a?(Array) ? v : [ v ]
+          # TODO multiple -o's arent supported at the moment
           values.each do |value|
             command_line += " -o #{k}=#{value}"
           end
