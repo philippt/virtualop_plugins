@@ -60,11 +60,14 @@ execute do |params, request|
           service_root = "/var/www/#{project_name}"
         end
       end
+      if service_root.is_a? Array
+        service_root = service_root.first
+      end
       
       @op.github_clone({"directory" => service_root}.merge_from(
         params, :machine, :github_project, :git_branch, :git_tag, :force, 
           :github_user, :github_password, :github_token
-      )) unless machine.file_exists service_root
+      )) unless machine.file_exists(service_root)
       
       # TODO remove
       machine.list_services_in_working_copies

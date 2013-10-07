@@ -11,9 +11,9 @@ accept_extra_params
 
 execute do |params|
   result = {}
-  
+
+    
   overlay_command = Thread.current['broker'].get_command(params["overlay_command"])
-  
   
   params["machine_group"].each do |machine_group_name|
     begin
