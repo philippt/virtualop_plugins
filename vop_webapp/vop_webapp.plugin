@@ -9,3 +9,4 @@ config_param "authentication_method", "the backend that should be used for authe
 config_param "default_machine_tabs", "the tabs that should be displayed in the machine view by default", :allows_multiple_values => true, 
   :default_value => %w|machine_overview list_services working_copies virtual_hosts log_files|
 config_param "auto_friends", "user/s (resp. their login(s) that should automatically be added as friends for new users", :allows_multiple_values => true, :default_value => [ 'marvin' ]
+config_param "tree_command", "vop command that returns the inventory tree", :default_value => 'tree' 
