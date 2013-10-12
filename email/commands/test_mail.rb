@@ -1,6 +1,6 @@
 description "sends a test mail"
 
-param "to", "the recipient address", :is_default_param => true
+param! "to", "the recipient address", :is_default_param => true
 
 execute do |params|
   puts "FOO40"

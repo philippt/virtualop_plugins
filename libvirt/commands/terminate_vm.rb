@@ -1,7 +1,7 @@
 description 'destroys and undefines a VM'
 
 param :machine
-param :vm
+param :vm, "", :default_param => true
 
 notifications
 

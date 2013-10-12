@@ -12,8 +12,6 @@ execute do |params|
     localhost.load_plugin("plugin_file_name" => "#{localhost.home}/virtualop_plugins/plugin_dev/plugin_dev.plugin")    
   end
   
-  
-  
   @op.add_known_machine("name" => "localhost", "ssh_user" => "marvin", "type" => "vm", "ssh_host" => "localhost")
   if params.has_key?("default_user")
     @op.configure_default_passwords({}.merge_from(params, :default_user, :default_password))

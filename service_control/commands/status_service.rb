@@ -6,6 +6,7 @@ param :service
 on_machine do |machine, params|
   service = @op.service_details(params)
   
+  # TODO actually, we should execute multiple checks
   result = "unknown"  
   if service.has_key? "status_command"
     status = machine.ssh_extended("command" => service["status_command"])

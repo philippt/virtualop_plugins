@@ -16,7 +16,5 @@ end
 
 stack :install do |m, p|
   m.canned_service :varnish
-  m.canned_service :squid
-  
-  
+  m.canned_service :squid    
 end

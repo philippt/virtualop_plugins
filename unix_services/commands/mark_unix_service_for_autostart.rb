@@ -4,7 +4,11 @@ param :machine
 param :unix_service, :default_param => true, :allows_multiple_values => true
 
 on_machine do |machine, params|
-  params["name"].each do |name|
-    machine.ssh("command" => "chkconfig #{name} on")
+  names = params["name"]
+  unless names.is_a? Array
+    names = [ names ]
+  end
+  names.each do |name|
+    machine.ssh "chkconfig #{name} on"
   end
 end  
