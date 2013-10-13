@@ -24,7 +24,9 @@ with_contributions do |result, params|
         #pp config_string('known_metadata_dirs')
         
         config_string('known_metadata_dirs').each do |known_metadata_dir|      
-          working_copies = machine.find("path" => dir_name, "maxdepth" => "2", "type" => "d", "name" => [ known_metadata_dir ])
+          working_copies = machine.find("path" => dir_name, "type" => "d", 
+                                        "follow" => 'true', "maxdepth" => config_string('find_maxdepth'), 
+                                        "name" => [ known_metadata_dir ])
           
           working_copies.each do |row|
             parts = row.strip.split("/")

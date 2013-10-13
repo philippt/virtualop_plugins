@@ -15,10 +15,10 @@ def param_canned_service(options = {})
     :mandatory => true,
     :lookup_method => lambda do |request|      
       @op.with_machine('localhost') do |localhost|
-        #$logger.info "lookup for canned service - on localhost : #{localhost.name}"
         localhost.list_available_services().map do |x|
           x["full_name"]
         end
+        #@op.list_canned_services.map { |x| "#{x}/#{x}" }
       end
     end    
   })

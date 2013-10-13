@@ -17,4 +17,5 @@ on_machine do |machine, params|
   
   ssh_config = read_local_template(:ssh_config, binding())
   machine.append_to_file("file_name" => "#{machine.home}/.ssh/config", "content" => ssh_config)
+  machine.disable_ssh_key_check
 end
