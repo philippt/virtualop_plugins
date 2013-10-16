@@ -23,19 +23,28 @@ on_machine do |machine, params|
   
   if result.has_key?("service_root")
     if result.has_key?("descriptor_machine") && result["descriptor_machine"] == machine.name
-      found = machine.list_services_in_directory("directory" => result["service_root"]).select { |row| row["name"] == params["service"] }
+      found = machine.list_services_in_directory("directory" => result["service_root"]).select { |row| row["name"] == (params["service"].split('/').last) }
       raise "did not find service descriptor for service '#{params["service"]}' - looked at #{result["service_root"]}. weird." if found.size == 0
       result.merge! found.first
     end
   else
+    full_name = params["service"]
+    unless full_name.include? '/'
+      full_name += '/' + full_name
+    end
+    begin 
+      result.merge! @op.canned_service_detail(full_name)
+    rescue => detail
+      $logger.warn "could not load canned service details for service '#{full_name}' : #{detail.message}"
+    end
     # TODO that's a bit approximate - should use x["full_name"] here to observe the "name spacing"
-    found_canned_service = @op.list_available_services("machine" => "localhost").select { |x| x["name"] == params["service"] }.first
-    if found_canned_service
-      result.merge! found_canned_service
-    else
-      # TODO this happens if services have been installed with a different vop instance
-      $logger.warn("did not find canned service #{params["service"]} - a bit odd.")
-    end  
+    #found_canned_service = @op.list_available_services("machine" => "localhost").select { |x| x["name"] == params["service"] }.first
+    #if found_canned_service
+    #  result.merge! found_canned_service
+    #else
+    #  # TODO this happens if services have been installed with a different vop instance
+    #  $logger.warn("did not find canned service #{params["service"]} - a bit odd.")
+    #end  
   end 
 
   result["is_startable"] = result.has_key?("start_command") || result.has_key?("start_block") || 

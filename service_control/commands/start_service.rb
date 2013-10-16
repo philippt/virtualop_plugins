@@ -8,7 +8,7 @@ on_machine do |machine, params|
   
   if service.has_key? "run_command"
     # TODO this writes a new start script every time the service is started
-    (script_path, output) = machine.start_background_process("service" => service["name"])
+    (script_path, output) = machine.start_background_process("service" => service["full_name"])
   elsif service.has_key? "start_command"
     start_command = service["start_command"]
     if service.has_key?("service_root")

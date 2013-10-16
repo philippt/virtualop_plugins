@@ -14,6 +14,7 @@ on_machine do |machine, params, request|
   descriptor_dir = parts[0..parts.size-3].join("/")
   
   service_name = parts.last.split(".").first
+  qualified_name = service_name
   
   $logger.info("installing service '#{service_name}' from #{descriptor_dir}")
   $logger.info("service root : #{params["service_root"]}") if params.has_key? "service_root"
@@ -77,6 +78,10 @@ on_machine do |machine, params, request|
     raise "could not find plugin file in #{dotvop_dir}" if plugin_names.size == 0
     plugin_name = plugin_names.first
     @op.comment("plugin name : #{plugin_name}")
+    
+    if plugin_name
+      qualified_name = plugin_name + '/' + service_name
+    end
   
     if plugin_name == service_name
         
@@ -233,7 +238,7 @@ on_machine do |machine, params, request|
     else
       if machine.file_exists("file_name" => machine.config_dir)
         machine.hash_to_file(
-          "file_name" => "#{machine.config_dir}/#{service_name}", 
+          "file_name" => "#{machine.config_dir}/#{qualified_name}", 
           "content" => params
         )
       end
@@ -259,7 +264,7 @@ on_machine do |machine, params, request|
     end
   end
   
-  service = machine.service_details("service" => service_name) 
+  service = machine.service_details("service" => qualified_name) 
   
   if service != nil
     
@@ -316,7 +321,7 @@ on_machine do |machine, params, request|
         "http://127.0.0.1:#{endpoint}"
       end
       machine.add_reverse_proxy("server_name" => domain, "target_url" => target_urls)
-      machine.restart_service("service" => "apache")
+      machine.restart_service 'apache/apache'
       
       machine.configure_reverse_proxy("domain" => domain) if machine.proxy
     end
@@ -350,7 +355,7 @@ on_machine do |machine, params, request|
         root.write_file("target_filename" => config_path, "content" => generated)
       end
       
-      machine.restart_service("service" => "apache")
+      machine.restart_service 'apache/apache'
       machine.configure_reverse_proxy("domain" => domain) if machine.proxy
     end    
     
@@ -364,7 +369,7 @@ on_machine do |machine, params, request|
   
       machine.add_static_vhost("server_name" => domain, "document_root" => params["service_root"])
       machine.allow_access_for_apache("file_name" => params["service_root"])
-      machine.restart_service 'apache'
+      machine.restart_service 'apache/apache'
       
       machine.configure_reverse_proxy("domain" => domain)
     end
@@ -372,14 +377,14 @@ on_machine do |machine, params, request|
   end
   
   if service["is_startable"]
-    machine.start_service("service" => service_name)
+    machine.start_service("service" => service["full_name"])
   end
   
   if service.has_key?("post_installation")
     details = nil
     # TODO [optimization] would be helpful if we could just load the details without cache without reloading the lookups
     @op.without_cache do
-      details = machine.service_details("service" => service["name"])
+      details = machine.service_details("service" => service["full_name"])
       begin
         # TODO kind of pointless now (see install_service_from_github)
         if details.has_key?("user")

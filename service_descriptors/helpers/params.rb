@@ -14,12 +14,12 @@ def param_canned_service(options = {})
   merge_options_with_defaults(options, {
     :mandatory => true,
     :lookup_method => lambda do |request|      
-      @op.with_machine('localhost') do |localhost|
-        localhost.list_available_services().map do |x|
-          x["full_name"]
-        end
-        #@op.list_canned_services.map { |x| "#{x}/#{x}" }
-      end
+      #@op.with_machine('localhost') do |localhost|
+        #localhost.list_available_services().map do |x|
+        #  x["full_name"]
+        #end
+      #end
+      @op.list_canned_services #.map { |x| "#{x}/#{x}" }
     end    
   })
   RHCP::CommandParam.new("service", "the service to work with", options)

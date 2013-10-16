@@ -41,13 +41,11 @@ execute do |params|
           command_line += " -r #{request.context.request_context_id}"
         end
         
-        request.context.cookies.each do |k,v|
+        command_line += ' -o ' + request.context.cookies.map do |k,v|
           values = v.is_a?(Array) ? v : [ v ]
           # TODO multiple -o's arent supported at the moment
-          values.each do |value|
-            command_line += " -o #{k}=#{value}"
-          end
-        end
+          values.map { |value| "#{k}=#{value}" }
+        end.join(',')
         
         command_string = "#{r["command_name"].split(".").last}"
         r["param_values"].each do |k,v|
