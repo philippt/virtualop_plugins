@@ -18,9 +18,7 @@ on_machine do |machine, params|
   else
     config_dir = machine.config_dir
     if machine.file_exists("file_name" => config_dir)
-      #result = machine.list_files("directory" => machine.config_dir)
       result = machine.find("path" => config_dir, "type" => "f").map do |x|
-        #x.chomp! and x.strip!
         x[config_dir.length+1..x.length-1].chomp.strip
       end
     end

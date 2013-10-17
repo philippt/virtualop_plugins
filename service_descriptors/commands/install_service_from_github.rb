@@ -32,8 +32,6 @@ execute do |params, request|
         old_user = request.context.cookies[key]
       end
       if descriptor
-        #pp descriptor
-        
         if descriptor.has_key?('user')
           user_name = descriptor['user']
           machine.init_system_user('user' => user_name)

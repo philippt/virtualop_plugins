@@ -47,6 +47,7 @@ on_machine do |machine, params, request|
       
       machine.set_machine_user(user_name)
       user_set = true
+      # TODO #performance
       @op.flush_cache
     end
     
@@ -54,7 +55,7 @@ on_machine do |machine, params, request|
       case dependency["type"]
       when "vop"
         # TODO support subservices properly
-        unless machine.list_installed_services.include? dependency["name"].split('/').first
+        unless machine.list_installed_services.include? dependency["name"]
           p = {
             "service" => dependency["name"],
             "extra_params" => {}
@@ -269,7 +270,7 @@ on_machine do |machine, params, request|
   if service != nil
     
     if service.has_key?("cron")
-      script_path = machine.write_background_start_script("service" => service_name)
+      script_path = machine.write_background_start_script("service" => qualified_name)
       machine.add_crontab_entry("data" => read_local_template(:crontab, binding()))
     end
     
