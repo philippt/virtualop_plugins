@@ -106,7 +106,7 @@ on_install do |stacked, params|
   
   @op.with_machine(@op.whoareyou("name_only" => "true")) do |i|
     i.install_service_from_working_copy("working_copy" => "virtualop", "service" => "import_logs")    
-    %w|thin launcher message_processor|.each do |service|
+    [ 'virtualop/thin', 'virtualop/launcher', 'virtualop/message_processor' ].each do |service|
       i.restart_service("service" => service)
     end
   end
