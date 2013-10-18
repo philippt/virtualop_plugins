@@ -9,7 +9,8 @@ on_machine do |machine, params|
  
   if the_backup["type"] == "file" then
     
-    service = machine.service_details("service" => the_backup["service"])
+    # TODO not quite
+    service = machine.service_details("service" => the_backup["service"] + '/' + the_backup["service"])
     candidates = service["local_files"].select { |x| x["alias"] == the_backup["alias"] }
     raise "the service #{the_backup["service"]} on #{machine.name} does not seem to have a local files definition with alias '#{the_backup["alias"]}'" unless candidates.size > 0
     local_files = candidates.first    

@@ -8,10 +8,10 @@ add_columns [ "name", "type", "date", "host", "service", "alias" ]
 
 execute do |params|
   result = []
-  matcher = /((db|file)_backup_(.*?))(\.tgz)?$/.match(params["filename"])
+  matcher = /((db|file)_backup-(.*?))(\.tgz)?$/.match(params["filename"])
   if matcher then
     # TODO this fails for machine names with underscores
-    name_components = matcher.captures[2].split("_")
+    name_components = matcher.captures[2].split("-")
     result_hash = {
       "type" => matcher.captures[1],
       "name" => "" + matcher.captures[0],

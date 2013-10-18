@@ -15,7 +15,7 @@ on_machine do |machine, params|
   
   details["databases"].each do |database|
     next if database["mode"] == "read-only"
-    dump_name = "db_backup_" + [ machine.name, [ params["service"], database["name"] ].join("."), timestamp_to_use ].join('_')
+    dump_name = "db_backup-" + [ machine.name, [ params["service"].gsub('-', '_'), database["name"] ].join("."), timestamp_to_use ].join('-')
     
     options = {
       "database" => database["name"],
@@ -36,7 +36,11 @@ on_machine do |machine, params|
     unless /^\//.match(local_files["path"])
       local_files["path"] = details["service_root"] + '/' + local_files["path"]
     end
-    tarball_name = "file_backup_" + [ machine.name, [ params["service"], local_files["alias"] ].join("."), timestamp_to_use ].join('_')
+    tarball_name = "file_backup-" + [ 
+      machine.name.gsub('-', '_'), 
+      [ params["service"].gsub('-', '_'), local_files["alias"] ].join("."), 
+      timestamp_to_use 
+    ].join('-')
     machine.tar(
       "working_dir" => local_files["path"],
       "files" => "*",
