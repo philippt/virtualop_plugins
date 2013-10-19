@@ -162,15 +162,24 @@ on_machine do |machine, params, request|
           end
         end
         
+        if package_files.include? "wget"
+          descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/wget").each do |line|
+            next if /^#/ =~ line
+            machine.wget("url" => line, "target_dir" => machine.home)           
+          end
+        end
+        
         if package_files.include? "gem"
           lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/gem")    
           machine.install_gems_from_file("lines" => lines) unless lines.size == 0
         end
         
-        gemfile_location = "#{params["service_root"]}/Gemfile"
-        if machine.file_exists(gemfile_location)
-          machine.rvm_ssh("gem install bundler")
-          machine.rvm_ssh("cd #{params["service_root"]} && bundle install")
+        if params.has_key?("service_root") && params["service_root"] != ''
+          gemfile_location = "#{params["service_root"]}/Gemfile"
+          if machine.file_exists(gemfile_location)
+            machine.rvm_ssh("gem install bundler")
+            machine.rvm_ssh("cd #{params["service_root"]} && bundle install")
+          end
         end
       end # linux
       
@@ -269,6 +278,25 @@ on_machine do |machine, params, request|
   
   if service != nil
     
+    if service.has_key?("post_installation")
+      details = nil
+      # TODO [optimization] would be helpful if we could just load the details without cache without reloading the lookups
+      @op.without_cache do
+        details = machine.service_details("service" => service["full_name"])
+        if details.has_key?("post_installation")
+          begin
+            details["post_installation"].call(machine, params)
+          rescue => detail
+            raise "problem in post_installation block for service #{service["name"]} on #{params["machine"]} : #{detail.message}"
+          end
+        else
+          @op.comment "post-installation key found in service details, but could not reload post_installation block for execution. weird."
+        end
+      end
+    end
+    
+    @op.post_process_service_installation(params.merge("service" => qualified_name))
+    
     if service.has_key?("cron")
       script_path = machine.write_background_start_script("service" => qualified_name)
       machine.add_crontab_entry("data" => read_local_template(:crontab, binding()))
@@ -360,44 +388,10 @@ on_machine do |machine, params, request|
       machine.configure_reverse_proxy("domain" => domain) if machine.proxy
     end    
     
-    if service.has_key?("static_html")
-      unless params.has_key?("extra_params") and params["extra_params"].has_key?("domain")
-        raise "static_html configuration found for service #{service["name"]}, but no domain parameter is present. don't know where to publish static html pages"
-      end
-      
-      domain = params["extra_params"]["domain"]
-      machine.install_canned_service("service" => "apache/apache")
-  
-      machine.add_static_vhost("server_name" => domain, "document_root" => params["service_root"])
-      machine.allow_access_for_apache("file_name" => params["service_root"])
-      machine.restart_service 'apache/apache'
-      
-      machine.configure_reverse_proxy("domain" => domain)
-    end
-    
-  end
+  end    
   
   if service["is_startable"]
     machine.start_service("service" => service["full_name"])
-  end
-  
-  if service.has_key?("post_installation")
-    details = nil
-    # TODO [optimization] would be helpful if we could just load the details without cache without reloading the lookups
-    @op.without_cache do
-      details = machine.service_details("service" => service["full_name"])
-      begin
-        # TODO kind of pointless now (see install_service_from_github)
-        if details.has_key?("user")
-          #machine
-          @op.comment("invoking post-installation block as #{details["user"]}")
-          machine = UserContext.new(@op, machine, details["user"])
-        end
-        details["post_installation"].call(machine, params)
-      rescue => detail
-        raise "problem in post_installation block for service #{service["name"]} on #{params["machine"]} : #{detail.message}"
-      end
-    end
   end
   
   ensure
