@@ -394,6 +394,26 @@ on_machine do |machine, params, request|
     machine.start_service("service" => service["full_name"])
   end
   
+  if service.has_key?("post_first_start")
+    details = nil
+    # TODO [optimization] would be helpful if we could just load the details without cache without reloading the lookups
+    @op.without_cache do
+      details = machine.service_details("service" => service["full_name"])
+      if details.has_key?("post_first_start")
+        begin
+          details["post_first_start"].call(machine, params)
+        rescue => detail
+          raise "problem in post_first_start block for service #{service["name"]} on #{params["machine"]} : #{detail.message}"
+        end
+      else
+        @op.comment "post_first_start key found in service details, but could not reload post_first_start block for execution. weird."
+      end
+    end
+  end
+  
+  #@op.post_process_service_first_start(params.merge("service" => qualified_name))
+    
+  
   ensure
     if user_set
       # TODO remove sudo permissions?

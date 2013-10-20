@@ -130,6 +130,12 @@ class ServiceDescriptorLoader
     end
   end
   
+  def post_first_start(&block)
+    @service["post_first_start"] = lambda do |machine, params|
+      block.call(machine, params)
+    end
+  end
+  
   def http_endpoint(foo)
     if foo.class == Array
       @service["http_endpoint"] += foo

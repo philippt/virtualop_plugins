@@ -4,7 +4,7 @@ param :machine
 
 add_columns [ :service, :path, :source, :format, :parser ]
 
-as_root do |machine, params|
+on_machine do |machine, params|
   result = []
   
   all_vhosts = []
@@ -29,7 +29,7 @@ as_root do |machine, params|
           
           if vhost.has_key?("log_path") and machine.file_exists("file_name" => vhost["log_path"])
             h = {
-              "service" => service["name"],
+              "service" => service["full_name"],
               "path" => vhost["log_path"],
               "source" => "apache",
               "format" => vhost["log_format"]
@@ -45,7 +45,14 @@ as_root do |machine, params|
     if service.has_key? "log_files"
       service["log_files"].each do |log|
         log_file = log["path"]
-        log_file = service["service_root"] + '/' + log_file unless /^\//.match(log_file)
+        
+        unless /^\//.match(log_file)
+          if service.has_key?("service_root")
+            log_file = service["service_root"] + '/' + log_file
+          else
+            log_file = machine.home + '/' + log_file 
+          end
+        end
         
         prefixes = %w|/var/log|
         needs_root = false
@@ -64,7 +71,7 @@ as_root do |machine, params|
               
         if file_exists 
           h = {
-            "service" => service["name"],
+            "service" => service["full_name"],
             "path" => log_file,
             "source" => service["name"],
             "format" => log["format"] || "freestyle",
@@ -79,7 +86,7 @@ as_root do |machine, params|
   all_vhosts.each do |vhost|
     if vhost.has_key? "log_path"
       result << {
-        "service" => "apache",
+        "service" => "apache/apache",
         "path" => vhost["log_path"],
         "source" => "apache",
         "format" => vhost["log_format"]

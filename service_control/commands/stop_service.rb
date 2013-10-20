@@ -29,6 +29,6 @@ on_machine do |machine, params|
     machine.stop_windows_service("service" => service["windows_service"])
   else
     pids = machine.processes_for_service("service" => params["service"]).map { |x| x["pid"] }
-    machine.kill_processes("pid" => pids)
+    machine.kill_processes("pid" => pids) if pids and pids.size > 0
   end
 end  
