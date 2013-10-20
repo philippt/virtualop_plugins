@@ -18,6 +18,7 @@ on_machine do |machine, params|
       )
       service_root = xoplogs.service_details("service" => "xoplogs/xoplogs")["service_root"]
       
+      service_name = log["service"].gsub('/', '_')          
       if log["source"] == "apache"
         
         parser = case log["format"]
@@ -30,11 +31,10 @@ on_machine do |machine, params|
         end
         
         $logger.warn "no known parser for log file #{log["path"]}" if nil == parser
-          
-        xoplogs.ssh("command" => "cd #{service_root} && `which rails` runner app/scripts/import_access_log.rb #{path_for_import} #{parser} #{params["machine"]} #{log["service"]}")
+        xoplogs.ssh("command" => "cd #{service_root} && `which rails` runner app/scripts/import_access_log.rb #{path_for_import} #{parser} #{params["machine"]} #{service_name}")
         result << { "path" => file_name }
       elsif log.has_key? "parser"
-        xoplogs.ssh("command" => "cd #{service_root} && `which rails` runner app/scripts/import_access_log.rb #{path_for_import} #{log["parser"]} #{params["machine"]} #{log["service"]}")
+        xoplogs.ssh("command" => "cd #{service_root} && `which rails` runner app/scripts/import_access_log.rb #{path_for_import} #{log["parser"]} #{params["machine"]} #{service_name}")
         result << { "path" => file_name }        
       end
     end
