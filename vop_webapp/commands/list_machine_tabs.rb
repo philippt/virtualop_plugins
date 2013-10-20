@@ -13,7 +13,8 @@ on_machine do |machine, params|
   tabs = [
     ["machine_overview", "Overview"],
     ["working_copies", "Working Copies"],
-    ["working_copies_new", "Working Copies New"],    
+    ["working_copies_new", "Working Copies New"],
+    ["status_working_copies", "Status Working Copies"],
     ["log_files", "Log Files"],
     #["machine_traffic", "Traffic"],
     ["disk_space", "Diskspace"],
@@ -56,6 +57,10 @@ on_machine do |machine, params|
     
     if services.include? "apache" #service_names.include?("httpd")
       tabs << [ "virtual_hosts", "Virtual Hosts" ]
+    end
+    
+    if services.include? "selenium"
+      tabs << [ "selenium_tests", "Selenium" ]
     end
     
     if (machine.processes().select do |process|

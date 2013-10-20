@@ -3,6 +3,8 @@ description "minimal set of infrastructure for running a web platform"
 param! "domain"
 param "target_domain", :description => "alternative domain that should be enabled during post_rollout"
 param "datarepo_init_url", :description => "http URL to initialize the datarepo from"
+param "default_user", "default SSH user"
+param "default_password", "default SSH password"
 
 stack :nagios do |m, p|
   m.canned_service :nagios
@@ -32,7 +34,9 @@ stack :datarepo do |m, params|
     (params.has_key?("extra_params") && params["extra_params"] != nil && params["extra_params"].has_key?("prefix")) ?
     params["extra_params"]["prefix"][0..-1] : 
     m.full_name
-  m.param('alias', datarepo_alias) unless datarepo_alias == ''
+  if datarepo_alias && datarepo_alias != ''
+    m.param('alias', datarepo_alias)
+  end 
   m.disk 100
 end
  
@@ -46,20 +50,20 @@ end
   # m.canned_service :powerdns
 # end
 # 
-# stack :ldap do |m, params|
-  # m.canned_service :centos_ldap
-  # m.domain params["domain"]
-# end
-# 
-# stack :owncloud do |m, params|
-  # m.canned_service :owncloud_server
-  # m.domain_prefix 'owncloud'
+stack :ldap do |m, params|
+  m.canned_service :centos_ldap
+  m.domain params["domain"]
+end
+ 
+#stack :owncloud do |m, params|
+#  m.canned_service :owncloud_server
+#  m.domain_prefix 'owncloud'
 #   
   # m.param('ldap_host', "ldap.#{params["domain"]}")
   # m.param('ldap_domain', params["domain"])
   # m.param('bind_user', 'cn=manager')
   # m.param('bind_password', 'the_password')
-# end
+#end
 
 # stack :openfire do |m, params|
   # m.canned_service :openfire
@@ -79,6 +83,10 @@ on_install do |stacked, params|
   @op.comment "host : #{host_name}"
   
   # TODO hardcoded credentials
+  @op.add_known_machine("name" => "localhost", "ssh_user" => "marvin", "type" => "vm", "ssh_host" => "localhost")
+  if params.has_key?("default_user")
+    @op.configure_default_passwords({}.merge_from(params, :default_user, :default_password))
+  end
   @op.configure_my_sql("mysql_user" => "root", "mysql_password" => "the_password")
   
   @op.configure_nagios_config_generator("nagios_machine_name" => stacked["nagios"].first["full_name"], "default_services" => ["ssh"])

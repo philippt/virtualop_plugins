@@ -8,8 +8,27 @@ on_machine do |machine, params|
   result = []
   
   all_vhosts = []
-  if machine.list_installed_services.include? "apache"
+  if machine.list_installed_services.include? "apache/apache"
     all_vhosts = machine.list_configured_vhosts
+  end
+  
+  def check_file_exists(machine, log_file)
+    prefixes = %w|/var/log|
+    needs_root = false
+    prefixes.each do |prefix|
+      if /#{prefix}/ =~ log_file
+        needs_root = true
+        break
+      end
+    end
+    
+    file_exists = needs_root ?
+      machine.as_user('root') { |root|
+        root.file_exists("file_name" => log_file)
+      } :
+      machine.file_exists("file_name" => log_file)
+      
+    file_exists
   end
   
   machine.list_services.each do |service|
@@ -27,7 +46,7 @@ on_machine do |machine, params|
         vhosts.each do |vhost|
           all_vhosts.delete(vhost)
           
-          if vhost.has_key?("log_path") and machine.file_exists("file_name" => vhost["log_path"])
+          if vhost.has_key?("log_path") and check_file_exists(machine, vhost["log_path"])
             h = {
               "service" => service["full_name"],
               "path" => vhost["log_path"],

@@ -26,7 +26,7 @@ on_machine do |machine, params|
     # $logger.info "found datasource for service '#{params["service"]}': '#{source_service_name}'"
   # end
   
-  source_service_name = service["name"]
+  source_service_name = service["full_name"].gsub(/[-\/]/, '_')
   $logger.info "restoring data for service '#{params["service"]}' from data repository (using service name '#{source_service_name}')"
     
   backups = []

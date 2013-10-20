@@ -12,7 +12,7 @@ on_machine do |machine, params|
   backup_items = []
   machine.list_services.each do |service|
     backup_items += machine.backup_service_data(
-      "service" => service["name"],
+      "service" => service["full_name"],
       "timestamp" => the_timestamp
     )
   end

@@ -16,7 +16,7 @@ on_machine do |machine, params|
         "local_file" => local_tmp_dir + '/' + file_name, 
         "target_file" => path_for_import
       )
-      service_root = xoplogs.service_details("service" => "xoplogs")["service_root"]
+      service_root = xoplogs.service_details("service" => "xoplogs/xoplogs")["service_root"]
       
       if log["source"] == "apache"
         

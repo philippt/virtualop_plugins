@@ -36,7 +36,6 @@ on_machine do |machine, params|
     raise "don't know how to get IP address for machine #{machine.name} - unsupported OS #{machine.machine_detail["os"]}"
   end
 
-
   @op.with_machine(config_string('nagios_machine_name')) do |nagios|
     process_local_template(template_name, nagios, target_file, binding())    
     nagios.chmod("file_name" => target_file, "permissions" => "644")
@@ -73,31 +72,7 @@ on_machine do |machine, params|
     end
   end
   #nagios_public_key = machine.read_file("file_name" => "/home/nagios/.ssh/id_rsa.pub")
-
-  if machine.machine_detail["os"] == "linux"
-    # TODO these checks are specific for environments with SNMP and VMWare - extract
-    local_partitions = machine.disk_space.select do |row|
-      /^\/dev/.match(row["filesystem"])
-    end.each do |partition|
-      machine.add_service_config(
-        "service_description" => "Disk - #{partition["mount_point"]}",
-        "service_template" => "disk-template",
-        "check_command" => "check_snmp_storage_used!#{partition["mount_point"]}!80!95"
-      )
-    end
-    
-    machine.add_service_config(
-      "service_template" => 'generic-service',
-      "service_description" => 'load',
-      "check_command" => "check_snmp_load_linux!6!10"
-    )
-    
-    machine.add_service_config(
-      "service_template" => 'service-template-nop',
-      "service_description" => 'Prozess VMWare Tools',
-      "check_command" => "check_snmp_process!vmtoolsd"
-    )
-  end
+  machine.additional_nagios_config
   
   machine.list_services.each do |service|
     if service.has_key?("domain")

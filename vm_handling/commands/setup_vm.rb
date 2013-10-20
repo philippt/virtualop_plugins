@@ -104,6 +104,10 @@ on_machine do |machine, params|
     # TODO we should not need this anymore at some point (disabling selinux in kickstart now), but we need it
     @op.without_cache do
       vm.ssh("command" => "setenforce Permissive")
+      vm.replace_in_file('file_name' => '/etc/sysconfig/selinux',
+        'source' => 'SELINUX=enforcing',
+        'target' => 'SELINUX=permissive'
+      )
     end
     
     if params.has_key?('canned_service')
