@@ -3,8 +3,8 @@ description "minimal set of infrastructure for running a web platform"
 param! "domain"
 param "target_domain", :description => "alternative domain that should be enabled during post_rollout"
 param "datarepo_init_url", :description => "http URL to initialize the datarepo from"
-param "default_user", "default SSH user"
-param "default_password", "default SSH password"
+param "default_user", :description => "default SSH user"
+param "default_password", :description => "default SSH password"
 
 stack :nagios do |m, p|
   m.canned_service :nagios
