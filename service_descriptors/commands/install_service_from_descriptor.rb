@@ -243,7 +243,7 @@ on_machine do |machine, params, request|
     if machine.machine_detail["os"] == "windows"
       config_dir = '.vop/services'
       if machine.win_file_exists("file_name" => config_dir)
-        machine.win_write_file("target_filename" => "#{config_dir}/#{service_name}", "content" => params.to_yaml)
+        machine.win_write_file("target_filename" => "#{config_dir}/#{qualified_name}", "content" => params.to_yaml)
       end    
     else
       if machine.file_exists("file_name" => machine.config_dir)

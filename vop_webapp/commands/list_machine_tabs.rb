@@ -105,6 +105,10 @@ on_machine do |machine, params|
   if @op.list_plugins.include?('gkv_release_repo')
     tabs << [ "list_deployed_releases", "Releases" ]
   end
+  
+  if @op.list_plugins.include?('bigip')
+    tabs << [ "bigip", "BigIP" ]
+  end
  
   tabs << [ "machine_history", "History" ]
   tabs << [ "machine_permissions", "Permissions" ]
