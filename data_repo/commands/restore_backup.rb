@@ -2,6 +2,7 @@ description "restores a database or local directory from the specified backup"
 
 param :machine
 param :local_backup
+param :service
 
 on_machine do |machine, params|
   the_backup = @op.decode_backup_filename("filename" => params["local_backup"]).first
@@ -10,7 +11,7 @@ on_machine do |machine, params|
   if the_backup["type"] == "file" then
     
     # TODO not quite
-    service = machine.service_details("service" => the_backup["service"] + '/' + the_backup["service"])
+    service = machine.service_details("service" => params["service"])
     candidates = service["local_files"].select { |x| x["alias"] == the_backup["alias"] }
     raise "the service #{the_backup["service"]} on #{machine.name} does not seem to have a local files definition with alias '#{the_backup["alias"]}'" unless candidates.size > 0
     local_files = candidates.first    

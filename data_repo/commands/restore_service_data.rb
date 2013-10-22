@@ -37,7 +37,8 @@ on_machine do |machine, params|
     backups.each do |backup|
       machine.download_backup "data_repo_service" => source_service_name, "backup_name" => backup["name"]
       p = {
-        "local_backup" => backup["name"]
+        "local_backup" => backup["name"],
+        "service" => params["service"]
       }
       machine.restore_backup(p)
       result << backup.clone

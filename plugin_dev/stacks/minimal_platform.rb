@@ -82,11 +82,11 @@ on_install do |stacked, params|
   host_name = params["machine"]
   @op.comment "host : #{host_name}"
   
-  # TODO hardcoded credentials
-  @op.add_known_machine("name" => "localhost", "ssh_user" => "marvin", "type" => "vm", "ssh_host" => "localhost")
+  #@op.add_known_machine("name" => "localhost", "ssh_user" => "marvin", "type" => "vm", "ssh_host" => "localhost")
   if params.has_key?("default_user")
     @op.configure_default_passwords({}.merge_from(params, :default_user, :default_password))
   end
+  # TODO hardcoded credentials
   @op.configure_my_sql("mysql_user" => "root", "mysql_password" => "the_password")
   
   @op.configure_nagios_config_generator("nagios_machine_name" => stacked["nagios"].first["full_name"], "default_services" => ["ssh"])
