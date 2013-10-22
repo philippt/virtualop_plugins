@@ -12,8 +12,8 @@ on_machine do |machine, params|
   result = []
   if machine.machine_detail["os"] == "windows"
     config_dir = '.vop/services'
-    if machine.win_file_exists("file_name" => config_dir)
-      result = machine.win_list_files("directory" => config_dir)
+    if machine.win_file_exists("file_name" => config_dir)      
+      result = machine.win_find_files("path" => config_dir, "type" => "f")
     end
   else
     config_dir = machine.config_dir
