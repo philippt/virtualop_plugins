@@ -32,14 +32,19 @@ execute do |params|
   p.delete("machine")
   p["vm_name"] = vm_name
   
-  if @op.reachable_through_ssh("machine" => params["machine"])
-    begin
-      @op.with_machine(params["machine"]) do |machine|
-        e = machine.environment
-        p["environment"] = e if e && e != ''
-      end      
-    rescue => detail
-      $logger.warn("could not retrieve params for kaboom from machine : #{detail.message}")
+  candidates = @op.list_machines.select { |x| x["full_name"] == params["machine"]}
+  machine_exists = candidates.size > 0
+  
+  if machine_exists
+    if @op.reachable_through_ssh("machine" => params["machine"])
+      begin
+        @op.with_machine(params["machine"]) do |machine|
+          e = machine.environment
+          p["environment"] = e if e && e != ''
+        end      
+      rescue => detail
+        $logger.warn("could not retrieve params for kaboom from machine : #{detail.message}")
+      end
     end
   end
   
