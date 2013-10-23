@@ -26,7 +26,6 @@ class RabbitmqBroker < RHCP::LoggingBroker
   
   def change_all_strings(thing, &block)
     result = nil
-    #puts "#{thing.class}"
     case thing.class.to_s
     when "Array" then
       result = []
@@ -56,7 +55,6 @@ class RabbitmqBroker < RHCP::LoggingBroker
   def force_binary(thing)
     change_all_strings(thing) do |x|
       x = x.dup if x.frozen?
-      #x.force_encoding(Encoding::BINARY)
       Base64.encode64(x.force_encoding('ISO-8859-1'))
     end
   end
@@ -141,31 +139,6 @@ class RabbitmqBroker < RHCP::LoggingBroker
       $logger.error("could not JSON-encode payload for message: #{detail.message} - payload:\n#{payload}")
     end
     
-    # begin
-      # json_payload = JSON.generate([payload])
-    # rescue Encoding::UndefinedConversionError 
-      # puts "UndefinedConversionError for #{payload}"
-      # begin
-        # json_payload = JSON.generate(change_encoding([payload]))
-        # #json_payload = JSON.generate(force_binary([payload]))
-        # puts "JSON payload now : #{json_payload}"
-      # rescue => nested
-        # $logger.error("could not force binary encoding : #{nested.message}")
-      # end
-    # rescue ArgumentError => arrrgh
-      # puts "ArgumentError"
-      # json_payload = JSON.generate(remove_invalid([payload]))
-    # rescue => detail
-      # $logger.error("could not generate JSON representation : #{detail.class.to_s} : #{detail.message}, payload : #{payload.pretty_inspect}")
-    # end
-    
-    #z = Zlib::Deflate.new()
-    #just_payload = JSON.parse(json_payload)
-    #zipped_payload = change_all_strings(just_payload) do |x|
-    #  z.deflate x
-    #end
-    #json_payload = JSON.generate(zipped_payload)
-    
     if json_payload
       send_payload json_payload
     end
@@ -201,32 +174,6 @@ class RabbitmqBroker < RHCP::LoggingBroker
       :start_ts => start_ts.utc.iso8601()
     }
     
-    #puts "\n*** #{current_stack} ***\n\n"
-    
-    # begin
-      # #jj j
-#     
-      # jason = JSON.generate [j]
-      # send_payload jason
-    # rescue Encoding::UndefinedConversionError 
-      # puts "UndefinedConversionError for #{j}"
-      # begin
-        # if j.has_key?(:request) and j[:request].has_key?(:param_values) and j[:request][:param_values].has_key?("output")
-          # force_binary(j[:request][:param_values]["output"])
-          # #j[:request][:param_values]["output"] = Base64.encode64(j[:request][:param_values]["output"]) 
-        # end
-        # puts "corrected output"
-#         
-        # jason = JSON.generate [j]
-        # send_payload jason
-        # #json_payload = JSON.generate(change_encoding([payload]))
-        # #json_payload = JSON.generate(force_binary([payload]))
-        # #puts "JSON payload now : #{json_payload}"
-      # rescue => nested
-        # $logger.error("could not force binary encoding : #{nested.message}")
-      # end      
-    # end
-    
     to_rabbit(j)
   end
   
@@ -248,35 +195,7 @@ class RabbitmqBroker < RHCP::LoggingBroker
     if response
       j[:response] = RHCP::EncodingHelper.to_base64(response.as_json())
     end
-    #pp j
     
-    #puts "\n$$$#{current_stack}$$$\n\n"
-    
-    # begin
-      # #jj j
-#     
-      # jason = JSON.generate [j]
-      # send_payload jason
-    # rescue Encoding::UndefinedConversionError 
-      # puts "UndefinedConversionError for #{j}"
-      # begin
-        # if j.has_key?(:request) and j[:request].has_key?(:param_values) and j[:request][:param_values].has_key?("output")
-          # force_binary(j[:request][:param_values]["output"])
-          # #j[:request][:param_values]["output"] = Base64.encode64(j[:request][:param_values]["output"]) 
-        # end
-        # puts "corrected output"
-#         
-        # jason = JSON.generate [j]
-        # send_payload jason
-        # #json_payload = JSON.generate(change_encoding([payload]))
-        # #json_payload = JSON.generate(force_binary([payload]))
-        # #puts "JSON payload now : #{json_payload}"
-      # rescue => nested
-        # $logger.error("could not force binary encoding : #{nested.message}")
-      # end      
-    # end
-    
-    # => send_payload(j)
     to_rabbit(j)
   end
   

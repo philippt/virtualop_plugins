@@ -104,7 +104,7 @@ on_install do |stacked, params|
       me.restore_data()
       @op.configure_machines("identity" => identity)
       
-      vop_webapp_path = me.service_details("service" => "virtualop_webapp")["service_root"]
+      vop_webapp_path = me.service_details("service" => "virtualop_webapp/virtualop_webapp")["service_root"]
       me.ssh("cd #{vop_webapp_path} && rake db:migrate")
     end
     

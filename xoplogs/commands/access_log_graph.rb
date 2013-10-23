@@ -15,7 +15,7 @@ mark_as_read_only
 
 execute do |params|
   @op.with_machine(config_string('xoplogs_machine')) do |xoplogs|
-    url = 'http://' + xoplogs.service_details("service" => "xoplogs")["domain"].first # TODO we know that one
+    url = 'http://' + xoplogs.service_details("service" => "xoplogs/xoplogs")["domain"].first # TODO we know that one
     url += '/aggregated/get_data'
     url += "?hosts\\[\\]=#{params["machine"]}"
     url += "&services\\[\\]=#{params["service"]}" if params.has_key?("service")
