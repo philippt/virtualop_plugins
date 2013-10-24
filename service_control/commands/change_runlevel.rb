@@ -36,7 +36,7 @@ on_machine do |machine, params|
           (target_runlevel == "maintenance" and service["runlevel"] == "application") then
 
           h["operation_name"] = "stop"
-          machine.stop_service("service" => service["name"])
+          machine.stop_service("service" => service["full_name"])
           
           result << h
         end
@@ -45,7 +45,7 @@ on_machine do |machine, params|
           (params["runlevel"] == "maintenance" and service["runlevel"] == "infrastructure") then
           
           h["operation_name"] = "start"
-          machine.start_service("service" => service["name"])
+          machine.start_service("service" => service["full_name"])
           
           result << h
         end
