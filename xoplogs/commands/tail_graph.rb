@@ -19,7 +19,7 @@ on_machine do |machine, params|
   raise "no log file definition found for #{params["path"]} on #{machine.name}" unless log_file
   raise "no parser defined for log file #{params["path"]}" unless log_file.has_key?("parser") and log_file["parser"] != ""
   
-  tempfile = "#{machine.home}/tmp/tail_graph.tmp"
+  tempfile = "#{@op.home("machine" => "localhost")}/tmp/tail_graph.tmp"
   begin
     @op.write_file("machine" => "localhost", "target_filename" => tempfile, "content" => lines)
     JSON.parse(@op.http_form_upload(
