@@ -12,7 +12,6 @@ on_machine do |machine, params|
     domain = domain.first
   end
   xoplogs_url = 'http://' + domain
-  puts "domain : >>#{domain}<<"
   
   lines = machine.tail("lines" => 1000, "file_name" => params["path"])
   
@@ -20,7 +19,6 @@ on_machine do |machine, params|
   raise "no log file definition found for #{params["path"]} on #{machine.name}" unless log_file
   raise "no parser defined for log file #{params["path"]}" unless log_file.has_key?("parser") and log_file["parser"] != ""
   
-  #tempfile = @op.write_tempfile("data" => lines)
   tempfile = "#{machine.home}/tmp/tail_graph.tmp"
   begin
     @op.write_file("machine" => "localhost", "target_filename" => tempfile, "content" => lines)
@@ -32,6 +30,6 @@ on_machine do |machine, params|
       "extra_content" => "parser=#{log_file["parser"]}"
     ))
   ensure
-    #@op.rm("machine" => "localhost", "file_name" => tempfile)
+    @op.rm("machine" => "localhost", "file_name" => tempfile)
   end
 end  
