@@ -93,7 +93,7 @@ on_machine do |machine, params|
   @op.wait("interval" => 5, "timeout" => config_string('vm_start_timeout_secs'), 
     "error_text" => "could not find a running machine with name '#{params["vm_name"]}'") do
     @op.cache_bomb
-    @op.reachable_through_ssh("machine" => full_name) == "true" # TODO i'll kill you
+    @op.reachable_through_ssh("machine" => full_name)
   end
   
   @op.with_machine(full_name) do |vm|

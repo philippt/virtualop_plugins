@@ -2,6 +2,7 @@ description "minimal set of infrastructure for running a web platform"
 
 param! "domain"
 param "target_domain", :description => "alternative domain that should be enabled during post_rollout"
+param "target_github_data", :description => "github application id and secret, separated by a slash. used for oauth integration"
 param "datarepo_init_url", :description => "http URL to initialize the datarepo from"
 param "default_user", :description => "default SSH user"
 param "default_password", :description => "default SSH password"
@@ -98,7 +99,6 @@ on_install do |stacked, params|
   @op.comment("found #{old_repos.size} old repos")
   if old_repos.size > 0
     old_repo = old_repos.first
-    #@op.with_machine(@op.whoareyou.split('@').last)
     identity = @op.whoareyou.split('@').last
     @op.with_machine(identity) do |me|
       me.restore_data()
@@ -122,21 +122,30 @@ end
 
 post_rollout do |stacked, params|
   @op.comment "post rollout. successful: #{params["result"][:success].size}, failed: #{params["result"][:failure].size}"
+  
+  if params.has_key?('extra_params')
+    params.merge! params['extra_params']
+  end 
+  
   pp params
   
   failure = params["result"][:failure]
   raise "some stacks could not be rolled out: #{failure.map { |x| x["name"] }}" unless failure.size == 0
   
-  if params.has_key?("extra_params") && params["extra_params"].has_key?("target_domain")
-    target_domain = params["extra_params"]["target_domain"]
+  if params.has_key?("target_domain")
+    target_domain = params["target_domain"]
     new_vop_domain = "vop.#{target_domain}"
     @op.with_machine(@op.whoareyou.split('@').last) do |vop|
       vop.change_runlevel("runlevel" => "maintenance")
-      vop.install_service_from_working_copy("working_copy" => "virtualop_webapp", "service" => "virtualop_webapp", "extra_params" => {
+      extra_params = {
         "domain" => new_vop_domain
-        # TODO github
-        # TODO dropbox
-      })
+      }
+      if params.has_key?("target_github_data")
+        extra_params["github_application_id"], extra_params["github_secret"] =
+          params["target_github_data"].split('/')
+      end
+      # TODO dropbox
+      vop.install_service_from_working_copy("working_copy" => "virtualop_webapp", "service" => "virtualop_webapp", "extra_params" => extra_params)
       vop.change_runlevel("runlevel" => "running")
     end
     
@@ -156,7 +165,9 @@ post_rollout do |stacked, params|
       account = hetzner_host["account"]
       failover_ip = @op.list_failover_ips("hetzner_account" => account).select { |x| x["ip_lookup"] == target_domain }.first
       if failover_ip
+        # TODO add ip to new host
         @op.switch_failover_ip("hetzner_account" => account, "ip" => failover_ip["ip"], "target_ip" => hetzner_host["server_ip"])
+        # TODO remove ip from old host
       end
     end
   end
