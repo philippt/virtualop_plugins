@@ -144,8 +144,12 @@ post_rollout do |stacked, params|
         "domain" => new_vop_domain
       }
       if params.has_key?("target_github_data")
+        github_data = params["target_github_data"]
+        if github_data.is_a? Array
+          github_data = github_data.first
+        end 
         extra_params["github_application_id"], extra_params["github_secret"] =
-          params["target_github_data"].split('/')
+          github_data.split('/')
       end
       # TODO dropbox
       vop.install_service_from_working_copy("working_copy" => "virtualop_webapp", "service" => "virtualop_webapp", "extra_params" => extra_params)
