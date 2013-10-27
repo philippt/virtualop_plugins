@@ -165,9 +165,18 @@ post_rollout do |stacked, params|
       account = hetzner_host["account"]
       failover_ip = @op.list_failover_ips("hetzner_account" => account).select { |x| x["ip_lookup"] == target_domain }.first
       if failover_ip
-        # TODO add ip to new host
+        old_host_name = @op.list_all_hetzner_hosts.select { |x| x["server_ip"] == failover_ip["active_server_ip"] }.first["name"]
+        
+        @op.with_machine(params["machine"]) do |new_host|
+          new_host.add_ip_address("address" => failover_ip["ip"], "device" => "eth0") unless
+            new_host.list_ip_addresses.map { |x| x["address"] }.include? failover_ip["ip"]
+        end
+        
         @op.switch_failover_ip("hetzner_account" => account, "ip" => failover_ip["ip"], "target_ip" => hetzner_host["server_ip"])
-        # TODO remove ip from old host
+        
+        @op.with_machine(old_host_name) do |old_host|
+          old_host.delete_ip_address("address" => failover_ip["ip"], "device" => "eth0")
+        end
       end
     end
   end
