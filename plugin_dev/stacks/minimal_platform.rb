@@ -134,6 +134,9 @@ post_rollout do |stacked, params|
   
   if params.has_key?("target_domain")
     target_domain = params["target_domain"]
+    if target_domain.is_a? Array
+      target_domain = target_domain.first
+    end
     new_vop_domain = "vop.#{target_domain}"
     @op.with_machine(@op.whoareyou.split('@').last) do |vop|
       vop.change_runlevel("runlevel" => "maintenance")
