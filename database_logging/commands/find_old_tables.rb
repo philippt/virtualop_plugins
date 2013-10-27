@@ -15,17 +15,16 @@ execute do |params|
   
   @op.with_machine("localhost") do |machine|
     machine.show_tables("database" => config_string("db_name")).each do |table|
-      matched = /.+_(\d{4})(\d{2})(\d{2})$/.match(table["name"])
+      matched = /.+_((\d{4})(\d{2})(\d{2}))$/.match(table["name"])
       if matched
-        timestamp = Time.local(matched.captures.first, matched.captures[1], matched.captures[2])
+        timestamp = Time.local(matched.captures[1], matched.captures[2], matched.captures[3])
         potential_max_age = Time.at(timestamp.to_i + (ONE_DAY))
-        #puts "#{table["name"]} => #{timestamp} / #{potential_max_age}"
         if potential_max_age.to_i < (Time.now().to_i - (max_age_days * ONE_DAY))
           result << table["name"]
         end
       end
     end
   end
-  
+    
   result
 end
