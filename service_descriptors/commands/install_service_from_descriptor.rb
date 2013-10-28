@@ -156,8 +156,11 @@ on_machine do |machine, params, request|
               if not machine.list_services.map { |x| x["full_name"] }.include? line
                 machine.install_service_from_working_copy("working_copy" => working_copy["name"], "service" => working_copy["name"])
               end
-            else
-              github_params = {"github_project" => line}.merge_from(params["extra_params"], :git_branch, :git_tag)
+            else              
+              github_params = {"github_project" => line}
+              if params.has_key?("extra_params") and params["extra_params"]
+                github_params = github_params.merge_from(params["extra_params"], :git_branch, :git_tag)
+              end
               machine.install_service_from_github(github_params)
             end
           end
