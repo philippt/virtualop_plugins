@@ -157,7 +157,8 @@ on_machine do |machine, params, request|
                 machine.install_service_from_working_copy("working_copy" => working_copy["name"], "service" => working_copy["name"])
               end
             else
-              machine.install_service_from_github({"github_project" => line}.merge_from(params, :git_branch, :git_tag))
+              github_params = {"github_project" => line}.merge_from(params["extra_params"], :git_branch, :git_tag)
+              machine.install_service_from_github(github_params)
             end
           end
         end
