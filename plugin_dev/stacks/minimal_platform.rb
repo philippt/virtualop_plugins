@@ -90,11 +90,6 @@ on_install do |stacked, params|
   # TODO hardcoded credentials
   @op.configure_my_sql("mysql_user" => "root", "mysql_password" => "the_password")
   
-  @op.configure_nagios_config_generator("nagios_machine_name" => stacked["nagios"].first["full_name"], "default_services" => ["ssh"])
-  @op.configure_nagios_status("nagios_bin_url" => "http://#{stacked["nagios"].first["domain"]}/nagios/cgi-bin", "nagios_user" => "nagiosadmin", "nagios_password" => "the_password")
-  
-  @op.configure_xoplogs("xoplogs_machine" => stacked["xoplogs"].first["full_name"], "auto_import_machine_groups" => [ host_name ])
-  
   old_repos = @op.list_data_repos.select { |x| x["alias"] == "old_data_repo" }
   @op.comment("found #{old_repos.size} old repos")
   if old_repos.size > 0
@@ -111,6 +106,10 @@ on_install do |stacked, params|
     # TODO delete old_data_repo after populating the new one
   end
 
+  @op.configure_nagios_config_generator("nagios_machine_name" => stacked["nagios"].first["full_name"], "default_services" => ["ssh"])
+  @op.configure_nagios_status("nagios_bin_url" => "http://#{stacked["nagios"].first["domain"]}/nagios/cgi-bin", "nagios_user" => "nagiosadmin", "nagios_password" => "the_password")
+  
+  @op.configure_xoplogs("xoplogs_machine" => stacked["xoplogs"].first["full_name"], "auto_import_machine_groups" => [ host_name ])
   
   @op.with_machine(@op.whoareyou("name_only" => "true")) do |i|
     i.install_service_from_working_copy("working_copy" => "virtualop", "service" => "import_logs")    
