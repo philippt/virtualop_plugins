@@ -15,7 +15,7 @@ on_machine do |machine, params|
   
   details["databases"].each do |database|
     next if database["mode"] == "read-only"
-    dump_name = "db_backup-" + [ machine.name, [ params["service"].gsub(/[-\/]/, '_'), database["name"] ].join("."), timestamp_to_use ].join('-')
+    dump_name = "db_backup-" + [ machine.name.gsub('-', '_'), [ params["service"].gsub(/[-\/]/, '_'), database["name"] ].join("."), timestamp_to_use ].join('-')
     
     options = {
       "database" => database["name"],
