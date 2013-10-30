@@ -5,16 +5,12 @@ param! "table_name", "the name of the table to be moved",
   :allows_multiple_values => true
 
 execute do |params|
+  raise "boo!"
+  
+  @op.dump_partition(params)
     
   @op.with_machine("localhost") do |machine|    
     params["table_name"].each do |table_name|
-      machine.dump_database(
-        "database" => config_string("db_name"),
-        "table_whitelist" => table_name,
-        "target_filename" => archive_dir(machine) + "/" + table_name,
-        "skip_check" => "true"
-      )
-      
       machine.execute_sql(
         "database" => config_string("db_name"),
         "statement" => "DROP TABLE #{table_name}"
@@ -23,6 +19,8 @@ execute do |params|
     
     @op.without_cache do
       machine.show_tables("database" => config_string("db_name"))
+      @op.list_archived_partitions
+      @op.list_partitions
     end
   end
 end  

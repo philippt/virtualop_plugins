@@ -79,7 +79,7 @@ execute do |params, request|
         end
       end
       
-      params["version"] = {}.merge_from params, :github_project, :git_branch, :git_tag
+      params["extra_params"].merge_from params, :github_project, :git_branch, :git_tag
       
       machine.install_service_from_working_copy(params)
     ensure
