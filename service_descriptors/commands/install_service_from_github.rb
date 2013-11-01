@@ -22,7 +22,7 @@ execute do |params, request|
     if has_github_params(params)
       # read the service descriptor through github first
       p = params.clone
-      p.delete("machine")
+      p.delete("machine")      
       descriptor = @op.list_services_in_github_project(p).select do |x|
         x["name"] == project_name
       end.first
