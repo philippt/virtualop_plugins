@@ -43,12 +43,16 @@ on_machine do |machine, params, request|
     
     if descriptor.has_key?('user')
       user_name = descriptor['user']
-      machine.init_system_user('user' => user_name)
-      
-      machine.set_machine_user(user_name)
-      user_set = true
-      # TODO #performance
-      @op.flush_cache
+      if user_name == old_user
+        @op.comment "already in user context #{old_user}, not switching"
+      else
+        machine.init_system_user('user' => user_name)
+        
+        machine.set_machine_user(user_name)
+        user_set = true
+        # TODO #performance
+        @op.flush_cache
+      end
     end
     
     descriptor["dependencies"].each do |dependency|
@@ -158,7 +162,7 @@ on_machine do |machine, params, request|
               end
             else              
               github_params = {"github_project" => line}
-              if params.has_key?("extra_params") and params["extra_params"]
+              if params.has_key?("extra_params") && params["extra_params"]
                 github_params = github_params.merge_from(params["extra_params"], :git_branch, :git_tag)
               end
               machine.install_service_from_github(github_params)
