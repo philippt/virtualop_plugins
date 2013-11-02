@@ -4,3 +4,8 @@ config_param! "xoplogs_machine", "the machine where the xoplogs application is r
 config_param "auto_import_machine_groups", "machine groups for which all logs should be imported automatically", :allows_multiple_values => true, :default_value => []
 
 tags :logfiles
+
+on_activation do |plugin, config|
+  require 'net/http'
+  require 'uri'
+end
