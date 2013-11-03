@@ -3,8 +3,25 @@ description "tests if a vop machine can setup new machines"
 param! "host", "a host to run CI on"
 param "default_user", "default SSH user"
 param "default_password", "default SSH password"
+param "marvin_email", "if specified, an account with the name 'marvin' and this email address is created. also see marvin_password"
+param "marvin_password", "the password for the marvin user"
 
 execute do |params|
+  begin
+    if params.has_key?('marvin_email') && params.has_key?('marvin_password')
+      @op.with_machine('localhost') do |machine|
+        user_data = {
+          "login" => "marvin"
+        }.merge_from(params, :marvin_email => :email, :marvin_password => :password)
+        escaped_user_data = user_data.pretty_inspect()
+        pp escaped_user_data
+        machine.rvm_ssh("cd /home/marvin/virtualop_webapp && rails runner 'puts $op.add_rails_user(#{escaped_user_data}'")
+      end
+    end
+  rescue => detail
+    $logger.error("could not create marvin user : #{detail.message}")
+  end
+  
   @op.find_vms
   
   @op.load_dev_plugin
