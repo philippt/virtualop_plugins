@@ -165,14 +165,20 @@ on_machine do |machine, params, request|
               # inherit git_branch if the dependency project has a branch or tag by that name
               if params.has_key?("extra_params") && params["extra_params"]
                 if params["extra_params"].has_key?("git_branch")
-                  trees =  @op.list_branches("github_project" => line) + 
-                    @op.list_tags("github_project" => line).map do |x|
-                      x["name"]
+                  inherit_branch = false
+                  if has_github_params(params)
+                    trees =  @op.list_branches("github_project" => line) + 
+                      @op.list_tags("github_project" => line).map do |x|
+                        x["name"]
+                      end
+                    if trees.include? params["extra_params"]["git_branch"]
+                      inherit_branch = true 
                     end
-                  if trees.include? params["extra_params"]["git_branch"]
-                    github_params["git_branch"] = params["extra_params"]["git_branch"] 
                   end
                   
+                  if inherit_branch
+                    github_params["git_branch"] = params["extra_params"]["git_branch"]
+                  end
                 end
                 #github_params = github_params.merge_from(params["extra_params"], :git_branch, :git_tag)
               end

@@ -65,7 +65,7 @@ on_machine do |machine, params|
           job["number"] = @op.trigger_build("jenkins_job" => job["full_name"])
         else
           puts "giving up on #{job["full_name"]}"
-          dead << failed.delete
+          dead << failed.delete(job)
         end
       end
       
