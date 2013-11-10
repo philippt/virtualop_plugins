@@ -12,18 +12,18 @@ stack :vop do |m, p|
   m.disk 50
 end
 
-# on_install do |stacked, params|
-  # @op.comment("installing vop stack")
-#   
-  # s = ""
-  # stacked.keys.each do |stack_name|
-    # s += "\t#{stack_name} : #{stacked[stack_name].first["full_name"]}\t#{stacked[stack_name].first["domain"]}\n"
-  # end
-  # @op.comment "stacks:\n#{s}"
-#   
-  # host_name = params["machine"]
-  # @op.comment "host : #{host_name}"
-# end  
+on_install do |stacked, params|
+  @op.comment("installing vop stack")
+  
+  s = ""
+  stacked.keys.each do |stack_name|
+    s += "\t#{stack_name} : #{stacked[stack_name].first["full_name"]}\t#{stacked[stack_name].first["domain"]}\n"
+  end
+  @op.comment "stacks:\n#{s}"
+  
+  host_name = params["machine"]
+  @op.comment "host : #{host_name}"
+end  
 
 post_rollout do |stacked, params|
   @op.comment "post vop rollout. successful: #{params["result"][:success].size}, failed: #{params["result"][:failure].size}"
