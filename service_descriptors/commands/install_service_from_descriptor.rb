@@ -162,8 +162,19 @@ on_machine do |machine, params, request|
               end
             else              
               github_params = {"github_project" => line}
+              # inherit git_branch if the dependency project has a branch or tag by that name
               if params.has_key?("extra_params") && params["extra_params"]
-                github_params = github_params.merge_from(params["extra_params"], :git_branch, :git_tag)
+                if params["extra_params"].has_key?("git_branch")
+                  trees =  @op.list_branches("github_project" => line) + 
+                    @op.list_tags("github_project" => line).map do |x|
+                      x["name"]
+                    end
+                  if trees.include? params["extra_params"]["git_branch"]
+                    github_params["git_branch"] = params["extra_params"]["git_branch"] 
+                  end
+                  
+                end
+                #github_params = github_params.merge_from(params["extra_params"], :git_branch, :git_tag)
               end
               machine.install_service_from_github(github_params)
             end
