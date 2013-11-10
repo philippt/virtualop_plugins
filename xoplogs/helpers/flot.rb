@@ -22,11 +22,13 @@ def access_log_graph_flot(data, tz_offset)
       title = "duration (ms)"
       color = 1
       yaxis = 2
+    else
+      title = name
     end
     
     data[name] = {
       :data => line,
-      #:label => title,
+      :label => title,
       :color => color,
       :yaxis => yaxis
     } 

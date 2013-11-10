@@ -5,7 +5,7 @@ param! "path", "path to the logfile (see find_logs)"
 
 on_machine do |machine, params|
   
-  lines = machine.tail("lines" => 1000, "file_name" => params["path"])
+  params["lines"] = machine.tail("lines" => 1000, "file_name" => params["path"])
   
   @op.graph_lines(params)
   # log_file = machine.find_logs.select { |x| x["path"] == params["path"] }.first

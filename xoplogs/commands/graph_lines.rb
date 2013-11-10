@@ -14,7 +14,13 @@ on_machine do |machine, params|
   raise "no parser defined for log file #{params["path"]}" unless log_file.has_key?("parser") and log_file["parser"] != ""
   
   uri = URI.parse(xoplogs_url + '/import_log/parse_and_aggregate')
-  response = Net::HTTP.post_form(uri, {"parser" => log_file["parser"], "lines" => lines})
+  post_data = {
+    "parser" => log_file["parser"], 
+    "lines" => lines
+  }
+  post_data["type"] = log_file["format"] if log_file["format"]
+  puts "posting to #{uri} : #{post_data}"
+  response = Net::HTTP.post_form(uri, post_data)  
   
   result = JSON.parse(response.body)
   
