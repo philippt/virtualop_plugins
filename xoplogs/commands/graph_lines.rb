@@ -19,7 +19,7 @@ on_machine do |machine, params|
     "lines" => lines
   }
   post_data["type"] = log_file["format"] if log_file["format"]
-  puts "posting to #{uri} : #{post_data}"
+  #puts "posting to #{uri} : #{post_data}"
   response = Net::HTTP.post_form(uri, post_data)  
   
   result = JSON.parse(response.body)
