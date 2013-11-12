@@ -10,6 +10,7 @@ stack :vop do |m, p|
   m.domain_prefix 'vop'
   m.memory [ 512, 2048, 4096 ]
   m.disk 50
+  m.param('service_root', '/home/marvin/virtualop_webapp')
 end
 
 on_install do |stacked, params|

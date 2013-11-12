@@ -282,24 +282,16 @@ on_machine do |machine, params, request|
   
   @op.comment "installation complete for #{service_name}, gonna invalidate and post-process"
   
+  @op.cache_bomb
+  machine.list_installed_services
   
-  @op.without_cache do
-    #machine.list_working_copies
-    installed = machine.list_installed_services
-    puts "installed services now : "
-    pp installed
-    # TODO we want to invalidate list_services, but list_services is too expensive
-    #machine.list_services
-    
-    # TODO actually, it would be ok if we invalidated these asynchronously
-    if @op.list_plugins.include? 'vop_webapp'
-      # TODO reactivate
-      #machine.list_machine_tabs
-      #machine.list_machine_actions
-    end
-  end
+  service = machine.service_details("service" => qualified_name)
   
-  service = machine.service_details("service" => qualified_name) 
+  @op.cache_bomb
+  machine.list_services 
+  
+  @op.cache_bomb
+  machine.status_services
   
   if service != nil
     
