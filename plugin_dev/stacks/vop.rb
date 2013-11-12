@@ -4,6 +4,7 @@ param! "domain", :description => "the domain for the virtualop instance"
 param! "hetzner_account", :description => "hetzner accounts to upload to the new vop instance", :allows_multiple_values => true
 param! "keypair", :description => "ssh keypair that should be uploaded to the new vop"
 param "clone", :description => "if set to true, the vop rolling out the stack will make a backup of itself into it's data repo and use this for setting up the new vop"
+param "github_token"
 
 stack :vop do |m, p|
   m.github 'virtualop/virtualop_webapp', :branch => 'rails3'
@@ -11,6 +12,7 @@ stack :vop do |m, p|
   m.memory [ 512, 2048, 4096 ]
   m.disk 50
   m.param('service_root', '/home/marvin/virtualop_webapp')
+  m.param('github_token', p['github_token']) if p.has_key?('github_token')
 end
 
 on_install do |stacked, params|
