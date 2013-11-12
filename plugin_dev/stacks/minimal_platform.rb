@@ -55,6 +55,10 @@ stack :ldap do |m, params|
   m.canned_service :centos_ldap
   m.domain params["domain"]
 end
+
+stack :selenium do |m, params|
+  m.canned_service :selenium
+end  
  
 #stack :owncloud do |m, params|
 #  m.canned_service :owncloud_server
