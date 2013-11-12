@@ -21,13 +21,11 @@ on_machine do |machine, params|
       next if %w|vm_name full_name name|.include? k
       option_string += " #{k}=#{v}"
     end
-    params["extra_params"].each do |k,v|
-      value = (v.is_a?(Array) && v.size == 1) ? v.first : v
-      option_string += " #{k}=#{value}"
-    end
-    Thread.current['broker'].context.cookies.each do |k,v|
-      
-    end
+    # TODO not a good idea (tm)
+    # params["extra_params"].each do |k,v|
+      # value = (v.is_a?(Array) && v.size == 1) ? v.first : v
+      # option_string += " #{k}=#{value}"
+    # end
     @op.create_jenkins_job("job_name" => full_name, "command_string" => "kaboom machine=#{full_name} #{option_string}")
     result << {
       "name" => vm_name,
