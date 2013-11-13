@@ -18,7 +18,7 @@ class RabbitmqBroker < RHCP::LoggingBroker
   
   def self.flush_buffer(op)
     @@buffer_lock.synchronize {
-      $logger.info "sending rabbitmq buffer : #{@@buffer.size}" 
+      $logger.debug "sending rabbitmq buffer : #{@@buffer.size}" 
       op.hello_rabbit("queue" => "raw_logging", "message" => JSON.generate(@@buffer))
       @@buffer = []
     }
@@ -86,8 +86,8 @@ class RabbitmqBroker < RHCP::LoggingBroker
   
   def get_blacklisted_commands
     commands = super()
-    #commands << "log_ssh_start"
-    #commands << "log_ssh_stop"
+    commands << "log_ssh_start"
+    commands << "log_ssh_stop"
     commands << "pre_flight_init"
     commands << "create_partition"
     # commands << "get_ssh_connection"
@@ -102,8 +102,7 @@ class RabbitmqBroker < RHCP::LoggingBroker
     
     commands << "text_log"
     commands << "raw_log"
-    commands << "show_plugin_config"
-    commands << "execute_as_hudson_job"
+    #commands << "show_plugin_config"
     commands << "execute_through_rabbit"
     
     commands << "select_datacenter"
@@ -114,7 +113,7 @@ class RabbitmqBroker < RHCP::LoggingBroker
     
     commands += %w|ssh_and_check_result ssh_extended get_ssh_connection|
     
-    commands
+    commands    
   end
   
   def get_graylisted_commands
@@ -163,7 +162,6 @@ class RabbitmqBroker < RHCP::LoggingBroker
     #  "message" => "#{request_id} #{level} > #{current_stack} [#{mode}] #{request.command.name} (#{param_values.join(", ")})"
     #)
     
-    #  Die Timestamps wenn es geht im ISO8601 format bidde
     j = {
       :request_id => request_id,
       :phase => 'start',
@@ -171,7 +169,7 @@ class RabbitmqBroker < RHCP::LoggingBroker
       :mode => mode,
       :current_stack => current_stack,
       :request => request.as_json(),
-      :start_ts => start_ts.utc.iso8601()
+      :start_ts => start_ts.utc.iso8601() #  Die Timestamps wenn es geht im ISO8601 format bidde
     }
     
     to_rabbit(j)

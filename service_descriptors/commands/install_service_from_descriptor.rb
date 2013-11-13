@@ -43,12 +43,16 @@ on_machine do |machine, params, request|
     
     if descriptor.has_key?('user')
       user_name = descriptor['user']
-      machine.init_system_user('user' => user_name)
-      
-      machine.set_machine_user(user_name)
-      user_set = true
-      # TODO #performance
-      @op.flush_cache
+      if user_name == old_user
+        @op.comment "already in user context #{old_user}, not switching"
+      else
+        machine.init_system_user('user' => user_name)
+        
+        machine.set_machine_user(user_name)
+        user_set = true
+        # TODO #performance
+        @op.flush_cache
+      end
     end
     
     descriptor["dependencies"].each do |dependency|
@@ -158,8 +162,25 @@ on_machine do |machine, params, request|
               end
             else              
               github_params = {"github_project" => line}
-              if params.has_key?("extra_params") and params["extra_params"]
-                github_params = github_params.merge_from(params["extra_params"], :git_branch, :git_tag)
+              # inherit git_branch if the dependency project has a branch or tag by that name
+              if params.has_key?("extra_params") && params["extra_params"]
+                if params["extra_params"].has_key?("git_branch")
+                  inherit_branch = false
+                  if has_github_params(params)
+                    trees =  @op.list_branches("github_project" => line) + 
+                      @op.list_tags("github_project" => line).map do |x|
+                        x["name"]
+                      end
+                    if trees.include? params["extra_params"]["git_branch"]
+                      inherit_branch = true 
+                    end
+                  end
+                  
+                  if inherit_branch
+                    github_params["git_branch"] = params["extra_params"]["git_branch"]
+                  end
+                end
+                #github_params = github_params.merge_from(params["extra_params"], :git_branch, :git_tag)
               end
               machine.install_service_from_github(github_params)
             end
@@ -175,7 +196,15 @@ on_machine do |machine, params, request|
         
         if package_files.include? "gem"
           lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/gem")    
-          machine.install_gems_from_file("lines" => lines) unless lines.size == 0
+          machine.install_gems_from_file("lines" => lines) unless lines.size == 0          
+        end
+        
+        if package_files.include? "Gemfile"
+          lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/Gemfile")
+          tmp_file_name = "/tmp/vop_install_service_from_descriptor_#{qualified_name}_#{@op.whoareyou}_#{Time.now.to_i.to_s}"
+          machine.write_file("target_filename" => tmp_file_name, "content" => lines.join("\n"))
+          machine.rvm_ssh("gem install bundler")
+          machine.rvm_ssh("bundle install --gemfile=#{tmp_file_name}")
         end
         
         if params.has_key?("service_root") && params["service_root"] != ''
@@ -261,24 +290,16 @@ on_machine do |machine, params, request|
   
   @op.comment "installation complete for #{service_name}, gonna invalidate and post-process"
   
+  @op.cache_bomb
+  machine.list_installed_services
   
-  @op.without_cache do
-    #machine.list_working_copies
-    installed = machine.list_installed_services
-    puts "installed services now : "
-    pp installed
-    # TODO we want to invalidate list_services, but list_services is too expensive
-    #machine.list_services
-    
-    # TODO actually, it would be ok if we invalidated these asynchronously
-    if @op.list_plugins.include? 'vop_webapp'
-      # TODO reactivate
-      #machine.list_machine_tabs
-      #machine.list_machine_actions
-    end
-  end
+  service = machine.service_details("service" => qualified_name)
   
-  service = machine.service_details("service" => qualified_name) 
+  @op.cache_bomb
+  machine.list_services 
+  
+  @op.cache_bomb
+  machine.status_services
   
   if service != nil
     

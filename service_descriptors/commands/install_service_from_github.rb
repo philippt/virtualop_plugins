@@ -5,7 +5,7 @@ github_params
 param :machine
 param! :github_project
 param :git_branch
-param :git_tag
+#param :git_tag
 
 param "service_root"
 
@@ -22,7 +22,7 @@ execute do |params, request|
     if has_github_params(params)
       # read the service descriptor through github first
       p = params.clone
-      p.delete("machine")
+      p.delete("machine")      
       descriptor = @op.list_services_in_github_project(p).select do |x|
         x["name"] == project_name
       end.first
@@ -32,13 +32,17 @@ execute do |params, request|
         old_user = request.context.cookies[key]
       end
       if descriptor
-        if descriptor.has_key?('user')
+        if descriptor.has_key?('user') 
           user_name = descriptor['user']
-          machine.init_system_user('user' => user_name)
-          
-          machine.set_machine_user(user_name)
-          user_set = true
-          @op.flush_cache
+          if user_name == old_user
+            @op.comment "already in user context #{old_user}, not switching"
+          else
+            machine.init_system_user('user' => user_name)
+            
+            machine.set_machine_user(user_name)
+            user_set = true
+            @op.flush_cache
+          end
         end
       end
     end
@@ -63,7 +67,7 @@ execute do |params, request|
       end
       
       @op.github_clone({"directory" => service_root}.merge_from(
-        params, :machine, :github_project, :git_branch, :git_tag, :force, 
+        params, :machine, :github_project, :git_branch, :force, 
           :github_user, :github_password, :github_token
       )) unless machine.file_exists(service_root)
       
@@ -77,9 +81,8 @@ execute do |params, request|
         params["extra_params"].each do |k,v|
           params[k] = v
         end
+        params["extra_params"].merge_from params, :github_project, :git_branch, :git_tag
       end
-      
-      params["version"] = {}.merge_from params, :github_project, :git_branch, :git_tag
       
       machine.install_service_from_working_copy(params)
     ensure
