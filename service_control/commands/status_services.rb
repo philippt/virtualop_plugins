@@ -7,9 +7,9 @@ param "all"
 result_as :list_services
 add_columns [ :status ]
 
-include_for_crawling
+#include_for_crawling
 
-mark_as_read_only
+#mark_as_read_only
 
 on_machine do |machine, params|
   machine.list_services.select do |service|

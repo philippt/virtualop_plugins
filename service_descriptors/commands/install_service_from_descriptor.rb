@@ -290,16 +290,13 @@ on_machine do |machine, params, request|
   
   @op.comment "installation complete for #{service_name}, gonna invalidate and post-process"
   
-  @op.cache_bomb
-  machine.list_installed_services
-  
-  service = machine.service_details("service" => qualified_name)
-  
-  @op.cache_bomb
-  machine.list_services 
-  
-  @op.cache_bomb
-  machine.status_services
+  service = nil
+  @op.without_cache do
+    machine.list_installed_services
+    machine.list_services 
+    service = machine.service_details("service" => qualified_name)
+    machine.status_services
+  end
   
   if service != nil
     
