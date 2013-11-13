@@ -24,9 +24,17 @@ with_contributions do |result, params|
         #pp config_string('known_metadata_dirs')
         
         config_string('known_metadata_dirs').each do |known_metadata_dir|      
-          working_copies = machine.find("path" => dir_name, "type" => "d", 
-                                        "follow" => 'true', "maxdepth" => config_string('find_maxdepth'), 
-                                        "name" => [ known_metadata_dir ])
+          find_params = { 
+            "path" => dir_name, 
+            "type" => "d", 
+            "follow" => (config_string('follow_symlinks').to_s == 'true').to_s, 
+            "maxdepth" => config_string('find_maxdepth'), 
+            "name" => [ known_metadata_dir ] 
+          }
+          if @plugin.config.has_key?('path_blacklist')
+            find_params["exclude_path"] = config_string('path_blacklist')
+          end
+          working_copies = machine.find(find_params)
           
           working_copies.each do |row|
             parts = row.strip.split("/")
