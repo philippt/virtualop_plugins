@@ -20,10 +20,20 @@ on_machine do |machine, params|
       }
       
       begin
-        machine.download_file("file_name" => log["path"], "local_dir" => local_tmp_dir)
+        source_file = local_tmp_dir + '/' + file_name
+        if machine.machine_detail['os'] && machine.machine_detail['os'] == 'windows'
+          # we can use the CIFS-mounted file as source
+          coords = { "target_machine" => params["machine"], "target_drive" => "c$" }
+          cifs_path = @op.prepare_cifs_mount(coords.merge('machine' => 'localhost'))
+          cifs_file_name = cifs_path + '/' + log["path"]
+          source_file = cifs_file_name       
+        else
+          machine.download_file("file_name" => log["path"], "local_dir" => local_tmp_dir)
+        end
+        
         path_for_import = '/var/lib/mysql_import/' + file_name
         xoplogs.upload_file(
-          "local_file" => local_tmp_dir + '/' + file_name, 
+          "local_file" => source_file, 
           "target_file" => path_for_import
         )
         service_root = xoplogs.service_details("service" => "xoplogs/xoplogs")["service_root"]
@@ -49,6 +59,7 @@ on_machine do |machine, params|
       rescue => detail
         h["status"] = "error"
         h["error_message"] = detail.message
+        h["backtrace"] = detail.backtrace.join("\n")
       end
       result << h
     end

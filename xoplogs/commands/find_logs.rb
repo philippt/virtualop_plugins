@@ -65,28 +65,34 @@ on_machine do |machine, params|
       service["log_files"].each do |log|
         log_file = log["path"]
         
-        unless /^\//.match(log_file)
-          if service.has_key?("service_root")
-            log_file = service["service_root"] + '/' + log_file
-          else
-            log_file = machine.home + '/' + log_file 
-          end
-        end
+        file_exists = nil
         
-        prefixes = %w|/var/log|
-        needs_root = false
-        prefixes.each do |prefix|
-          if /#{prefix}/ =~ log_file
-            needs_root = true
-            break
+        if machine.machine_detail["os"] == 'windows'
+          file_exists = machine.win_file_exists("file_name" => log_file)
+        else
+          unless /^\//.match(log_file)
+            if service.has_key?("service_root")
+              log_file = service["service_root"] + '/' + log_file
+            else
+              log_file = machine.home + '/' + log_file 
+            end
           end
-        end
-        
-        file_exists = needs_root ?
+          
+          prefixes = %w|/var/log|
+          needs_root = false
+          prefixes.each do |prefix|
+            if /#{prefix}/ =~ log_file
+              needs_root = true
+              break
+            end
+          end
+          file_exists = needs_root ?
           machine.as_user('root') { |root|
             root.file_exists("file_name" => log_file)
           } :
           machine.file_exists("file_name" => log_file)
+        end 
+        
               
         if file_exists 
           h = {
