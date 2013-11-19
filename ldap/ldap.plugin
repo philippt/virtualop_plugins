@@ -2,6 +2,12 @@ dependencies [ :core, :machines, :erb_processor, :drop_dir ]
 
 config_param "ldap_dropdir", "the directory with ldap server details", :default_value => "#{@op.config_base_dir}/accounts/ldap"
 
+has_accounts({
+  :list => 'list_ldap_servers',
+  :add => 'add_ldap_server',
+  :remove => 'delete_ldap_server'
+})
+
 on_activation do |plugin, config|
   require 'helpers/drop_dir_provider'
   

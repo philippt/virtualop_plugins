@@ -26,6 +26,8 @@ on_machine do |m, params|
         if matched = /consider running yum-complete-transaction/.match(detail.message)
           machine.install_rpm_package("name" => "yum-utils")
           machine.ssh("command" => "yum-complete-transaction -y")
+        else
+          raise
         end
       end
       
