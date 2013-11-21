@@ -14,13 +14,13 @@ mark_as_read_only
 # TODO expires => 15.minutes would be nice here
 
 execute do |params|
-  @op.with_machine(config_string('xoplogs_machine')) do |xoplogs|
-    url = 'http://' + xoplogs.service_details("service" => "xoplogs/xoplogs")["domain"].first # TODO we know that one
-    url += '/aggregated/get_data'
-    url += "?hosts\\[\\]=#{params["machine"]}"
-    url += "&services\\[\\]=#{params["service"]}" if params.has_key?("service")
-    url += "&line=#{params["line"].join(',')}"
-    url += "&interval_hours=#{params["interval_hours"]}"
-    JSON.parse(@op.http_get("url" => url))
-  end
+  url = @op.xoplogs_domain + '/aggregated/get_data'
+  url += "?hosts\\[\\]=#{params["machine"]}"
+  url += "&services\\[\\]=#{params["service"]}" if params.has_key?("service")
+  url += "&line=#{params["line"].join(',')}"
+  url += "&interval_hours=#{params["interval_hours"]}"
+  
+  puts "calling #{url} for access log graphs"
+  
+  JSON.parse(@op.http_get("url" => url))
 end
