@@ -181,11 +181,15 @@ class ServiceDescriptorLoader
     @service["dependencies"] << h
   end
   
+  def apache_config(template_sym)
+    @service['apache_config'] = template_sym.to_s
+  end
+  
   def method_missing(m, *args)
     targets = [ :redirect_log, :start_command, :stop_command, :on_install ]
     targets += [ :port, :process_regex ]
     targets += [ :cron, :every ]
-    targets += [ :static_html, :apache_config ]
+    targets += [ :static_html ]
     targets += [ :user ]
     
     if targets.include? m
