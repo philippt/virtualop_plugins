@@ -49,11 +49,11 @@ on_machine do |machine, params|
           end
           
           raise "no known parser for log file #{log["path"]}" unless parser
-          xoplogs.ssh("command" => "cd #{service_root} && `which rails` runner app/scripts/import_access_log.rb #{path_for_import} #{parser} #{params["machine"]} #{service_name}")
+          xoplogs.ssh "command" => "cd #{service_root} && `which rails` runner app/scripts/import_access_log.rb #{path_for_import} #{parser} #{params["machine"]} #{service_name}"
           h["status"] = "ok"
         elsif log.has_key? "parser"
           script_name = (log.has_key?('format') && log['format'] == 'server_log') ? 'import_server_log' : 'import_access_log'         
-          xoplogs.ssh("command" => "cd #{service_root} && `which rails` runner app/scripts/#{script_name}.rb #{path_for_import} #{log["parser"]} #{params["machine"]} #{service_name}")
+          xoplogs.ssh "cd #{service_root} && `which rails` runner app/scripts/#{script_name}.rb #{path_for_import} #{log["parser"]} #{params["machine"]} #{service_name}"
           h["status"] = "ok"        
         end        
       rescue => detail
