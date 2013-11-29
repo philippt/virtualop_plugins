@@ -319,11 +319,6 @@ on_machine do |machine, params, request|
     
     @op.post_process_service_installation(params.merge("service" => qualified_name))
     
-    if service.has_key?("cron")
-      script_path = machine.write_background_start_script("service" => qualified_name)
-      machine.add_crontab_entry("data" => read_local_template(:crontab, binding()))
-    end
-    
     if service.has_key?("outgoing_tcp") and service["outgoing_tcp"] != nil and service["outgoing_tcp"].class == Array
       service["outgoing_tcp"].each do |outgoing|
         case outgoing
@@ -358,23 +353,6 @@ on_machine do |machine, params, request|
           )
         end
       end
-    end
-    
-    if service.has_key?("http_endpoint") and service["http_endpoint"].size > 0
-      unless params.has_key?("extra_params") and params["extra_params"].has_key?("domain")
-        raise "http_endpoint configuration found for service #{service["name"]}, but no domain parameter is present. not handling http_endpoint #{service["http_endpoint"]}"
-      end
-      
-      domain = params["extra_params"]["domain"]      
-      machine.install_canned_service("service" => "apache/apache")
-  
-      target_urls = service["http_endpoint"].map do |endpoint|
-        "http://127.0.0.1:#{endpoint}"
-      end
-      machine.add_reverse_proxy("server_name" => domain, "target_url" => target_urls)
-      machine.restart_service 'apache/apache'
-      
-      machine.configure_reverse_proxy("domain" => domain) if machine.proxy
     end
     
     if service.has_key?("apache_config")
