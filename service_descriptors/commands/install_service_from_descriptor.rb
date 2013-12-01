@@ -298,96 +298,94 @@ on_machine do |machine, params, request|
     machine.status_services
   end
   
-  if service != nil
+  raise "could not find service information after installation, service is nil" if service == nil
     
-    if service.has_key?("post_installation")
-      details = nil
-      # TODO [optimization] would be helpful if we could just load the details without cache without reloading the lookups
-      @op.without_cache do
-        details = machine.service_details("service" => service["full_name"])
-        if details.has_key?("post_installation")
-          begin
-            details["post_installation"].call(machine, params)
-          rescue => detail
-            raise "problem in post_installation block for service #{service["name"]} on #{params["machine"]} : #{detail.message}"
-          end
-        else
-          @op.comment "post-installation key found in service details, but could not reload post_installation block for execution. weird."
+  if service.has_key?("post_installation")
+    details = nil
+    # TODO [optimization] would be helpful if we could just load the details without cache without reloading the lookups
+    @op.without_cache do
+      details = machine.service_details("service" => service["full_name"])
+      if details.has_key?("post_installation")
+        begin
+          details["post_installation"].call(machine, params)
+        rescue => detail
+          raise "problem in post_installation block for service #{service["name"]} on #{params["machine"]} : #{detail.message}"
         end
+      else
+        @op.comment "post-installation key found in service details, but could not reload post_installation block for execution. weird."
       end
     end
-    
-    @op.post_process_service_installation(params.merge("service" => qualified_name))
-    
-    if service.has_key?("outgoing_tcp") and service["outgoing_tcp"] != nil and service["outgoing_tcp"].class == Array
-      service["outgoing_tcp"].each do |outgoing|
-        case outgoing
-        when "all_destinations"
-          host_name = machine.name.split('.')[1..10].join('.')
-          @op.with_machine(host_name) do |host|
-            host.add_forward_include(
-              "source_machine" => machine.name,
-              "service" => service_name,
-              "content" => "iptables -A FORWARD -s #{machine.ipaddress} -p tcp -m state --state NEW -j ACCEPT"
-            )
-            #host.generate_and_diff_iptables()  # TODO needs 'differ' gem
-            host.generate_and_execute_iptables_script()
-          end
-        else
-          raise "unknown destination #{outgoing} in service #{service_name}"
-        end
-      end
-    end
-    
-    %w|tcp udp|.each do |protocol|
-      endpoint_name = "#{protocol}_endpoint"
-      if service.has_key?(endpoint_name)
-        service[endpoint_name].each do |endpoint|
-          port = endpoint
-          host_name = machine.name.split('.')[1..10].join('.')
-          
-          @op.configure_endpoint( 
-            "machine" => host_name, 
-            "source_machine" => machine.name, "service" => service["name"],
-            "protocol" => protocol, "port" => port 
+  end
+  
+  @op.post_process_service_installation(params.merge("service" => qualified_name))
+  
+  if service.has_key?("outgoing_tcp") and service["outgoing_tcp"] != nil and service["outgoing_tcp"].class == Array
+    service["outgoing_tcp"].each do |outgoing|
+      case outgoing
+      when "all_destinations"
+        host_name = machine.name.split('.')[1..10].join('.')
+        @op.with_machine(host_name) do |host|
+          host.add_forward_include(
+            "source_machine" => machine.name,
+            "service" => service_name,
+            "content" => "iptables -A FORWARD -s #{machine.ipaddress} -p tcp -m state --state NEW -j ACCEPT"
           )
+          #host.generate_and_diff_iptables()  # TODO needs 'differ' gem
+          host.generate_and_execute_iptables_script()
         end
+      else
+        raise "unknown destination #{outgoing} in service #{service_name}"
       end
     end
-    
-    if service.has_key?("apache_config")
-      unless params.has_key?("extra_params") and params["extra_params"].has_key?("domain")
-        raise "apache_config found for service #{service["name"]}, but no domain parameter is present. don't know where to publish, please give me a domain param"
-      end
-      
-      domain = params["extra_params"]["domain"]
-      if domain.is_a?(Array)
-        domain = domain.first
-      end      
-      machine.install_canned_service("service" => "apache/apache")
-      
-      template_name = service["apache_config"]
-      template_path = descriptor_dir + '/templates/' + template_name.to_s + '.erb'
-      puts "template for apache config : #{template_path}"
-      
-      config_path = "#{machine.apache_generated_conf_dir}/#{domain}.conf"
-      puts "apache config will be written into #{config_path}"
-      
-      generated = @op.with_machine(params["descriptor_machine"]) do |descriptor_machine|
-        descriptor_machine.process_file(
-          "file_name" => template_path,
-          "bindings" => binding() 
+  end
+  
+  %w|tcp udp|.each do |protocol|
+    endpoint_name = "#{protocol}_endpoint"
+    if service.has_key?(endpoint_name)
+      service[endpoint_name].each do |endpoint|
+        port = endpoint
+        host_name = machine.name.split('.')[1..10].join('.')
+        
+        @op.configure_endpoint( 
+          "machine" => host_name, 
+          "source_machine" => machine.name, "service" => service["name"],
+          "protocol" => protocol, "port" => port 
         )
       end
-      puts "generated : #{generated}"
-      machine.as_user('root') do |root|
-        root.write_file("target_filename" => config_path, "content" => generated)
-      end
-      
-      machine.restart_service 'apache/apache'
-      machine.configure_reverse_proxy("domain" => domain) if machine.proxy
-    end    
+    end
+  end
+  
+  if service.has_key?("apache_config")
+    unless params.has_key?("extra_params") and params["extra_params"].has_key?("domain")
+      raise "apache_config found for service #{service["name"]}, but no domain parameter is present. don't know where to publish, please give me a domain param"
+    end
     
+    domain = params["extra_params"]["domain"]
+    if domain.is_a?(Array)
+      domain = domain.first
+    end      
+    machine.install_canned_service("service" => "apache/apache")
+    
+    template_name = service["apache_config"]
+    template_path = descriptor_dir + '/templates/' + template_name.to_s + '.erb'
+    puts "template for apache config : #{template_path}"
+    
+    config_path = "#{machine.apache_generated_conf_dir}/#{domain}.conf"
+    puts "apache config will be written into #{config_path}"
+    
+    generated = @op.with_machine(params["descriptor_machine"]) do |descriptor_machine|
+      descriptor_machine.process_file(
+        "file_name" => template_path,
+        "bindings" => binding() 
+      )
+    end
+    puts "generated : #{generated}"
+    machine.as_user('root') do |root|
+      root.write_file("target_filename" => config_path, "content" => generated)
+    end
+    
+    machine.restart_service 'apache/apache'
+    machine.configure_reverse_proxy("domain" => domain) if machine.proxy
   end    
   
   if service["is_startable"]
@@ -412,7 +410,6 @@ on_machine do |machine, params, request|
   end
   
   #@op.post_process_service_first_start(params.merge("service" => qualified_name))
-    
   
   ensure
     if user_set

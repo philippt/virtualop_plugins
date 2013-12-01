@@ -185,11 +185,18 @@ class ServiceDescriptorLoader
     @service['apache_config'] = template_sym.to_s
   end
   
+  def static_html(options = {})
+    o = {}
+    options.each do |k,v| 
+      o[k.to_s] = v
+    end
+    @service['static_html'] = o    
+  end
+  
   def method_missing(m, *args)
     targets = [ :redirect_log, :start_command, :stop_command, :on_install ]
     targets += [ :port, :process_regex ]
     targets += [ :cron, :every ]
-    targets += [ :static_html ]
     targets += [ :user ]
     
     if targets.include? m

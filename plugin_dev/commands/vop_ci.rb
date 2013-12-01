@@ -14,7 +14,7 @@ execute do |params|
           "login" => "marvin"
         }.merge_from(params, :marvin_email => :email, :marvin_password => :password)
         escaped_user_data = user_data.pretty_inspect()
-        pp escaped_user_data
+        #pp escaped_user_data
         machine.rvm_ssh("cd /home/marvin/virtualop_webapp && rails runner 'puts $op.add_rails_user(#{escaped_user_data})'")
       end
     end
