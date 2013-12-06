@@ -6,7 +6,11 @@ param :service
 on_machine do |machine, params|
   service = @op.service_details(params)
   
-  if service.has_key? "run_command"
+  if service.has_key? "unix_service"
+    machine.start_unix_service("name" => machine.unix_service_name("unix_service" => service["unix_service"]))
+  elsif service.has_key? "windows_service"
+    machine.start_windows_service("service" => service["windows_service"])
+  elsif service.has_key? "run_command"
     # TODO this writes a new start script every time the service is started
     (script_path, output) = machine.start_background_process("service" => service["full_name"])
   elsif service.has_key? "start_command"
@@ -33,10 +37,6 @@ on_machine do |machine, params|
     rescue => detail
       raise "problem in start block for service #{params["service"]} on #{params["machine"]} : #{detail.message}"
     end
-  elsif service.has_key? "unix_service"
-    machine.start_unix_service("name" => machine.unix_service_name("unix_service" => service["unix_service"]))
-  elsif service.has_key? "windows_service"
-    machine.start_windows_service("service" => service["windows_service"])
   else
     raise "don't know how to start service #{service["name"]}"
   end
