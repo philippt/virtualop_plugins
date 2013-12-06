@@ -3,7 +3,7 @@ description "modifies the system config so that the specified service is started
 param :machine
 param :unix_service, :default_param => true, :allows_multiple_values => true
 
-on_machine do |machine, params|
+as_root do |machine, params|
   names = params["name"]
   unless names.is_a? Array
     names = [ names ]
