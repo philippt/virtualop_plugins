@@ -9,10 +9,22 @@ accept_extra_params
 on_machine do |machine, params|
   service_name = params["service"]
   service_row = @op.canned_service_detail service_name
-  
+
+  should_install = true
+    
   if machine.list_installed_services.include?(service_name) && params["force"].to_s != 'true'
-    @op.comment("service #{service_name} already installed, nothing to do.")
-  else
+    service = machine.service_details('service' => service_name)
+    
+    should_install = false
+    
+    if service.has_key?('release') && params.has_key?('extra_params') && params['extra_params'].has_key?('release') &&
+       service['release'] != params['extra_params']['release']
+      should_install = true
+    end
+    
+  end
+    
+  if should_install
     @op.comment("installing canned service #{service_name} onto #{params["machine"]}")
     
     params.delete("service")
@@ -24,6 +36,8 @@ on_machine do |machine, params|
       end
     end
     
-    @op.install_service_from_descriptor(params)  
+    @op.install_service_from_descriptor(params)
+  else
+    @op.comment("service #{service_name} already installed, nothing to do.")
   end
 end
