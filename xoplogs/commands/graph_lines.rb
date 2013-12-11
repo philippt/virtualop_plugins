@@ -19,10 +19,16 @@ on_machine do |machine, params|
     "lines" => lines
   }
   post_data["type"] = log_file["format"] if log_file["format"]
-  #puts "posting to #{uri} : #{post_data}"
   response = Net::HTTP.post_form(uri, post_data)  
   
-  result = JSON.parse(response.body)
+  json = JSON.parse(response.body)
+  
+  parsed = json['parsed']
+  first = Time.parse(parsed.first['log_ts'])
+  last = Time.parse(parsed.last['log_ts'])
+  puts "data range: #{first} to #{last}"
+  
+  result = json['stats'] 
   
   if params["for_flot"] == 'true' && params.has_key?("tz_offset")
     result = access_log_graph_flot(result, params["tz_offset"])

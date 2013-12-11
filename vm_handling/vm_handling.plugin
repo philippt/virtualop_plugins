@@ -6,6 +6,8 @@ dependency :service_descriptors
 dependency :github_scm
 dependency :git_scm
 dependency :environments
+dependency :locks_dropdir
+
 # TODO actually, this could be an optional_dependency
 dependency :machine_groups
 

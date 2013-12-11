@@ -7,7 +7,7 @@ param "clone", :description => "if set to true, the vop rolling out the stack wi
 param "github_token"
 
 stack :vop do |m, p|
-  m.github 'virtualop/virtualop_webapp', :branch => 'rails3'
+  m.github 'virtualop/virtualop_webapp', :branch => 'stable'
   m.domain_prefix 'vop'
   m.memory [ 512, 2048, 4096 ]
   m.disk 50
