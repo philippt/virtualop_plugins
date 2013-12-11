@@ -23,5 +23,8 @@ on_machine do |machine, params|
   if params.has_key?("directory")
     dir = params["directory"]
   end
-  machine.ssh "svn co #{auth} #{params["svn_url"]} #{dir}"
+  
+  svn_url = (/^(http|svn)/ =~ params['svn_url']) ? params['svn_url'] : "#{config['url']}/#{params['svn_url']}" 
+  
+  machine.ssh "svn co #{auth} #{svn_url} #{dir}"
 end
