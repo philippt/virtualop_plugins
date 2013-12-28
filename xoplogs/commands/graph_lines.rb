@@ -5,6 +5,8 @@ param! "path"
 param! "lines"
 param "for_flot"
 param "tz_offset", "timezone offset (from UTC) to use for preparing the graph data"
+param "interval", "if selected, only the part of the logfile in the interval is displayed", :lookup_method => lambda { %w|hour day week| }
+param "stats_only" 
 
 on_machine do |machine, params|
   lines = params["lines"]
@@ -19,19 +21,27 @@ on_machine do |machine, params|
     "lines" => lines
   }
   post_data["type"] = log_file["format"] if log_file["format"]
+  post_data["interval"] = params["interval"] if params.has_key?("interval")
   response = Net::HTTP.post_form(uri, post_data)  
   
   json = JSON.parse(response.body)
+  json['raw'] = lines
   
   parsed = json['parsed']
-  first = Time.parse(parsed.first['log_ts'])
-  last = Time.parse(parsed.last['log_ts'])
-  puts "data range: #{first} to #{last}"
+  if parsed.size > 0
+    first = Time.parse(parsed.first['log_ts'])
+    last = Time.parse(parsed.last['log_ts'])
+    puts "data range: #{first} to #{last}"
+  end
   
-  result = json['stats'] 
-  
-  if params["for_flot"] == 'true' && params.has_key?("tz_offset")
-    result = access_log_graph_flot(result, params["tz_offset"])
+  result = nil
+  if params["stats_only"]
+    result = json['stats']
+  else
+    if params["for_flot"] == 'true' && params.has_key?("tz_offset")
+      json['stats'] = access_log_graph_flot(json['stats'], params["tz_offset"])
+    end
+    result = json
   end
   
   result
