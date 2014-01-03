@@ -4,7 +4,7 @@ param! "unix_service", "", :default_param => true
 
 on_machine do |machine, params|
   result = params["unix_service"]
-  if result.class == Hash
+  if result.is_a?(Hash)
     distribution = machine.linux_distribution.split("_").first
                 
     if result.has_key? distribution

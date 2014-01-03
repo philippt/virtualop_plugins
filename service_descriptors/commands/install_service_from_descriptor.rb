@@ -35,7 +35,6 @@ on_machine do |machine, params, request|
       descriptor_dir = dotvop_dir 
     end
     
-    # install dependencies that have been specified in the service descriptor
     descriptor_file_name = params["descriptor"]
     if descriptor_machine.file_exists descriptor_file_name
       descriptor = descriptor_machine.read_service_descriptor("file_name" => descriptor_file_name)
@@ -90,9 +89,8 @@ on_machine do |machine, params, request|
   
     if plugin_name == service_name
         
-      # install dependencies
-      
       package_dir = "#{descriptor_dir}/packages"
+      
       package_files = descriptor_machine.file_exists("file_name" => package_dir) ? descriptor_machine.list_files("directory" => package_dir) : []
       
       if package_files.include? "vop"
@@ -319,7 +317,7 @@ on_machine do |machine, params, request|
   
   @op.post_process_service_installation(params.merge("service" => qualified_name))
   
-  if service.has_key?("outgoing_tcp") and service["outgoing_tcp"] != nil and service["outgoing_tcp"].class == Array
+  if service.has_key?("outgoing_tcp") && service["outgoing_tcp"] != nil && service["outgoing_tcp"].is_a?(Array)
     service["outgoing_tcp"].each do |outgoing|
       case outgoing
       when "all_destinations"
@@ -397,9 +395,9 @@ on_machine do |machine, params, request|
     # TODO [optimization] would be helpful if we could just load the details without cache without reloading the lookups
     @op.without_cache do
       details = machine.service_details("service" => service["full_name"])
-      if details.has_key?("post_first_start")
+      if details['post_first_start']
         begin
-          details["post_first_start"].call(machine, params)
+          details['post_first_start'].call(machine, params)
         rescue => detail
           raise "problem in post_first_start block for service #{service["name"]} on #{params["machine"]} : #{detail.message}"
         end

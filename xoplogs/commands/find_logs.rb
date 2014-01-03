@@ -70,7 +70,8 @@ on_machine do |machine, params|
         if machine.machine_detail["os"] == 'windows'
           file_exists = machine.win_file_exists("file_name" => log_file)
         else
-          unless /^\//.match(log_file)
+          # prefix relative paths
+          unless /^[\/\$]/.match(log_file)
             if service.has_key?("service_root")
               log_file = service["service_root"] + '/' + log_file
             else

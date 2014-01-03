@@ -21,7 +21,10 @@ def access_log_graph_flot(data, tz_offset)
     when "response_time_ms"
       title = "duration (ms)"
       color = 1
-      yaxis = 2
+      yaxis = {
+        :position => "right" 
+      }
+      stack = 'none'
     else
       title = name
     end
