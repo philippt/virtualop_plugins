@@ -5,7 +5,8 @@ param! "path"
 param! "lines"
 param "for_flot"
 param "tz_offset", "timezone offset (from UTC) to use for preparing the graph data"
-param "interval", "if selected, only the part of the logfile in the interval is displayed", :lookup_method => lambda { %w|hour day week| }
+param "interval", "if selected, only the part of the logfile in the interval is displayed", :lookup_method => lambda { %w|minute hour day week| }
+param "count", "selects how many +interval+s should be displayed", :default_value => 1
 param "stats_only" 
 
 on_machine do |machine, params|
@@ -21,11 +22,14 @@ on_machine do |machine, params|
     "lines" => lines
   }
   post_data["type"] = log_file["format"] if log_file["format"]
-  post_data["interval"] = params["interval"] if params.has_key?("interval")
+  post_data.merge_from params, :interval, :count
   response = Net::HTTP.post_form(uri, post_data)  
   
+  puts "gonna parse JSON"
   json = JSON.parse(response.body)
   json['raw'] = lines
+  puts "json stats"
+  pp json['stats']
   
   parsed = json['parsed']
   if parsed.size > 0

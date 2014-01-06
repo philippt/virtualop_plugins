@@ -14,25 +14,10 @@ ignore_extra_params
 execute do |params|
   result = []
   
-  result = JSON.parse(@op.http_get("url" => github_url(params, '/user/repos')))
+  result = JSON.parse(@op.http_get("url" => github_url(params, '/user/repos'))).clone
   
   if params['with_service']
-    result.each do |x|
-      x["full_name"] = x["owner"]["login"] + '/' + x["name"]
-      # TODO branch support?
-      begin
-        x["has_metadata"] = @op.get_tree(params.merge({ "github_project" => x["full_name"] })).select { |y| y["path"] == ".vop" }.size > 0
-        if x["has_metadata"]
-          services = @op.list_services_in_github_project("github_project" => x["full_name"])
-          if services.size > 0
-            service = services.first
-            x["installation_params"] = service["install_command_params"]
-          end
-        end
-      rescue
-        x["has_metadata"] = false
-      end
-    end
+    result = @op.inspect_github_repos(params.merge({'project_data' => result}))    
   end
   
   result

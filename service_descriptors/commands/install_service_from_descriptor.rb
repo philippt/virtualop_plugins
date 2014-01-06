@@ -201,15 +201,21 @@ on_machine do |machine, params, request|
           lines = descriptor_machine.read_lines("file_name" => "#{descriptor_dir}/packages/Gemfile")
           tmp_file_name = "/tmp/vop_install_service_from_descriptor_#{qualified_name}_#{@op.whoareyou}_#{Time.now.to_i.to_s}"
           machine.write_file("target_filename" => tmp_file_name, "content" => lines.join("\n"))
-          machine.rvm_ssh("gem install bundler")
-          machine.rvm_ssh("bundle install --gemfile=#{tmp_file_name}")
+          
+          machine.as_user('root') do |root|
+            root.ssh("gem install bundler")
+            root.ssh("bundle install --gemfile=#{tmp_file_name}")
+          end
+          #machine.rvm_ssh("gem install bundler")
         end
         
         if params.has_key?("service_root") && params["service_root"] != ''
           gemfile_location = "#{params["service_root"]}/Gemfile"
           if machine.file_exists(gemfile_location)
-            machine.rvm_ssh("gem install bundler")
-            machine.rvm_ssh("cd #{params["service_root"]} && bundle install")
+            machine.as_user('root') do |root|
+              root.ssh("gem install bundler")
+              root.ssh("bundle install --gemfile=#{gemfile_location}")
+            end
           end
         end
       end # linux
