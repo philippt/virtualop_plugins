@@ -23,8 +23,6 @@ on_machine do |machine, params|
 
   ipaddress = nil
   case machine.machine_detail["os"]
-  when "linux"
-    ipaddress = machine.ipaddress
   when "windows"
     reported_hostname = @op.vm_detail("machine_name" => machine.name)["hostname"]
     if matched = /.+\(([\d\.]+)\)/.match(reported_hostname)
@@ -33,7 +31,9 @@ on_machine do |machine, params|
       raise "could not parse IP address from VMware output - input is #{reported_hostname}"
     end
   else
-    raise "don't know how to get IP address for machine #{machine.name} - unsupported OS #{machine.machine_detail["os"]}"
+    ipaddress = machine.ipaddress
+    # TODO
+    #raise "don't know how to get IP address for machine #{machine.name} - unsupported OS #{machine.machine_detail["os"]}"
   end
 
   @op.with_machine(config_string('nagios_machine_name')) do |nagios|
