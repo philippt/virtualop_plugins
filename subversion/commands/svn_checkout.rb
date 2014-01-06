@@ -12,6 +12,7 @@ param "directory", "target directory"
 on_machine do |machine, params|
   auth = ' --non-interactive '
   
+  config = nil
   if params.has_key?('username') && params.has_key?('password')
     auth += " --username #{params["username"]} --password #{params["password"]}"
   elsif params.has_key?('subversion')
@@ -24,7 +25,9 @@ on_machine do |machine, params|
     dir = params["directory"]
   end
   
-  svn_url = (/^(http|svn)/ =~ params['svn_url']) ? params['svn_url'] : "#{config['url']}/#{params['svn_url']}" 
+  if config && (/^(http|svn)/ !~ params['svn_url'])  
+    params['svn_url'] = "#{config['url']}/#{params['svn_url']}"
+  end
   
   machine.ssh "svn co #{auth} #{svn_url} #{dir}"
 end

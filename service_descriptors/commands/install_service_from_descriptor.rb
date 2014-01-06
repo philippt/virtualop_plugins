@@ -214,8 +214,8 @@ on_machine do |machine, params, request|
           if machine.file_exists(gemfile_location)
             machine.as_user('root') do |root|
               root.ssh("gem install bundler")
-              root.ssh("bundle install --gemfile=#{gemfile_location}")
             end
+            machine.rvm_ssh("cd #{params['service_root']} && bundle install --gemfile=#{gemfile_location}")
           end
         end
       end # linux

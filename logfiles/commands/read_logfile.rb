@@ -18,8 +18,16 @@ on_machine do |machine, params|
   raise "no parser defined for log file #{params["path"]}" unless log_file.has_key?("parser") and log_file["parser"] != ""
   parser = @op.list_parsers.select { |x| x['name'] == log_file['parser'] }.first
   
-  start = Time.now
-  raw = machine.tail("lines" => params['line_count'], "file_name" => params["path"])
+  machine_detail = machine.machine_detail
+  tail_params = {
+    "lines" => params['line_count'], "file_name" => params["path"]
+  }
+  start = Time.now  
+  raw = if machine_detail && machine_detail['os'] && machine_detail['os'] == 'windows'
+    machine.win_tail(tail_params)
+  else
+    machine.tail(tail_params)
+  end
   timing[:read] = Time.now - start
   result['raw'] = raw if params['wanted'].include?('raw')
   
