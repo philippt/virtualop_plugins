@@ -57,13 +57,33 @@ with_contributions do |result, params|
       end
       
     end
-  end
+    
+    # filter link targets
+    link_targets = []
+    result.each do |row|
+      begin
+        path = row['path']
+        if /symbolic link/.match(machine.ssh("file #{path}"))
+          link_targets << machine.ssh("readlink #{path}").chomp
+        end
+      rescue => detail
+        $logger.info("#{row['path']} is probably not a link : #{detail.message}")
+      end
+    end
+    link_targets.each do |target|
+      $logger.info("removing link targets ending in '#{target}'")
+      result.delete_if { |x| /#{target}$/ =~ x['path']}
+    end
+    
+    # remove home (it's not a working copy, even though there might be a .vop subdirectory thanks to one stupid son of a bitch)
+    result.delete_if { |x| x['path'] == machine.home }
+  end # with_machine
   
   if params.has_key?("type")
     result.delete_if { |x| x["type"] != params["type"] }
   end
   
-  # make result unique by path, merging types?
+  # make result unique by path, merging types
   result.each do |row|
     same_path = result.select { |x| x["path"] == row["path"] }.delete_if { |x| x == row }
     same_path.each do |moriturus|
@@ -73,6 +93,7 @@ with_contributions do |result, params|
       result.delete moriturus      
     end
   end
+  
   
   result    
 end  

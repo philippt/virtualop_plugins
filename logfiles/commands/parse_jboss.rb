@@ -18,8 +18,6 @@ execute do |params|
       {
         #:log_ts => Time.at(DateTime.parse(matched.captures[0]).to_time.to_i - Time.zone.utc_offset).utc,
         :log_ts => Time.at(DateTime.parse(matched.captures[0]).to_time.to_i).utc,
-        :host_name => @host_name,
-        :service_name => @service_name,
         :log_level => matched.captures[1],
         :class_name => matched.captures[2],
         :message => matched.captures[4].strip.chomp,

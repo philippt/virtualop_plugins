@@ -33,7 +33,7 @@ on_machine do |machine, params|
   
   lines = raw.split("\n")
   start = Time.now
-  parsed = @op.parse_logdata('parser' => log_file['parser'], 'data' => lines)
+  parsed = @op.parse_logdata('parser' => log_file['parser'], 'data' => lines, 'tz_offset' => params['tz_offset'].to_i, 'extra_params' => { 'tz_offset' => params["tz_offset"].to_i })
   timing[:parsed] = Time.now - start
   result['parsed'] = parsed  if params['wanted'].include?('parsed')
   
