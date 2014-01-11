@@ -31,7 +31,7 @@ execute do |params|
         puts "user : #{request.context.cookies['current_user']} (#{request.context.cookies['current_user_email']})"
         
         #command = "nohup vop"
-        command_line = "vop"
+        command_line = "rails_vop"
         
         if request.context.cookies['current_user']
           command_line += " -u #{request.context.cookies['current_user']}"
@@ -67,7 +67,7 @@ execute do |params|
           end
         end
         
-        command_line += " -fle '#{command_string}' &"      
+        command_line += " -fl --execute='#{command_string}' &"      
         
         puts "+++\nlaunching\n+++\n#{command_line}\n+++"
         system command_line

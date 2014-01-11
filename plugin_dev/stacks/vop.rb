@@ -39,31 +39,7 @@ post_rollout do |stacked, params|
   
   failure = params["result"][:failure]
   raise "some stacks could not be rolled out: #{failure.map { |x| x["name"] }}" unless failure.size == 0
-  
-  @op.with_machine(stacked["vop"].first["full_name"]) do |vop|
-    vop.as_user('marvin') do |marvin|
-      marvin.upload_stored_keypair("keypair" => params["keypair"])
-      marvin.transfer_keypair("keypair" => params["keypair"])
-      
-      params["hetzner_account"].each do |hetzner_account|
-        marvin.upload_hetzner_account("hetzner_account" => hetzner_account)
-      end      
-      
-      marvin.vop_call("force" => "true", "command" => "find_vms", "logging" => "true")
-      
-      marvin.upload_data_repo("target_alias" => "old_data_repo")
-      
-      if params["clone"]
-        identity = @op.whoareyou.split('@').last
-        @op.with_machine(identity) do |me|
-          me.backup_data()
-        end
-        marvin.vop_call("logging" => "true", "command" => "restore_self")
-      end
-      
-      marvin.vop_call("force" => "true", "logging" => "true", "command" => "start_rollout", 
-        "host" => params["machine"], "stack" => "minimal_platform", "extra_params" => params["extra_params"] 
-      )
-    end
-  end
+
+  params['vop_machine'] = stacked["vop"].first["full_name"]   
+  @op.post_rollout_vop(params)
 end
