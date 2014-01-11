@@ -57,13 +57,6 @@ define service{
 define service{
         use                             service-template-nop
         host_name                       <%= machine.name.downcase %>
-        service_description             OfficeScan NT Listener
-        check_command                   check_snmp_process!TmListen.exe
-        }
-
-define service{
-        use                             service-template-nop
-        host_name                       <%= machine.name.downcase %>
         service_description             OfficeScan NT Realtime Scan
         check_command                   check_snmp_process_regex![nN][tT][rR][tT][sS]can.exe
         }
@@ -71,6 +64,6 @@ define service{
 define service{
         use                             service-template-nop
         host_name                       <%= machine.name.downcase %>
-        service_description             Prozess VMWare Tools
-        check_command                   check_snmp_process!vmtoolsd.exe
-        }
+        service_description             AV-Update Status
+        check_command                   check_nrpe!check_officescan -a 1 2
+        } 

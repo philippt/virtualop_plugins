@@ -25,8 +25,9 @@ on_machine do |machine, params|
     dir = params["directory"]
   end
   
-  if config && (/^(http|svn)/ !~ params['svn_url'])  
-    params['svn_url'] = "#{config['url']}/#{params['svn_url']}"
+  svn_url = params['svn_url']
+  if config && (/^(http|svn)/ !~ svn_url)  
+    svn_url = "#{config['url']}/#{svn_url}"
   end
   
   machine.ssh "svn co #{auth} #{svn_url} #{dir}"
