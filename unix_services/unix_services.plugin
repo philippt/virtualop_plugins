@@ -1,3 +1,0 @@
-dependencies [ :core, :machines ]
-
-tags :linux # yes, i know

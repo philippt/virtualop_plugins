@@ -1,7 +1,0 @@
-define service {
-        use                     <%= params["service_template"] %>
-        host_name               <%= params["machine"] %>
-        service_description     <%= params["service_description"] %>
-        check_command           <%= params["check_command"] %>
-        notifications_enabled   <%= notifications_enabled ? 1 : 0 %>
-}

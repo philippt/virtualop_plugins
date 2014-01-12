@@ -1,1 +1,0 @@
-dependencies [ :machines, :core, :vm_handling ]

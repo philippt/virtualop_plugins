@@ -1,7 +1,0 @@
-dependency :bash
-dependency :machines
-dependency :core
-dependency :erb_processor
-dependency :packages
-
-tags :packages

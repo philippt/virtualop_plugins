@@ -1,4 +1,0 @@
-dependencies [ :core, :machines, :erb_processor ]
-
-# TODO for now...
-dependency :xoplogs
