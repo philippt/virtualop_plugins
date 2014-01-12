@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS <%= partitioned_table_name %> (
+  `id` int(11) NOT NULL auto_increment,
+  `request_id` int(11) default NULL,
+  `execution_id` int(11) default NULL,
+  `level` varchar(10) default NULL,
+  `message` varchar(2048) default NULL,
+  `ts` datetime default NULL,
+  PRIMARY KEY  (`id`)
+  
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHARACTER SET utf8 COLLATE utf8_unicode_ci;

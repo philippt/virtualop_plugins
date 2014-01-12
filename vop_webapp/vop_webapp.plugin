@@ -1,0 +1,12 @@
+dependency :core
+dependency :machines
+
+config_param "root_action", "target for the root action in rails route config", :default_value => 'home#index'
+config_param "default_theme", "the theme to use", :default_value => 'virtualop'
+config_param "new_machine_command", "base name for the new_machine command that should be used. will be suffixed with +_somewhere+", :default_value => 'new_machine'
+config_param "authentication_method", "the backend that should be used for authenticating users in the web app", 
+  :lookup_method => lambda { %w|database ldap| }, :default_value => 'database'
+config_param "default_machine_tabs", "the tabs that should be displayed in the machine view by default", :allows_multiple_values => true, 
+  :default_value => %w|machine_overview list_services working_copies virtual_hosts log_files|
+config_param "auto_friends", "user/s (resp. their login(s) that should automatically be added as friends for new users", :allows_multiple_values => true, :default_value => [ 'marvin' ]
+config_param "tree_command", "vop command that returns the inventory tree", :default_value => 'tree' 

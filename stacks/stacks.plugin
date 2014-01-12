@@ -1,0 +1,5 @@
+dependencies [ :core, :machines, :erb_processor ]
+
+on_init do |plugin, config|
+  plugin.state[:stacks] = {}
+end

@@ -1,0 +1,6 @@
+dependency :core
+dependency :machines
+dependency :vm
+
+tags :installation
+tags :virtual_insanity

@@ -1,0 +1,25 @@
+dependency :rabbitmq_plugin
+dependencies [ :core, :machines ]
+dependency :erb_processor
+
+config_param! "db_host", "host on which the database is running that should be used"
+config_param! "db_user", "user name for the db connection"
+config_param! "db_pass", "password for the db connection"
+config_param! "db_name", "name of the database to use"
+
+config_param "db_port", "TCP port the database is listening on", :default_value => 3306
+config_param "db_socket", "path to UNIX socket to use for the connection", :default_value => '/var/lib/mysql/mysql.sock'
+
+config_param "archive_directory", "the directory where old archive tables should be stored"
+config_param "archive_min_age", "the age logging tables can reach before they are moved into the archive", :default_value => 7
+
+on_activation do |plugin, config|
+  require 'mysql'
+  
+  dbh = Mysql.real_connect(config["db_host"], config["db_user"], config["db_pass"], config["db_name"], config["db_port"], config["db_socket"])
+  dbh.autocommit(false)
+  plugin.state[:dbh] = dbh      
+  $logger.info("database logging activated (db name : #{config["db_name"]})")
+end
+
+tags :logging

@@ -1,0 +1,35 @@
+dependencies [ :core, :machines, :erb_processor, :drop_dir ]
+
+config_param "ldap_dropdir", "the directory with ldap server details", :default_value => "#{@op.config_base_dir}/accounts/ldap"
+
+has_accounts({
+  :list => 'list_ldap_servers',
+  :add => 'add_ldap_server',
+  :remove => 'delete_ldap_server'
+})
+
+on_activation do |plugin, config|
+  require 'helpers/drop_dir_provider'
+  
+  dir_name = plugin.config_string("ldap_dropdir")
+  
+  provider = DropDirProvider.new(@op,
+	  :host => "localhost",
+	  :user => "root",
+	  :directory => dir_name
+  )
+  plugin.state[:drop_dir] = provider
+  FileUtils.mkdir_p(dir_name) unless File.exists?(dir_name)
+  
+  plugin.state[:connection_pool] = {}
+  
+  require 'util/net_ldap_adjustments'
+end
+
+on_preflight do |request, response|
+  ldaps = @op.list_ldap_servers
+  if ldaps.size > 0
+    #@op.comment("auto-selecting ldap server '#{ldaps.first["alias"]}'")
+    @op.select_ldap_server("ldap_server" => ldaps.first["alias"])
+  end
+end

@@ -1,0 +1,26 @@
+dependencies [ :core, :hosting_accounts, :libvirt, :drop_dir, :dns ]
+
+config_param "hetzner_account_dropdir", "the directory with hetzner account details", 
+  :default_value => "#{@op.config_base_dir}/accounts/hetzner"
+
+tags :hosting
+
+has_accounts({
+  :list => 'list_hetzner_accounts',
+  :add => 'add_hetzner_account',
+})
+
+on_activation do |plugin, config|
+  require 'helpers/drop_dir_provider'
+  
+  dir_name = plugin.config_string('hetzner_account_dropdir')
+  #dir_name = config["hetzner_account_dropdir"]
+  
+  provider = DropDirProvider.new(@op,
+	  :host => "localhost",
+	  :user => "root",
+	  :directory => dir_name
+  )
+  plugin.state[:hetzner_drop_dir] = provider
+  FileUtils.mkdir_p(dir_name) unless File.exists?(dir_name)
+end

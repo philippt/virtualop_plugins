@@ -1,0 +1,18 @@
+CREATE TABLE IF NOT EXISTS <%= partitioned_table_name %> (
+  `id` int(11) NOT NULL auto_increment,
+  `request_id` varchar(255) default NULL,
+  `command_name` varchar(200) default NULL,
+  `param_string` varchar(1024) default NULL,
+  `mode` varchar(10) default NULL,
+  `level` int(11) default NULL,
+  `response_code` varchar(10) default NULL,
+  `error_message` varchar(255) default NULL,
+  `error_detail` blob,
+  `start_ts` datetime default NULL,
+  `stop_ts` datetime default NULL,
+  `json_request` blob,
+  `json_response` blob,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+
+

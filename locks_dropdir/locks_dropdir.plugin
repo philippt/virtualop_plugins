@@ -1,0 +1,11 @@
+dependencies [ :core, :machines, :erb_processor, :drop_dir ]
+
+config_param "dropdir", "the directory holding machine groups", :default_value => "#{@op.config_base_dir}/locks"
+
+config_param "max_attempts", "amount of attempts to be performed to acquire a lock", :default_value => 10
+config_param "attempt_interval_secs", "sleep duration between attempts to get a lock (in seconds)", :default_value => 60
+
+on_init do |plugin, config|
+  require 'helpers/init_dropdir'
+  init_dropdir plugin, plugin.config_string("dropdir")
+end

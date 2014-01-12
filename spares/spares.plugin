@@ -1,0 +1,5 @@
+dependencies [ :core, :machines, :erb_processor ]
+
+dependencies [ :libvirt, :vm_handling ]
+dependencies [ :git_scm, :github_scm ] # TODO
+dependency :environments
