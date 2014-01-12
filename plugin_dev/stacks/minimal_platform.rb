@@ -97,14 +97,15 @@ on_install do |stacked, params|
   @op.comment("found #{old_repos.size} old repos")
   if old_repos.size > 0
     old_repo = old_repos.first
-    identity = @op.whoareyou.split('@').last
-    @op.with_machine(identity) do |me|
-      me.restore_data()
-      @op.configure_machines("identity" => identity)
-      
-      vop_webapp_path = me.service_details("service" => "virtualop_webapp/virtualop_webapp")["service_root"]
-      me.ssh("cd #{vop_webapp_path} && rake db:migrate")
-    end
+    @op.restore_self
+    # identity = @op.whoareyou.split('@').last
+    # @op.with_machine(identity) do |me|
+      # me.restore_data()
+      # @op.configure_machines("identity" => identity)
+#       
+      # vop_webapp_path = me.service_details("service" => "virtualop_webapp/virtualop_webapp")["service_root"]
+      # me.rvm_ssh("cd #{vop_webapp_path} && rake db:migrate")
+    # end
     
     # TODO delete old_data_repo after populating the new one?
   end
