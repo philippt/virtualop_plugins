@@ -1,5 +1,7 @@
 github_params
 param! :github_project
+param :git_branch
+param 'with_install_command', '', :default_value => false
 
 #add_columns [ :full_name ]
 
@@ -17,17 +19,20 @@ execute do |params|
   unless row
     raise "sanity check failed: github project #{params['github_project']} not found in user or organisation repos"
   end
-  result = @op.inspect_github_repos(params.merge('project_data' => row)).first
-  
-  if result && result['services'] && result['services'].size > 0
-    service = result['services'].first
-    begin
-      if service.has_key?('install_command_name') and service['install_command_name'] != nil
-        result['install_command'] = @op.broker.get_command(service["install_command_name"])
+  row.merge_from params, :git_branch
+  result = @op.inspect_github_repos('project_data' => row).first
+
+  if params['with_install_command']
+    if result && result['services'] && result['services'].size > 0
+      service = result['services'].first
+      begin
+        if service.has_key?('install_command_name') and service['install_command_name'] != nil
+          result['install_command'] = @op.broker.get_command(service["install_command_name"])
+        end
+      rescue RHCP::RhcpException => e
+        $logger.warn("cannot load install command for service #{service["name"]} : #{e}")
+        raise e
       end
-    rescue RHCP::RhcpException => e
-      $logger.warn("cannot load install command for service #{service["name"]} : #{e}")
-      raise e
     end
   end
   

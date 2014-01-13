@@ -6,6 +6,8 @@ param "with_service", "if set to true, we will try to find vop services in the g
 
 add_columns [ :name, :description ]
 
+mark_as_read_only
+
 execute do |params|
   data = JSON.parse(@op.http_get("url" => github_url(params, "/orgs/#{params["org"]}/repos")))
   

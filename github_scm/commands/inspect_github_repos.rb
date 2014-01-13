@@ -8,9 +8,12 @@ execute do |params|
     x["full_name"] = x["owner"]["login"] + '/' + x["name"]
     # TODO branch support?
     begin
-      x["has_metadata"] = @op.get_tree(params.merge({ "github_project" => x["full_name"] })).select { |y| y["path"] == ".vop" }.size > 0
+      p = {
+        "github_project" => x["full_name"]
+      }.merge_from(x, :git_branch)
+      x["has_metadata"] = @op.get_tree(p).select { |y| y["path"] == ".vop" }.size > 0
       if x["has_metadata"]
-        services = @op.list_services_in_github_project("github_project" => x["full_name"])
+        services = @op.list_services_in_github_project(p)
         if services.size > 0
           service = services.first
           x["installation_params"] = service["install_command_params"]

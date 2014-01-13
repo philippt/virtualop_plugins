@@ -6,13 +6,13 @@ param "memory_size", "the amount of memory (in MB) that should be allocated for 
 param "disk_size", "disk size in GB for the new VM", :default_value => 25
 param "vcpu_count", "the number of virtual CPUs to allocate", :default_value => 1
 
-param "ip", "the static IP address for the new machine"
+#param "ip", "the static IP address for the new machine"
 
 param :github_project
 param :git_branch
-param :git_tag
+#param :git_tag
 
-param "canned_service", "name of a canned service to install on the machine", :allows_multiple_values => true
+#param "canned_service", "name of a canned service to install on the machine", :allows_multiple_values => true
 
 param "environment", "if specified, the environment is written into a config file so that it's available through $VOP_ENV", :lookup_method => lambda {
   @op.list_environments

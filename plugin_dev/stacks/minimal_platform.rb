@@ -126,14 +126,15 @@ end
 post_rollout do |stacked, params|
   @op.comment "post rollout. successful: #{params["result"][:success].size}, failed: #{params["result"][:failure].size}"
   
-  if params.has_key?('extra_params')
-    params.merge! params['extra_params']
-  end 
-  
   pp params
   
   failure = params["result"][:failure]
   raise "some stacks could not be rolled out: #{failure.map { |x| x["name"] }}" unless failure.size == 0
+  
+  if params.has_key?('extra_params')
+    params.merge! params['extra_params']
+  end
+  pp params
   
   if params.has_key?("target_domain")
     target_domain = params["target_domain"]

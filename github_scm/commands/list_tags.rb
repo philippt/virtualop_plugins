@@ -3,7 +3,7 @@ description "returns the tags that have been set on a github project"
 github_params
 param! :github_project
 
-#mark_as_read_only
+mark_as_read_only
 
 add_columns [ :name, :sha ]
 

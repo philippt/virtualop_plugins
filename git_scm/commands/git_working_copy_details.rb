@@ -38,6 +38,10 @@ on_machine do |machine, params|
     end
     
     wc["active_branch"] = machine.list_branches_for_working_copy("working_copy" => params["working_copy"]).select { |x| x["active"] == "true" }.first["name"]
+    last_log = @op.working_copy_log(params).first
+    if last_log
+      wc['last_commit'], wc['last_commit_comment'] = last_log['sha'], last_log['comment']
+    end
   end
   
   #pp wc
