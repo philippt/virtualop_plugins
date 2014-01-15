@@ -9,6 +9,7 @@ add_columns [ :name, :sha ]
 
 execute do |params|
   result = JSON.parse(@op.http_get("url" => "https://api.github.com/repos/#{params["github_project"]}/git/refs/heads?access_token=#{params["github_token"]}")).map do |ref|
+    $logger.info ref.pretty_inspect
     {
       "sha" => ref["object"]["sha"],
       "name" => ref["ref"].split("/").last
