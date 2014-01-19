@@ -4,7 +4,7 @@ github_params
 
 param :machine
 
-param! "github_project"
+param! "github_project", :default_param => true
 param :git_branch
 param :git_tag
 param "directory", "the target directory to checkout into (defaults to $HOME/project_name)"
