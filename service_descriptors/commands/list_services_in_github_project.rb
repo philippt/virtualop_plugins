@@ -11,6 +11,7 @@ mark_as_read_only
 add_columns [ :name, :unix_service, :port, :process_regex, :http_endpoint, :tcp_endpoint ]
 
 # TODO refactor
+# TODO deprecated - should be replaced by services_in_github_project
 execute do |params|
   result = []
   
@@ -74,9 +75,6 @@ execute do |params|
       thing = matched.captures.first[0..-2]
       name = matched.captures[1]
       things_to_load[thing][name] = source
-      
-      #load_method = "load_#{}"
-      #the_plugin.send(load_method.to_sym, matched.captures[1], source)
     elsif matched = /services\/(.+)\.rb$/.match(file)
       service_name = matched.captures.first
       
@@ -105,7 +103,7 @@ execute do |params|
     end
   end
   
-  pp result
+  #pp result
   if result.size > 0
     project_name = plugin_name
     
