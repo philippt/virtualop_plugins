@@ -17,8 +17,12 @@ execute do |params|
     @op.list_repos_for_org(params.merge('org' => org_name))
   row = rows.select { |x| x['full_name'] == params['github_project'] }.first
   unless row
-    raise "sanity check failed: github project #{params['github_project']} not found in user or organisation repos"
+    #raise "sanity check failed: github project #{params['github_project']} not found in user or organisation repos"
+    row = {
+      'full_name' => params['github_project']
+    } 
   end
+  
   row.merge_from params, :git_branch
   result = @op.inspect_github_repos('project_data' => row).first
 
