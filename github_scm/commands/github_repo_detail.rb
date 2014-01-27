@@ -27,8 +27,13 @@ execute do |params|
   result = @op.inspect_github_repos('project_data' => row).first
 
   if params['with_install_command']
+    services = @op.list_services_in_github_project('github_project' => params['github_project'])
+    
     if result && result['services'] && result['services'].size > 0
-      service = result['services'].first
+      # actually, x['full_name'] does not correspond to service_name
+      #service_name = result['services'].first
+      #service = services.select { |x| x['full_name'] == service_name }.first
+      service = services.first
       begin
         if service.has_key?('install_command_name') and service['install_command_name'] != nil
           result['install_command'] = @op.broker.get_command(service["install_command_name"])
