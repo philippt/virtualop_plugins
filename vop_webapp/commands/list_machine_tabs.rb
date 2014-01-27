@@ -32,6 +32,7 @@ on_machine do |machine, params|
     tabs << [ "windows_services", "Windows Services" ]
   when "linux"
     tabs << ["unix_services", "Unix Services"]
+    tabs << ["system_users", "Users"]
   end
   
   tabs << ["list_services", "Services"]
