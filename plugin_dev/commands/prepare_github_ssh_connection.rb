@@ -10,7 +10,6 @@ on_machine do |machine, params|
   keypair = @op.list_stored_keypairs { |x| x["alias"] == params["keypair"] }.first
   
   github_user = @op.github_user({}.merge_from(params, :github_user, :github_password, :github_token))
-  pp github_user
   
   machine.ssh "git config --global user.email '#{github_user["email"]}'"
   machine.ssh "git config --global user.name '#{github_user["name"]}'"

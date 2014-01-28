@@ -5,6 +5,10 @@ param "default_user", "default SSH user"
 param "default_password", "default SSH password"
 param "marvin_email", "if specified, an account with the name 'marvin' and this email address is created. also see marvin_password"
 param "marvin_password", "the password for the marvin user"
+param "target_host", "a production host onto which the new version is rolled out after successful tests"
+#param "target_domain", "ugly workaround because we need to specify alpha/beta. necessary for target_host to work"
+
+accept_extra_params 
 
 execute do |params|
   begin
@@ -30,5 +34,22 @@ execute do |params|
     "prefix" => "ci_", "domain" => "ci.virtualop.org",
     "default_user" => params["default_user"],
     "default_password" => params["default_password"] 
-  })  
+  })
+  
+  @op.tag_as_stable('machine' => 'localhost', 'keypair' => 'ci_vop')
+  
+  if params['target_host'] #&& params['target_domain']
+    #start_rollout host=seriphos.xop stack=vop domain=beta.virtualop.org hetzner_account=xop hetzner_account=virtualop keypair=ci_vop 
+    #default_user=root default_password=the_password environment=production service_root=/home/marvin/virtualop_webapp git_branch=stable 
+    #target_github_data=9f1f08ae7d4506ae3c9c/b451bda4fe36233186fad5567d6dd1084bba3804    
+    @op.start_rollout({ 
+      'host' => params['target_host'],
+      'stack' => 'vop',
+      'keypair' => 'ci_vop',
+      'environment' => 'production',
+      'service_root' => '/home/marvin/virtualop_webapp',
+      'git_branch' => 'stable',
+      'extra_params' => params['extra_params']
+    })    
+  end
 end
