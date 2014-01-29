@@ -1,3 +1,5 @@
+github_params
+
 param :machine
 
 param :keypair

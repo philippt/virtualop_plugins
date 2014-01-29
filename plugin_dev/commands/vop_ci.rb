@@ -1,5 +1,7 @@
 description "tests if a vop machine can setup new machines"
 
+github_params
+
 param! "host", "a host to run CI on"
 param "default_user", "default SSH user"
 param "default_password", "default SSH password"
@@ -36,7 +38,7 @@ execute do |params|
     "default_password" => params["default_password"] 
   })
   
-  @op.tag_as_stable('machine' => 'localhost', 'keypair' => 'ci_vop')
+  @op.tag_as_stable({'machine' => 'localhost', 'keypair' => 'ci_vop'}.merge_from params, :github_token)
   
   if params['target_host'] #&& params['target_domain']
     #start_rollout host=seriphos.xop stack=vop domain=beta.virtualop.org hetzner_account=xop hetzner_account=virtualop keypair=ci_vop 
