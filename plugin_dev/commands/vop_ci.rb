@@ -38,7 +38,7 @@ execute do |params|
     "default_password" => params["default_password"] 
   })
   
-  @op.tag_as_stable({'machine' => 'localhost', 'keypair' => 'ci_vop'}.merge_from params, :github_token)
+  @op.tag_as_stable({'machine' => 'localhost', 'keypair' => 'ci_vop'}.merge_from(params, :github_token))
   
   if params['target_host'] #&& params['target_domain']
     #start_rollout host=seriphos.xop stack=vop domain=beta.virtualop.org hetzner_account=xop hetzner_account=virtualop keypair=ci_vop 

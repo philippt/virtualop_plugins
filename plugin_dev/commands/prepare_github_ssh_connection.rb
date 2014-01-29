@@ -9,7 +9,12 @@ on_machine do |machine, params|
   machine.upload_stored_keypair("keypair" => params["keypair"])
   keypair = @op.list_stored_keypairs { |x| x["alias"] == params["keypair"] }.first
   
-  github_user = @op.github_user({}.merge_from(params, :github_user, :github_password, :github_token))
+  puts "params"
+  pp params
+  p = {}.merge_from(params, :github_user, :github_password, :github_token)
+  puts "p"
+  pp p
+  github_user = @op.github_user(p)
   
   machine.ssh "git config --global user.email '#{github_user["email"]}'"
   machine.ssh "git config --global user.name '#{github_user["name"]}'"

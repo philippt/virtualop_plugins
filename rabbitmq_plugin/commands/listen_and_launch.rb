@@ -43,7 +43,6 @@ execute do |params|
         
         command_line += ' -o ' + request.context.cookies.map do |k,v|
           values = v.is_a?(Array) ? v : [ v ]
-          # TODO multiple -o's arent supported at the moment
           values.map { |value| "#{k}=#{value}" }
         end.join(',')
         
