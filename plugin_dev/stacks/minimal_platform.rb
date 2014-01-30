@@ -14,17 +14,17 @@ stack :nagios do |m, p|
   m.disk 50
 end
  
-stack :xoplogs do |m, params|
-  m.github 'philippt/xoplogs'
-  m.domain_prefix 'xoplogs'
-  m.memory [ 512, 1024, 2048 ]
-  m.disk 100
-  
-  #m.post_install do |machine|
-    # TODO check if this works (lots of 'machine' thingies)
-  #  @op.configure_xoplogs("xoplogs_machine" => machine.name, "auto_import_machine_groups" => [ params["machine"] ])
-  #end
-end
+# stack :xoplogs do |m, params|
+  # m.github 'philippt/xoplogs'
+  # m.domain_prefix 'xoplogs'
+  # m.memory [ 512, 1024, 2048 ]
+  # m.disk 100
+#   
+  # #m.post_install do |machine|
+    # # TODO check if this works (lots of 'machine' thingies)
+  # #  @op.configure_xoplogs("xoplogs_machine" => machine.name, "auto_import_machine_groups" => [ params["machine"] ])
+  # #end
+# end
  
 stack :datarepo do |m, params|
   m.canned_service :datarepo
