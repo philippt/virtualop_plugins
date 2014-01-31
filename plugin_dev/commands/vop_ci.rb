@@ -35,7 +35,7 @@ execute do |params|
     "prefix" => "ci_", "domain" => "ci.virtualop.org",
     "default_user" => params["default_user"],
     "default_password" => params["default_password"] 
-  })
+  }) if false
   
   @op.tag_as_stable({'machine' => 'localhost', 'keypair' => 'ci_vop'}.merge_from(params, :github_token))
   
@@ -47,6 +47,7 @@ execute do |params|
     p['extra_params'] ||= {}
     p['extra_params'].merge!(
       'keypair' => 'ci_vop',
+      'data_repo' => 'ci_',
       'environment' => 'production',
       'service_root' => '/home/marvin/virtualop_webapp',
       'git_branch' => 'stable'

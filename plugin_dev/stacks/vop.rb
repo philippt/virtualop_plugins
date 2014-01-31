@@ -4,6 +4,7 @@ param! "domain", :description => "the domain for the virtualop instance"
 param! "hetzner_account", :description => "hetzner accounts to upload to the new vop instance", :allows_multiple_values => true
 param! "keypair", :description => "ssh keypair that should be uploaded to the new vop"
 param "clone", :description => "if set to true, the vop rolling out the stack will make a backup of itself into it's data repo and use this for setting up the new vop"
+param "clone_from", :description => "name of a machine to clone the vop data from"
 param "github_token"
 param "target_domain", :description => "alternative domain that should be enabled during post_rollout"
 param "target_github_data", :description => "github application id and secret, separated by a slash. used for oauth integration"
@@ -42,6 +43,51 @@ post_rollout do |stacked, params|
   failure = params["result"][:failure]
   raise "some stacks could not be rolled out: #{failure.map { |x| x["name"] }}" unless failure.size == 0
 
-  params['vop_machine'] = stacked["vop"].first["full_name"]   
-  @op.post_rollout_vop(params)
+  vop_machine = stacked["vop"].first["full_name"]
+  @op.with_machine(vop_machine) do |vop|
+    vop.as_user('marvin') do |marvin|
+      @op.flush_cache # TODO #snafoo machine.home is cached as '/root'
+      marvin.upload_stored_keypair("keypair" => params["keypair"])
+      marvin.transfer_keypair("keypair" => params["keypair"])
+      @op.comment "uploaded and transferred keypair #{params['keypair']}"
+      
+      params["hetzner_account"].each do |hetzner_account|
+        marvin.upload_hetzner_account("hetzner_account" => hetzner_account)
+        @op.comment "uploaded hetzner account #{hetzner_account}"
+      end      
+      
+      marvin.vop_call("force" => "true", "command" => "find_vms", "logging" => "true")
+      
+      if params['data_repo']
+        marvin.upload_data_repo('data_repo' => params['data_repo'], "target_alias" => "old_data_repo")
+      end
+      
+      source = nil
+      if params["clone"]
+        source = @op.whoareyou.split('@').last
+      elsif params['clone_from']
+        source = params['clone_from']
+      end
+      
+      if source
+        @op.backup_data('machine' => source)
+      end
+      # TODO marvin.vop_call("logging" => "true", "command" => "restore_self")
+      # TODO execute migrations (happens inside restore_self at the moment)
+      
+      p = {}
+      p.merge_from params, :github_token
+      p.merge! params['extra_params'] if params['extra_params']
+      
+      p['stack'] = 'minimal_platform'
+      p['host'] = params["machine"]
+      
+      marvin.vop_call( 
+        "command" => "start_rollout",
+        "extra_params" => p,
+        "force" => "true", 
+        "logging" => "true" 
+      )
+    end
+  end   
 end
