@@ -8,6 +8,7 @@ param "default_password", "default SSH password"
 param "marvin_email", "if specified, an account with the name 'marvin' and this email address is created. also see marvin_password"
 param "marvin_password", "the password for the marvin user"
 param "target_host", "a production host onto which the new version is rolled out after successful tests"
+#param "source_vop", "a vop machine from which the new vop should copy it's data"
 
 accept_extra_params 
 
@@ -35,7 +36,7 @@ execute do |params|
     "prefix" => "ci_", "domain" => "ci.virtualop.org",
     "default_user" => params["default_user"],
     "default_password" => params["default_password"] 
-  }) if false
+  })
   
   @op.tag_as_stable({'machine' => 'localhost', 'keypair' => 'ci_vop'}.merge_from(params, :github_token))
   
