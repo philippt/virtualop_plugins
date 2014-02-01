@@ -8,6 +8,7 @@ param "default_password", "default SSH password"
 param "marvin_email", "if specified, an account with the name 'marvin' and this email address is created. also see marvin_password"
 param "marvin_password", "the password for the marvin user"
 param "target_host", "a production host onto which the new version is rolled out after successful tests"
+param 'data_repo'
 
 accept_extra_params 
 
@@ -26,7 +27,11 @@ execute do |params|
     $logger.error("could not create marvin user : #{detail.message}")
   end
   
-  @op.find_vms
+  #@op.find_vms
+  if params['data_repo']
+    @op.upload_data_repo('machine' => 'self', 'data_repo' => params['data_repo'], 'target_alias' => 'old_data_repo')
+  end
+  
   
   @op.load_dev_plugin
   
