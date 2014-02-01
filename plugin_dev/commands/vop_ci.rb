@@ -8,7 +8,6 @@ param "default_password", "default SSH password"
 param "marvin_email", "if specified, an account with the name 'marvin' and this email address is created. also see marvin_password"
 param "marvin_password", "the password for the marvin user"
 param "target_host", "a production host onto which the new version is rolled out after successful tests"
-#param "source_vop", "a vop machine from which the new vop should copy it's data"
 
 accept_extra_params 
 
@@ -20,7 +19,6 @@ execute do |params|
           "login" => "marvin"
         }.merge_from(params, :marvin_email => :email, :marvin_password => :password)
         escaped_user_data = user_data.pretty_inspect()
-        #pp escaped_user_data
         machine.rvm_ssh("cd /home/marvin/virtualop_webapp && rails runner 'puts $op.add_rails_user(#{escaped_user_data})'")
       end
     end
@@ -48,7 +46,6 @@ execute do |params|
     p['extra_params'] ||= {}
     p['extra_params'].merge!(
       'keypair' => 'ci_vop',
-      'data_repo' => 'ci_',
       'environment' => 'production',
       'service_root' => '/home/marvin/virtualop_webapp',
       'git_branch' => 'stable'
