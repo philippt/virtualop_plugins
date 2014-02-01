@@ -28,10 +28,6 @@ execute do |params|
   end
   
   #@op.find_vms
-  if params['data_repo']
-    @op.upload_data_repo('machine' => 'self', 'data_repo' => params['data_repo'], 'target_alias' => 'old_data_repo')
-  end
-  
   
   @op.load_dev_plugin
   
@@ -40,6 +36,10 @@ execute do |params|
     "default_user" => params["default_user"],
     "default_password" => params["default_password"] 
   })
+  
+  #if params['data_repo']
+  #  @op.upload_data_repo('machine' => 'self', 'data_repo' => params['data_repo'], 'target_alias' => 'old_data_repo')
+  #end
   
   @op.tag_as_stable({'machine' => 'localhost', 'keypair' => 'ci_vop'}.merge_from(params, :github_token))
   
