@@ -55,6 +55,10 @@ execute do |params|
       'service_root' => '/home/marvin/virtualop_webapp',
       'git_branch' => 'stable'
     )
+    p['extra_params'].merge!(
+      "default_user" => params["default_user"],
+      "default_password" => params["default_password"]
+    ) if params['default_user']
     @op.start_rollout(p)
   end
 end
