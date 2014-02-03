@@ -20,16 +20,17 @@ execute do |params|
       end
       service["dir_name"] = parts.join("/") 
       
-      parts = service["file_name"].split("/")
-      idx = parts.index("services")
-      offset = 1
-      possible_name = parts[idx - offset]
-      if possible_name == '.vop'
-        offset += 1
-        possible_name = parts[idx - offset]
-      end
+      #parts = service["file_name"].split("/")
+      #idx = parts.index("services")
+      #offset = 1
+      #possible_name = parts[idx - offset]
+      #if possible_name == '.vop'
+      #  offset += 1
+      #  possible_name = parts[idx - offset]
+      #end
       
-      service["full_name"] = possible_name + '/' + service["name"]
+      #service["full_name"] = possible_name + '/' + service["name"]
+      service["full_name"] = params['service']
       
       result = service
     rescue => detail
