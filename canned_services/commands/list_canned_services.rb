@@ -10,7 +10,7 @@ execute do |params|
     config_string("descriptor_dirs").each do |dir|
       localhost.find("path" => dir, "path_filter" => "*/services/*.rb").each do |file|
         file.chomp!
-        if /([^\/]+)\/services\/(.+)\.rb/.match(file)
+        if /([^\/]+)\/services\/([^\/]+)\.rb/.match(file)
           if service_plugins.include? $1
             result << "#{$1}/#{$2}"
           end

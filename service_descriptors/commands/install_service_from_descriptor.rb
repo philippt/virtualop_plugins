@@ -50,7 +50,7 @@ on_machine do |machine, params, request|
         machine.set_machine_user(user_name)
         user_set = true
         # TODO #performance
-        @op.flush_cache
+        @op.flush_cache if @op.list_plugins.include? 'memcached_plugin'
       end
     end
     
