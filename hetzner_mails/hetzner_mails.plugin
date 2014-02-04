@@ -1,4 +1,0 @@
-dependencies [ :core, :machines, :erb_processor ]
-
-dependencies [ :hetzner, :imap, :email ]
-

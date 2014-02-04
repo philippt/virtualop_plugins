@@ -1,5 +1,0 @@
-dependencies [ :core, :machines, :erb_processor ]
-
-dependency :service_descriptors # param_service
-dependency :vop_webapp # param_current_user
-dependency :spares

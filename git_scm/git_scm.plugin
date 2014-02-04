@@ -1,5 +1,0 @@
-dependency :core
-dependency :machines
-dependency :working_copies
-
-#dependency :machine_crawler

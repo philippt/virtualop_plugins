@@ -1,7 +1,0 @@
-
-define service {
-        use						<%= config_string('service_template').join(',') %>
-		host_name				<%= machine.name %>
-		service_description     apache2_status	
-		check_command			check_apache2
-}

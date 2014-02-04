@@ -1,6 +1,0 @@
-dependencies [ :core, :machines, :erb_processor, :service_descriptors, :unix_services ]
-
-dependency :machine_crawler
-
-#dependency :windows_services
-
