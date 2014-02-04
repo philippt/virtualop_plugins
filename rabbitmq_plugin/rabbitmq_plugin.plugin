@@ -1,0 +1,24 @@
+#require 'carrot'
+
+require 'brokers/rabbitmq_broker'
+
+dependencies [ :core, :machines ]
+
+config_param! "rabbitmq_hostname", "the hostname or IP address to the machine where rabbitmq can be found", :default_value => 'localhost'
+# TODO wishful thinking?
+config_param "broker_enabled", "if set to true, all rhcp commands will be logged to a rabbitmq queue", :default_value => false
+config_param "buffer_enabled", "if set to true, messages are buffered before sent out to rabbitmq", :default_value => false
+config_param "launch_command", "the command with which vop instances should be launched to handle commands", :default_value => 'vop'
+
+@plugin.register_broker RabbitmqBroker
+
+tags :logging, :plumbing
+
+on_activation do |plugin, config|
+  #require 'rubygems'
+  #require 'carrot'  
+end  
+
+on_shutdown do |plugin, config|
+  @op.flush_buffer
+end

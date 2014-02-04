@@ -1,0 +1,5 @@
+dependencies [ :core, :machines, :erb_processor ]
+
+dependencies [ :service_descriptors ]
+
+config_param! "descriptor_dirs", "list of fully qualified paths holding service descriptors", :allows_multiple_values => true

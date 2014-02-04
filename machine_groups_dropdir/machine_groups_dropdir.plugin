@@ -1,0 +1,18 @@
+dependencies [ :core, :machines, :erb_processor, :drop_dir, :machine_groups ]
+
+config_param "dropdir", "the directory holding machine groups", :default_value => "#{@op.config_base_dir}/machine_groups"
+
+on_init do |plugin, config|
+  require 'helpers/drop_dir_provider'
+  
+  dir_name = plugin.config_string("dropdir")
+  
+  provider = DropDirProvider.new(@op,
+	  :host => "localhost",
+	  :user => "root",
+	  :directory => dir_name,
+	  :extension_filter => '\.conf'
+  )
+  plugin.state[:drop_dir] = provider
+  Dir.mkdir(dir_name) unless File.exists?(dir_name)
+end

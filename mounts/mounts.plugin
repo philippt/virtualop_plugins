@@ -1,0 +1,2 @@
+dependencies [ :core, :machines, :erb_processor ]
+

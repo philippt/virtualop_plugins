@@ -1,0 +1,29 @@
+dependency :core
+dependency :erb_processor
+dependency :libvirt
+dependency :rpm
+dependency :service_descriptors
+dependency :github_scm
+dependency :git_scm
+dependency :environments
+dependency :locks_dropdir
+
+# TODO actually, this could be an optional_dependency
+dependency :machine_groups
+
+config_param "install_kernel_location", "the location from which the kernel+initrd pair should be retrieved for an installation", 
+  :default_value => "http://ftp-stud.fht-esslingen.de/pub/Mirrors/centos/6/os/x86_64/"
+  #:default_value => "http://mirror.virtualop.org/pub/Mirrors/centos/6/os/x86_64/"
+  
+config_param "kickstart_url_vm", "the HTTP url to the kickstart script to use for setting up new VMs",
+  :default_value => "http://vop.beta.virtualop.org/kickstart/centos6_minimal"
+  
+config_param "http_proxy", "URL to a http proxy to use during the installation and on new VMs"     
+  
+config_param "installation_target", "a virtualization host on which VMs are created when no host is specified", 
+	:lookup_method => lambda { @op.list_machines.map { |x| x["name"] } }, :allows_multiple_values => true    
+  
+config_param 'installation_timeout_secs', 'seconds to wait for an installation to finish', :default_value => 1800
+config_param 'vm_start_timeout_secs', 'seconds to wait for a VM to start', :default_value => 300  
+  
+tags :installation

@@ -1,0 +1,16 @@
+dependencies [ :core, :machines, :erb_processor ]
+
+dependency :drop_dir
+
+config_param "account_dropdir", "the directory with subversion server details", :default_value => "#{@op.config_base_dir}/accounts/subversion"
+
+has_accounts(
+  :list => 'list_subversion_servers',
+  :add => 'add_subversion_server',
+  #:remove => 'remove_data_repo'
+)
+
+on_init do |plugin, config|
+  require 'helpers/init_dropdir'
+  init_dropdir plugin, plugin.config_string("account_dropdir")
+end

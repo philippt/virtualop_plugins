@@ -1,0 +1,3 @@
+dependencies [ :core, :machines, :erb_processor ]
+
+tags :packages

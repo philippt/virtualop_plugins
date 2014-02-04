@@ -1,0 +1,69 @@
+###############################################################################
+###############################################################################
+#
+# HOST DEFINITIONS
+#
+###############################################################################
+###############################################################################
+
+<% options = @op.ssh_options_for_machine("machine" => machine.name) %>
+define host{
+        use                     windows-host;
+        host_name               <%= machine.name.downcase %>
+        alias                   <%= machine.name.downcase %>
+        address                 <%= ipaddress %>
+        }
+
+
+###############################################################################
+###############################################################################
+#
+# SERVICE DEFINITIONS
+#
+###############################################################################
+###############################################################################
+
+
+define service{
+        use                             generic-service
+        host_name                       <%= machine.name.downcase %>
+        service_description             Memory
+        check_command                   check_snmp_windows_mem!80!95
+        notification_options            n
+        }
+
+define service{
+        use                             disk-template
+        host_name                       <%= machine.name.downcase %>
+        service_description             Disk - C:
+        check_command                   check_snmp_storage_windows_used!C:!85!95
+        }
+
+define service{
+        use                             generic-service
+        host_name                       <%= machine.name.downcase %>
+        service_description             Load
+        check_command                   check_snmp_cpu_windows!85!95
+        }
+
+define service{
+        use                             generic-service
+        host_name                       <%= machine.name.downcase %>
+        service_description             Virtual Memory
+        check_command                   check_snmp_windows_virtmemory!50!90
+        notification_options            n
+        }
+
+define service{
+        use                             service-template-nop
+        host_name                       <%= machine.name.downcase %>
+        service_description             OfficeScan NT Realtime Scan
+        check_command                   check_snmp_process_regex![nN][tT][rR][tT][sS]can.exe
+        }
+
+define service{
+        use                             service-template-nop
+        host_name                       <%= machine.name.downcase %>
+        service_description             AV-Update Status
+        check_command                   check_nrpe!check_officescan -a 1 2
+        } 

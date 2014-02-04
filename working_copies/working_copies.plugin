@@ -1,0 +1,9 @@
+dependencies [ :core, :machines, :erb_processor ]
+
+config_param 'known_metadata_dirs', 'pattern that is used in find-style call to search for working copies. see working_copies.list_working_copies', :allows_multiple_values => true, :default_value => [ '.git', '.vop' ]
+config_param 'location', 'directories in which to look for working copies', :allows_multiple_values => true, :default_value => [ '/var/www' ]
+config_param 'find_maxdepth', 'maximum tree depth, is passed to find for searching working copies.', :default_value => 3
+config_param 'follow_symlinks', 'if set to true, will follow symlink while searching working copies', :default_value => true
+config_param 'path_blacklist', 'exclude filter to use while searching working copies'
+
+tags :deployment, :installation

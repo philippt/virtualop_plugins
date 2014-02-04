@@ -1,0 +1,14 @@
+dependency :core
+dependency :bash
+dependency :machines
+dependency :erb_processor
+dependency :git_scm
+dependency :github_scm
+dependency :machine_config
+dependency :working_copies
+dependency :ssh_connector
+#dependency :machine_crawler
+#dependency :apache_proxy
+
+config_param! "descriptor_dirs", "list of fully qualified paths holding service descriptors", :allows_multiple_values => true
+config_param "service_config_dir", "directory where descriptors for installed services should be written when a service is installed", :default_value => "/etc/vop/installed_services"

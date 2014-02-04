@@ -1,0 +1,11 @@
+require 'brokers/memcached_broker'
+
+@plugin.register_broker MemcachedBroker
+
+config_param "server_name", "server ip and optionally port, separated by colon (example: 127.0.0.1:11211)", :default_value => "localhost"
+config_param "expiration_seconds", "number of seconds after which cached content should be considered invalid", :default_value => 86400
+config_param "additional_blob_file_cache_dir", "qualified path to a directory that should be used for caching blobs", :default_value => "/var/lib/virtualop/cache/blob" 
+
+description "provides a caching broker that stores responses to r/o commands in a memcached"
+
+tags :plumbing

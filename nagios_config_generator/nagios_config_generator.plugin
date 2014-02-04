@@ -1,0 +1,18 @@
+dependencies [ :core, :machines, :erb_processor, :bash, :service_descriptors ]
+
+is_aware_of [ :nagios_status ]
+
+config_param! "nagios_machine_name", "the alias of the machine on which nagios is running", :default_value => "nagios"
+config_param "config_root", "path on the nagios machine where the config files should be written", :default_value => "/usr/local/nagios/etc/objects"
+config_param "host_template", "name of an existing nagios template to use for generated host entries", :default_value => 'linux-server'
+config_param "service_template", "name of a service template to 'use' within generated nagios services", :allows_multiple_values => true, :default_value => [ 'generic-service' ]
+config_param "default_services", "the services that should be generated for every new machine", :allows_multiple_values => true, :default_value => [ 'ping', 'ssh' ]
+config_param "default_check_command", "the command that should be used to indicate if a machine is alive or not"
+
+config_param "ec2_crypted_credentials_file", "path on the nagios machine where crypted aws ec2 credentials can be found", 
+	:default_value => '/usr/local/nagios/ec2.crypted'
+	
+config_param "mysql_check_user", "the mysql user to use for nagios checks with check_mysql_health"
+config_param "mysql_check_password", "the password to use for mysql connections initiated by check_mysql_health"
+
+tags :monitoring

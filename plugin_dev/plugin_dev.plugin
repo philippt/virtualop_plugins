@@ -1,0 +1,5 @@
+dependencies [ :core, :machines, :erb_processor, :drop_dir, :apache, :vop_webapp, :ssh_keys, :github_scm ]
+
+config_param! "plugin_dir", "directory into which new plugins should be written"
+config_param "private_key_file", "path to a private key to use on the vop CI machine"
+config_param "public_key_file", "path to a public key to use on the vop CI machine"

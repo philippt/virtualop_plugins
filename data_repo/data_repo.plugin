@@ -1,0 +1,27 @@
+dependencies [ :core, :machines, :my_sql, :service_descriptors, :drop_dir ]
+
+config_param "account_dropdir", "the directory with repository account details", :default_value => "#{@op.config_base_dir}/accounts/data_repo"
+config_param "local_backup_dir", "the directory on the target machines where backups should be stored"
+config_param "default_owner", "the user that should own backups"
+config_param "default_permissions", "default permissions for backup files"
+
+tags :backup
+
+has_accounts({
+  :list => 'list_data_repos',
+  :add => 'add_data_repo',
+  :remove => 'remove_data_repo'
+})
+
+on_init do |plugin, config|
+  require 'helpers/init_dropdir'
+  init_dropdir plugin, plugin.config_string("account_dropdir")
+end
+
+on_preflight do |request, response|
+  repos = @op.list_data_repos
+  if repos.size > 0
+  	$logger.debug "auto-selecting data repo '#{repos.first["alias"]}'"
+    @op.select_data_repo("data_repo" => repos.first["alias"])
+  end
+end

@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS <%= partitioned_table_name %> (
+  `id` int(11) NOT NULL auto_increment,
+  `request_id` int(11) default NULL,
+  `execution_id` int(11) default NULL,
+  `host_name` varchar(255) default NULL,
+  `user_name` varchar(255) default NULL,
+  `command` varchar(2048) default NULL,
+  `exit_code` int(11) default NULL,
+  `output` blob,
+  `start_ts` datetime default NULL,
+  `stop_ts` datetime default NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;

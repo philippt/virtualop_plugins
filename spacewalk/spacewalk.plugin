@@ -1,0 +1,26 @@
+dependencies [ :core, :machines, :rpm ]
+
+on_activation do |plugin, config|
+  require 'uri'
+  require 'xmlrpc/client'
+  
+  plugin.state[:connection_pool] = {}
+end
+
+on_preflight do |request, response|
+  spacewalks = @op.list_spacewalks
+  if spacewalks.size > 0
+    @op.select_spacewalk("spacewalk_host" => spacewalks.values.first)
+  end
+end
+
+# ugly workaround to get rid of this warning message:
+# warning: peer certificate won't be verified in this SSL session
+class Net::HTTP
+  alias_method :old_initialize, :initialize
+  def initialize(*args)
+    old_initialize(*args)
+    @ssl_context = OpenSSL::SSL::SSLContext.new
+    @ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
+  end
+end

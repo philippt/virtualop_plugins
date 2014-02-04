@@ -1,0 +1,20 @@
+dependencies [ :core, :machines, :erb_processor ]
+
+config_param "slogan_dropdir", "the directory holding the slogans", :default_value => "#{@op.config_base_dir}/slogans"
+
+on_init do |plugin, config|
+  require 'helpers/drop_dir_provider'
+  
+  dir_name = plugin.config_string("slogan_dropdir")
+  
+  provider = DropDirProvider.new(@op,
+	  :host => "localhost",
+	  :user => "root",
+	  :directory => dir_name,
+	  :extension_filter => '\.conf'
+  )
+  plugin.state[:drop_dir] = provider
+  Dir.mkdir(dir_name) unless File.exists?(dir_name)
+  
+  #require 'backports'
+end
