@@ -131,6 +131,8 @@ post_rollout do |stacked, params|
   failure = params["result"][:failure]
   raise "some stacks could not be rolled out: #{failure.map { |x| x["name"] }}" unless failure.size == 0
   
+  params.delete("result")
+  
   if params.has_key?('extra_params')
     params.merge! params['extra_params']
   end

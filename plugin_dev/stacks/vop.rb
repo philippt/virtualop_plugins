@@ -44,6 +44,7 @@ post_rollout do |stacked, params|
   raise "some stacks could not be rolled out: #{failure.map { |x| x["name"] }}" unless failure.size == 0
   
   params.delete("result")
+  params['extra_params'].delete('result') if params['extra_params']
 
   vop_machine = stacked["vop"].first["full_name"]
   @op.with_machine(vop_machine) do |vop|
