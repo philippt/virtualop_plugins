@@ -9,6 +9,7 @@ param "marvin_email", "if specified, an account with the name 'marvin' and this 
 param "marvin_password", "the password for the marvin user"
 param "target_host", "a production host onto which the new version is rolled out after successful tests"
 param 'data_repo'
+param 'release_version'
 
 accept_extra_params 
 
@@ -41,26 +42,39 @@ execute do |params|
   #  @op.upload_data_repo('machine' => 'self', 'data_repo' => params['data_repo'], 'target_alias' => 'old_data_repo')
   #end
   
-  @op.tag_as_stable({'machine' => 'localhost', 'keypair' => 'ci_vop'}.merge_from(params, :github_token))
-  
-  # TODO extract maybe?
-  if params['target_host']
-    p = {
-      'host' => params['target_host'],
-      'stack' => 'vop'
-    }.merge_from(params, :extra_params)
-    p['extra_params'] ||= {}
-    p['extra_params'].merge!(
+  if params['release_version']
+    @op.tag_as({
+      'machine' => 'localhost', 
       'keypair' => 'ci_vop',
-      'environment' => 'production',
-      'service_root' => '/home/marvin/virtualop_webapp',
-      'git_branch' => 'stable'
-    )
-    p['extra_params'].merge!(
-      "default_user" => params["default_user"],
-      "default_password" => params["default_password"]
-    ) if params['default_user'] 
-    p['extra_params'].merge!('data_repo' => params['data_repo']) if params['data_repo']
-    @op.start_rollout(p)
+      'tag' => params['release_version']
+    }.merge_from(params, :github_token))
+    
+    # TODO extract maybe?
+    if params['target_host']
+      p = {
+        'host' => params['target_host'],
+        'stack' => 'vop'
+      }.merge_from(params, :extra_params)
+      p['extra_params'] ||= {}
+      p['extra_params'].merge!(
+        'keypair' => 'ci_vop',
+        'environment' => 'production',
+        'service_root' => '/home/marvin/virtualop_webapp',
+        'git_branch' => 'stable'
+      )
+      p['extra_params'].merge!(
+        "default_user" => params["default_user"],
+        "default_password" => params["default_password"]
+      ) if params['default_user'] 
+      p['extra_params'].merge!('data_repo' => params['data_repo']) if params['data_repo']
+      @op.start_rollout(p)
+    end
+  else
+    @op.tag_as({
+      'machine' => 'localhost', 
+      'keypair' => 'ci_vop',
+      'comment' => "passed CI #{Time.now.strftime("%Y%m%d")} on #{machine.name}"
+    }.merge_from(params, :github_token))
   end
+  
 end
