@@ -38,10 +38,6 @@ execute do |params|
     "default_password" => params["default_password"] 
   })
   
-  #if params['data_repo']
-  #  @op.upload_data_repo('machine' => 'self', 'data_repo' => params['data_repo'], 'target_alias' => 'old_data_repo')
-  #end
-  
   if params['release_version']
     @op.tag_as({
       'machine' => 'localhost', 
@@ -60,7 +56,7 @@ execute do |params|
         'keypair' => 'ci_vop',
         'environment' => 'production',
         'service_root' => '/home/marvin/virtualop_webapp',
-        'git_branch' => 'stable'
+        'git_branch' => params['release_version']
       )
       p['extra_params'].merge!(
         "default_user" => params["default_user"],
@@ -73,7 +69,7 @@ execute do |params|
     @op.tag_as({
       'machine' => 'localhost', 
       'keypair' => 'ci_vop',
-      'comment' => "passed CI #{Time.now.strftime("%Y%m%d")} on #{machine.name}"
+      'comment' => "passed CI #{Time.now.strftime("%Y%m%d")}"
     }.merge_from(params, :github_token))
   end
   
